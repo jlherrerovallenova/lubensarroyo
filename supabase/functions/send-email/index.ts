@@ -62,8 +62,8 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         from: 'Residencial Altavik <info@terravallpromociones.com>',
-        to: Array.isArray(to) ? to.join(', ') : to,
-        bcc: 'terravall@residencialaltavik.es',
+        to: Array.isArray(to) ? to : [to],
+        bcc: ['terravall@residencialaltavik.es'],
         subject,
         html,
       }),
