@@ -448,6 +448,19 @@ export function FichaTab({
                     </div>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {task.type === 'Visita' && whatsappUrl && (
+                      <a
+                        href={`${whatsappUrl}${whatsappUrl.includes('?') ? '&' : '?'}text=${encodeURIComponent(
+                          `${new Date().getHours() < 14 ? 'Buenos días' : 'Buenas tardes'}, ${formData.name ? formData.name.split(' ')[0] : ''}.\nSoy Juan Herrero de Terravall inmobiliaria.\nLe envío un recordatorio de la cita:\n${new Date(task.due_date).toLocaleDateString('es-ES')} a las ${new Date(task.due_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}.\nPlaza Mayor 8 1ºA`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                        title="Recordatorio de cita por WhatsApp"
+                      >
+                        <MessageCircle size={14} />
+                      </a>
+                    )}
                     <button type="button" onClick={() => startEditingTask(task)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Pencil size={14} /></button>
                     <button type="button" onClick={() => deleteTask(task.id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={14} /></button>
                   </div>
