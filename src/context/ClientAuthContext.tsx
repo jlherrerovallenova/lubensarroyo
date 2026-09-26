@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Database } from '../types/supabase';
 
@@ -81,13 +81,18 @@ export const ClientAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setClient(null);
     localStorage.removeItem('altavik_client_session');
-  };
+  }, []);
+
+  const value = useMemo(
+    () => ({ client, loading, login, logout }),
+    [client, loading, logout]
+  );
 
   return (
-    <ClientAuthContext.Provider value={{ client, loading, login, logout }}>
+    <ClientAuthContext.Provider value={value}>
       {children}
     </ClientAuthContext.Provider>
   );

@@ -55,6 +55,9 @@ interface Property {
   created_at: string;
 }
 
+const currencyFormatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
+const currencyFormatterCompact = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
 export default function Inventory() {
   const { data: settings } = useSettings();
   const [properties, setProperties] = useState<Property[]>([]);
@@ -300,7 +303,7 @@ export default function Inventory() {
       `${p.sup_construida?.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²`,
       `${p.sup_terrazas?.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²`,
       `${p.sup_porche?.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²`,
-      new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(p.precio),
+      currencyFormatter.format(p.precio),
       (p.estado_vivienda || 'DISPONIBLE').toUpperCase()
     ]);
 
@@ -354,7 +357,7 @@ export default function Inventory() {
 
     // Generar el PDF y abrirlo en una nueva pestaña (más fiable para depuración y visualización)
     const pdfOutput = doc.output('bloburl');
-    window.open(pdfOutput, '_blank');
+    window.open(pdfOutput, '_blank', 'noopener,noreferrer');
     
     // También guardarlo por si el usuario lo prefiere
     doc.save(`listado_viviendas_${stateFilter || 'todas'}_${new Date().toISOString().split('T')[0]}.pdf`);
@@ -521,7 +524,7 @@ export default function Inventory() {
                     </div>
                     <div className="text-right shrink-0 ml-2">
                       <span className="inline-block px-3 py-1.5 rounded-lg bg-altavik-600 text-white font-black text-sm shadow-sm">
-                        {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(property.precio)}
+                        {currencyFormatterCompact.format(property.precio)}
                       </span>
                     </div>
                   </div>
@@ -674,7 +677,7 @@ export default function Inventory() {
                     </td>
                     <td className="px-4 py-5 text-center">
                       <span className="inline-flex px-3.5 py-2 rounded-lg bg-altavik-600 text-white font-bold text-sm whitespace-nowrap shadow-sm">
-                        {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(property.precio)}
+                        {currencyFormatterCompact.format(property.precio)}
                       </span>
                     </td>
                     <td className="px-4 py-5">

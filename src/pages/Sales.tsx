@@ -12,6 +12,8 @@ const STATUS_CONFIG: Record<string, { label: string, color: string, icon: React.
   completada: { label: 'Cerrada', color: 'bg-emerald-100 text-emerald-700 border-emerald-200', icon: <CheckCircle2 size={14} /> }
 };
 
+const salesCurrencyFormatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+
 export default function Sales() {
   const { data: sales, isLoading } = useSales();
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ export default function Sales() {
 
   const formatCurrency = (val: number | null) => {
     if (val === null || isNaN(val)) return '-';
-    return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(val);
+    return salesCurrencyFormatter.format(val);
   };
 
   const formatDate = (dateStr: string | null) => {

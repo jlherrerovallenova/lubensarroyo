@@ -45,6 +45,17 @@ interface PaymentFormModalProps {
   property: Property;
 }
 
+const paymentCurrencyFormatter = new Intl.NumberFormat('de-DE', {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0
+});
+
+const formatCurrency = (num: number) => {
+  return paymentCurrencyFormatter.format(num).replace('€', '€').trim();
+};
+
 export default function PaymentFormModal({ isOpen, onClose, property }: PaymentFormModalProps) {
   const [showSimulator, setShowSimulator] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -69,15 +80,6 @@ export default function PaymentFormModal({ isOpen, onClose, property }: PaymentF
   const monthlyQuotaTotal = totalWithIVA * installmentPct;
   const monthlyAmount = monthlyQuotaTotal / installmentCount;
   const eightyPercent = totalWithIVA * deedPct;
-
-  const formatCurrency = (num: number) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(num).replace('€', '€').trim();
-  };
 
   const handleGenerateWithParams = async (params: MortgageParams) => {
     setIsGenerating(true);

@@ -371,6 +371,9 @@ Mensaje a analizar: "${messageText.replace(/"/g, "'")}"`
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.1 } })
     })
+    if (!res.ok) {
+      throw new Error(`Gemini API error: ${res.statusText}`);
+    }
     const result = await res.json()
     let raw = result.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}'
     const match = raw.match(/\{[\s\S]*\}/)

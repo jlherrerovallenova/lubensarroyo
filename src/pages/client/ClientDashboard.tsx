@@ -74,7 +74,7 @@ export default function ClientDashboard() {
 
       if (error) throw error;
       if (data?.signedUrl) {
-        window.open(data.signedUrl, '_blank');
+        window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
       }
     } catch (error: any) {
       console.error('Error opening document:', error);

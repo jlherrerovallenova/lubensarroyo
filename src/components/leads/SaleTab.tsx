@@ -977,6 +977,7 @@ export default function SaleTab({ lead, onLeadUpdate }: Props) {
                   <iframe
                     src={previewUrl}
                     title={previewName || 'Vista previa PDF'}
+                    sandbox="allow-scripts allow-same-origin"
                     className="w-full h-full rounded-xl border border-slate-200/60 shadow-lg bg-white"
                   />
                 )}

@@ -93,6 +93,9 @@ function numeroALetras(n: number): string {
 export async function generarReservaDocx(datos: DatosReserva, promotionSettings?: any): Promise<void> {
   // Cargar la plantilla desde public/ con un parámetro para evitar caché
   const response = await fetch(`/plantilla_reserva.docx?t=${Date.now()}`);
+  if (!response.ok) {
+    throw new Error(`Error al descargar la plantilla de reserva: ${response.status} ${response.statusText}`);
+  }
   const arrayBuffer = await response.arrayBuffer();
   const zip = new PizZip(arrayBuffer);
 

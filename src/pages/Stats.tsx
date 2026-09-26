@@ -254,6 +254,7 @@ export default function Stats() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleDownloadPDF = () => {

@@ -89,7 +89,7 @@ export function DocumentsTab() {
     try {
       const { data, error } = await supabase.storage.from('documents').createSignedUrl(fullPath, 60);
       if (error) throw error;
-      window.open(data.signedUrl, '_blank');
+      window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
     } catch (ignore) {
       await showAlert({ title: 'Error', message: 'No se pudo generar la vista temporizada del archivo.' });
     }

@@ -21,13 +21,21 @@ interface Property {
   ficha_url?: string;
 }
 
+const currencyFormatter0 = new Intl.NumberFormat('de-DE', {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0
+});
+
+const currencyFormatter2 = new Intl.NumberFormat('de-DE', {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 2
+});
+
 const formatCurrency = (num: number) => {
-  return new Intl.NumberFormat('de-DE', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(num).replace('€', '€').trim();
+  return currencyFormatter0.format(num).replace('€', '€').trim();
 };
 
 const getBase64Image = (url: string): Promise<{ data: string, width: number, height: number } | null> => {
@@ -272,8 +280,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
 
   // ─── PÁGINA 3: SIMULACIÓN HIPOTECARIA ───────────────────────────────────────
   const generateMortgagePage = () => {
-    const fmtEur2 = (n: number) =>
-      new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 }).format(n);
+    const fmtEur2 = (n: number) => currencyFormatter2.format(n);
     const interestRate = mortgageParams?.interestRate ?? 0.035;
     const loanYears   = mortgageParams?.loanYears   ?? 30;
     const entryPct    = mortgageParams?.entryPct    ?? 0.20;
@@ -346,8 +353,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
 
   // ─── PÁGINA 4: GASTOS DE COMPRAVENTA ────────────────────────────────────────
   const generateCostPage = () => {
-    const fmtEur2 = (n: number) =>
-      new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2 }).format(n);
+    const fmtEur2 = (n: number) => currencyFormatter2.format(n);
     const itpAjd = basePrice * 0.015;
     const notaria = Math.round(Math.min(Math.max(basePrice * 0.005, 1200), 2500));
     const registro = Math.round(Math.min(Math.max(basePrice * 0.003, 600), 1400));

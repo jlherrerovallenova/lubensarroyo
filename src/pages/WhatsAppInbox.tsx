@@ -30,7 +30,13 @@ interface Message {
   sent_at: string;
 }
 
-
+const StatusIcon = ({ status }: { status: string }) => {
+  if (status === 'sending') return <Clock size={12} className="text-slate-400" />;
+  if (status === 'sent')    return <Check size={12} className="text-slate-400" />;
+  if (status === 'delivered') return <CheckCheck size={12} className="text-slate-400" />;
+  if (status === 'read')    return <CheckCheck size={12} className="text-blue-400" />;
+  return null;
+};
 
 export default function WhatsAppInbox() {
   const { session } = useAuth();
@@ -256,14 +262,6 @@ export default function WhatsAppInbox() {
     if (diffDays === 1) return 'Ayer';
     if (diffDays < 7) return date.toLocaleDateString('es-ES', { weekday: 'short' });
     return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-  };
-
-  const StatusIcon = ({ status }: { status: string }) => {
-    if (status === 'sending') return <Clock size={12} className="text-slate-400" />;
-    if (status === 'sent')    return <Check size={12} className="text-slate-400" />;
-    if (status === 'delivered') return <CheckCheck size={12} className="text-slate-400" />;
-    if (status === 'read')    return <CheckCheck size={12} className="text-blue-400" />;
-    return null;
   };
 
   const totalUnread = conversations.reduce((acc, c) => acc + (c.unread_count || 0), 0);

@@ -546,7 +546,7 @@ ${agentName} - TERRAVALL`);
 
                 await sendWhatsAppCloudAPI(leadPhone, templateIdName, lang, components);
               } else {
-                window.open(getWhatsAppUrl(leadPhone, fullMessage), '_blank');
+                window.open(getWhatsAppUrl(leadPhone, fullMessage), '_blank', 'noopener,noreferrer');
               }
             } else {
               // ✅ Intento via Cloud API con la plantilla aprobada en Meta
@@ -554,11 +554,11 @@ ${agentName} - TERRAVALL`);
             }
           } catch (apiError: any) {
             console.warn('Cloud API no disponible, usando fallback URL:', apiError.message);
-            window.open(getWhatsAppUrl(leadPhone, fullMessage), '_blank');
+            window.open(getWhatsAppUrl(leadPhone, fullMessage), '_blank', 'noopener,noreferrer');
           }
         } else {
           // Fallback directo: abre WhatsApp Web con el mensaje prellenado
-          window.open(getWhatsAppUrl(leadPhone, fullMessage), '_blank');
+          window.open(getWhatsAppUrl(leadPhone, fullMessage), '_blank', 'noopener,noreferrer');
         }
 
         await saveHistory('whatsapp');

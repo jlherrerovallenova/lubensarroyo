@@ -4,6 +4,13 @@ import { supabase } from '../../lib/supabase';
 import { useDialog } from '../../context/DialogContext';
 import { useQueryClient } from '@tanstack/react-query';
 
+const promoCurrencyFormatter = new Intl.NumberFormat('de-DE', {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0
+});
+
 export function PromotionTab() {
   const { showAlert } = useDialog();
   const queryClient = useQueryClient();
@@ -190,12 +197,7 @@ export function PromotionTab() {
   const deedPercentage = Math.max(0, 100 - (Number(contractPercentage) + Number(installmentPercentage) + Number(courtesyPercentage)));
 
   const formatEur = (num: number) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(num);
+    return promoCurrencyFormatter.format(num);
   };
 
   if (loading) {

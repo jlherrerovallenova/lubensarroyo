@@ -20,10 +20,10 @@ interface Props {
   isGenerating?: boolean;
 }
 
-const fmt = (n: number) =>
-  new Intl.NumberFormat('de-DE', {
-    style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0
-  }).format(n);
+const currencyFormatter = new Intl.NumberFormat('de-DE', {
+  style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0
+});
+const fmt = (n: number) => currencyFormatter.format(n);
 
 export default function MortgageSimulatorModal({ isOpen, onClose, property, onGenerate, isGenerating }: Props) {
   const totalWithIVA = property.precio * 1.1;

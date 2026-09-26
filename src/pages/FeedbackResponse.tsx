@@ -31,6 +31,32 @@ const optionsP4 = [
   { id: 'no_mirar', text: 'No, prefiero seguir mirando por mi cuenta de momento.' }
 ];
 
+const OptionButton = ({ 
+  selected, 
+  onClick, 
+  text 
+}: { 
+  selected: boolean; 
+  onClick: () => void; 
+  text: string 
+}) => (
+  <button type="button"
+    onClick={onClick}
+    className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-3 ${
+      selected 
+        ? 'border-altavik-600 bg-altavik-600/40 text-altavik-900 font-bold' 
+        : 'border-slate-200 bg-white hover:border-altavik-300 hover:bg-slate-50 text-slate-600'
+    }`}
+  >
+    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+      selected ? 'border-altavik-600' : 'border-slate-300'
+    }`}>
+      {selected && <div className="w-2.5 h-2.5 rounded-full bg-altavik-600" />}
+    </div>
+    <span className="text-sm">{text}</span>
+  </button>
+);
+
 export default function FeedbackResponse() {
   const [searchParams] = useSearchParams();
   const leadId = searchParams.get('leadId');
@@ -78,32 +104,6 @@ export default function FeedbackResponse() {
       return next;
     });
   };
-
-  const OptionButton = ({ 
-    selected, 
-    onClick, 
-    text 
-  }: { 
-    selected: boolean; 
-    onClick: () => void; 
-    text: string 
-  }) => (
-    <button type="button"
-      onClick={onClick}
-      className={`w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-3 ${
-        selected 
-          ? 'border-altavik-600 bg-altavik-600/40 text-altavik-900 font-bold' 
-          : 'border-slate-200 bg-white hover:border-altavik-300 hover:bg-slate-50 text-slate-600'
-      }`}
-    >
-      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
-        selected ? 'border-altavik-600' : 'border-slate-300'
-      }`}>
-        {selected && <div className="w-2.5 h-2.5 rounded-full bg-altavik-600" />}
-      </div>
-      <span className="text-sm">{text}</span>
-    </button>
-  );
 
   if (isSubmitted) {
     const whatsappUrl = `https://wa.me/34600000000?text=${encodeURIComponent(`Hola! Soy ${name}, he completado la encuesta y me gustaría recibir más información.`)}`;

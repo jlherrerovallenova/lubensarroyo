@@ -24,6 +24,12 @@ interface Props {
   alreadySelected?: string[]; // IDs of properties already selected
 }
 
+const propertyCurrencyFormatter = new Intl.NumberFormat('es-ES', {
+  style: 'currency',
+  currency: 'EUR',
+  maximumFractionDigits: 0
+});
+
 export default function PropertySelector({ isOpen, onClose, onSelect, alreadySelected = [] }: Props) {
   const { data: properties = [], isLoading } = useInventory();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -222,7 +228,7 @@ export default function PropertySelector({ isOpen, onClose, onSelect, alreadySel
                         {p.sup_util.toFixed(2)} m² · {p.dormitorios}D / {p.banos}B
                       </div>
                       <div className="text-sm font-black text-altavik-600">
-                        {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(p.precio)}
+                        {propertyCurrencyFormatter.format(p.precio)}
                       </div>
                     </div>
                   </button>

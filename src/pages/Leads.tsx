@@ -50,9 +50,9 @@ export default function Leads() {
     .filter(doc => doc.url)
     .map(doc => ({ name: doc.name, url: doc.url!, category: doc.category }));
 
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const [statusFilter, setStatusFilter] = useState<string>(searchParams.get('status') || '');
-  const [sourceFilter, setSourceFilter] = useState<string>(searchParams.get('source') || '');
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('search') || '');
+  const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get('status') || '');
+  const [sourceFilter, setSourceFilter] = useState<string>(() => searchParams.get('source') || '');
   const [page, setPage] = useState(1);
   const [sortField, setSortField] = useState<'name' | 'created_at' | 'client_quality_rating'>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');

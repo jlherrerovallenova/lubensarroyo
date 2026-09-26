@@ -15,7 +15,7 @@ export default function ExportLeadsModal({ isOpen, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const { showAlert } = useDialog();
   const [filterType, setFilterType] = useState<'all' | 'month'>('all');
-  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
+  const [selectedMonth, setSelectedMonth] = useState(() => new Date().toISOString().slice(0, 7)); // YYYY-MM
 
   if (!isOpen) return null;
 

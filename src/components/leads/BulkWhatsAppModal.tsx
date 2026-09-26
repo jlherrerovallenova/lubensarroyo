@@ -66,7 +66,7 @@ export default function BulkWhatsAppModal({ isOpen, onClose, leads, title }: Bul
       } else {
         // Enviar via URL tradicional
         const whatsappUrl = getWhatsAppUrl(lead.phone || '', personalizedMessage);
-        window.open(whatsappUrl, '_blank');
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
 
         await (supabase as any).from('lead_history').insert([{
           lead_id: lead.id,
