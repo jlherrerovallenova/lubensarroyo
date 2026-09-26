@@ -1,4 +1,4 @@
-# Altavik CRM 2.0 - UI/UX Design System
+# Lubens Arroyo CRM 2.0 - UI/UX Design System
 
 ## 1. Filosofía de Diseño
 El CRM adopta una estética **Premium** basada en el **Glassmorphism** (Efecto cristal) combinado con interfaces minimalistas y limpias. La intención es transmitir confianza, modernidad y lujo, acorde al sector inmobiliario de alto nivel.
@@ -12,7 +12,7 @@ Se utiliza una única fuente sans-serif para todo el sistema, asegurando consist
 
 ## 3. Paleta de Colores
 
-### Colores de Marca (Altavik)
+### Colores de Marca (Lubens Arroyo)
 Basados en el azul corporativo:
 - **Primary (500):** `#6b94b9` - Uso en botones principales y llamadas a la acción.
 - **Secondary (800):** `#3a516b` - Uso en elementos secundarios, bordes oscuros o fondos invertidos.

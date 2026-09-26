@@ -53,9 +53,9 @@ export function useSettings() {
       if (error) throw new Error(error.message);
 
       const settings: PromotionSettings = {
-        promotion_name: 'RESIDENCIAL ALTAVIK',
+        promotion_name: 'LUBENS ARROYO',
         promotion_location: 'Vallenova',
-        promotion_promoter: 'RESIDENCIAL ALTAVIK, S.L.',
+        promotion_promoter: 'LUBENS ARROYO, S.L.',
         promotion_builder: '',
         promotion_status: 'active',
         promotion_reservation_amount: 3000,
@@ -75,9 +75,9 @@ export function useSettings() {
       if (data) {
         data.forEach((s: any) => {
           switch (s.key) {
-            case 'promotion_name': settings.promotion_name = s.value || 'RESIDENCIAL ALTAVIK'; break;
+            case 'promotion_name': settings.promotion_name = s.value || 'LUBENS ARROYO'; break;
             case 'promotion_location': settings.promotion_location = s.value || 'Vallenova'; break;
-            case 'promotion_promoter': settings.promotion_promoter = s.value || 'RESIDENCIAL ALTAVIK, S.L.'; break;
+            case 'promotion_promoter': settings.promotion_promoter = s.value || 'LUBENS ARROYO, S.L.'; break;
             case 'promotion_builder': settings.promotion_builder = s.value || ''; break;
             case 'promotion_status': settings.promotion_status = s.value || 'active'; break;
             case 'promotion_reservation_amount': settings.promotion_reservation_amount = Number(s.value) || 3000; break;

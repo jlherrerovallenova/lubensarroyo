@@ -148,7 +148,7 @@ export default function CreatePropertyModal({ isOpen, onClose, onSuccess, initia
             </div>
             <div>
               <h3 className="text-lg font-bold text-slate-800">{initialData ? 'Editar Propiedad' : 'Nueva Propiedad'}</h3>
-              <p className="text-xs text-slate-500">Datos técnicos del activo en Altavik</p>
+              <p className="text-xs text-slate-500">Datos técnicos del activo en Lubens Arroyo</p>
             </div>
           </div>
           <button type="button"

@@ -205,7 +205,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       <div className="h-screen w-full flex items-center justify-center bg-slate-50 relative">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="animate-spin text-altavik-600 h-10 w-10" />
-          <p className="text-slate-400 text-sm animate-pulse">Sincronizando con Altavik CRM...</p>
+          <p className="text-slate-400 text-sm animate-pulse">Sincronizando con Lubens Arroyo CRM...</p>
         </div>
       </div>
     );

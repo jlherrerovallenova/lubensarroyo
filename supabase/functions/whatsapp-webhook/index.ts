@@ -188,13 +188,13 @@ serve(async (req) => {
             // Auto-respuesta inteligente al cliente
             let replyText = ''
             if (extracted.es_saludo && !extracted.contiene_preferencias) {
-              replyText = `¡Hola! Bienvenido a Inmobiliaria TERRAVALL. ¿En qué podemos ayudarle hoy? Si está interesado en la promoción ALTAVIK, coméntenos brevemente qué tipo de vivienda prefiere (bajo, planta intermedia o ático) y cuántos dormitorios necesita para ofrecerle las mejores opciones.`
+              replyText = `¡Hola! Bienvenido a Inmobiliaria TERRAVALL. ¿En qué podemos ayudarle hoy? Si está interesado en la promoción LUBENS ARROYO, coméntenos brevemente qué tipo de vivienda prefiere (bajo, planta intermedia o ático) y cuántos dormitorios necesita para ofrecerle las mejores opciones.`
             } else if (extracted.contiene_preferencias) {
               replyText = extracted.quiere_visita
                 ? `¡Muchas gracias por su respuesta! Hemos anotado sus preferencias. Le llamaremos pronto para concertar la visita. ¡Un cordial saludo! — Terravall`
                 : `¡Muchas gracias por su respuesta! Hemos anotado sus preferencias y le prepararemos las mejores opciones. ¡Un cordial saludo! — Terravall`
             } else {
-              replyText = `¡Muchas gracias por su mensaje! En breve un asesor de Inmobiliaria TERRAVALL se pondrá en contacto con usted para facilitarle toda la información sobre la promoción ALTAVIK.`
+              replyText = `¡Muchas gracias por su mensaje! En breve un asesor de Inmobiliaria TERRAVALL se pondrá en contacto con usted para facilitarle toda la información sobre la promoción LUBENS ARROYO.`
             }
 
             const sent = await sendWhatsAppReply(fromPhone, replyText)
@@ -353,7 +353,7 @@ serve(async (req) => {
 })
 
 async function extractWithGemini(messageText: string) {
-  const prompt = `Eres el CRM inmobiliario ALTAVIK. Analiza el mensaje del cliente de WhatsApp y extrae cualquier preferencia de vivienda o intención de visita.
+  const prompt = `Eres el CRM inmobiliario LUBENS ARROYO. Analiza el mensaje del cliente de WhatsApp y extrae cualquier preferencia de vivienda o intención de visita.
 Devuelve SOLO un objeto JSON estructurado sin formato markdown ni código:
 {
   "es_saludo": <true|false (si el mensaje es solo un saludo como Hola, Buenas, etc. sin aportar información)>,

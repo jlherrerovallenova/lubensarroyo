@@ -30,7 +30,7 @@ export default function FeedbackEmailModal({ isOpen, onClose, lead, onSuccess }:
 
   if (!isOpen) return null;
 
-  const promotionName = settings?.promotion_name || 'Residencial Altavik';
+  const promotionName = settings?.promotion_name || 'Lubens Arroyo';
 
   const handleSendFeedbackEmail = async () => {
     const recipients = [lead.email, lead.secondary_email].filter(Boolean) as string[];

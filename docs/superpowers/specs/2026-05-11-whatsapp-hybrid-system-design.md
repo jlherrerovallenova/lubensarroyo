@@ -1,6 +1,6 @@
 # Diseño Técnico: Sistema Híbrido de Plantillas WhatsApp
 
-Este documento detalla la implementación de un sistema de plantillas inteligente para WhatsApp en Altavik CRM, combinando robustez de código con flexibilidad de base de datos.
+Este documento detalla la implementación de un sistema de plantillas inteligente para WhatsApp en Lubens Arroyo CRM, combinando robustez de código con flexibilidad de base de datos.
 
 ## 1. Objetivos
 - Centralizar la lógica de mensajes de WhatsApp.

@@ -107,7 +107,7 @@ export default function EmailComposerModal({
   };
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const [subject, setSubject, clearSubject] = useAutosave(`draft-email-subj-${leadId}`, `Documentación RESIDENCIAL ALTAVIK - TERRAVALL`);
+  const [subject, setSubject, clearSubject] = useAutosave(`draft-email-subj-${leadId}`, `Documentación LUBENS ARROYO - TERRAVALL`);
   const { templates, loading: loadingTemplates } = useWhatsAppTemplates();
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
 
@@ -140,14 +140,14 @@ export default function EmailComposerModal({
         setSelectedTemplateId(firstContact.id || firstContact.name);
         setMessage(parseTemplate(firstContact.body, { name: leadName }, { agente: agentName }));
         if (method === 'email') {
-          setSubject(`Información Promoción ALTAVIK - ${agentName}`);
+          setSubject(`Información Promoción LUBENS ARROYO - ${agentName}`);
         }
       }
     } else if (!message && templates.length > 0) {
       // Mensaje genérico por defecto
       setMessage(`¡${getGreeting()}, ${leadName.split(' ')[0]}!
 
-Tal y como acabamos de hablar, le envío adjunta toda la información sobre RESIDENCIAL ALTAVIK.
+Tal y como acabamos de hablar, le envío adjunta toda la información sobre LUBENS ARROYO.
 
 Échele un vistazo tranquilamente y, si tiene cualquier duda o quiere que comentemos algún detalle, estoy a su disposición.
 
@@ -196,7 +196,7 @@ ${agentName} - TERRAVALL`);
     }
 
     if (template.name.includes('Primer Contacto') && method === 'email') {
-      setSubject(`Información Promoción ALTAVIK - ${agentName}`);
+      setSubject(`Información Promoción LUBENS ARROYO - ${agentName}`);
     }
   };
 
@@ -303,12 +303,12 @@ ${agentName} - TERRAVALL`);
             TERRAVALL
           </div>
           <div style="font-size: 11px; font-weight: 600; color: #6b94b9; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px;">
-            Residencial Altavik
+            Lubens Arroyo
           </div>
           <div style="margin-top: 10px; font-size: 12px; color: #64748b; line-height: 1.6;">
             <div>📍 Plaza Mayor 8, 1ºA · Valladolid</div>
             <div>📞 983 34 21 32</div>
-            <div>🌐 <a href="https://residencialaltavik.es" style="color: #1e293b; text-decoration: none;">residencialaltavik.es</a></div>
+            <div>🌐 <a href="https://lubensarroyo.es" style="color: #1e293b; text-decoration: none;">lubensarroyo.es</a></div>
           </div>
         </div>
       </div>
@@ -452,7 +452,7 @@ ${agentName} - TERRAVALL`);
             <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
               <!-- Header Corporativo -->
               <div style="background-color: #ffffff; padding: 25px 20px; text-align: center; border-bottom: 2px solid #6b94b9;">
-                <img src="https://oenaworwtrblkmjvwjfs.supabase.co/storage/v1/object/public/documents/logo-altavik.png" alt="Altavik Residencial" style="height: 65px; max-height: 65px; width: auto; display: inline-block; border: none; outline: none; text-decoration: none;" />
+                <img src="https://oenaworwtrblkmjvwjfs.supabase.co/storage/v1/object/public/documents/logo-altavik.png" alt="Lubens Arroyo" style="height: 65px; max-height: 65px; width: auto; display: inline-block; border: none; outline: none; text-decoration: none;" />
               </div>
 
               <div style="padding: 40px;">
@@ -471,7 +471,7 @@ ${agentName} - TERRAVALL`);
               <div style="background-color: #f8fafc; padding: 25px; text-align: center; border-top: 1px solid #f1f5f9;">
                 <div style="font-size: 11px; color: #94a3b8; line-height: 1.5;">
                   Este mensaje y cualquier documento adjunto son confidenciales y están dirigidos exclusivamente a su destinatario. Si lo ha recibido por error, por favor notifíquelo y elimine el mensaje.<br>
-                  <strong style="color: #64748b; margin-top: 10px; display: block;">Residencial ALTAVIK</strong>
+                  <strong style="color: #64748b; margin-top: 10px; display: block;">Lubens Arroyo</strong>
                 </div>
               </div>
             </div>

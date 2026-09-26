@@ -241,7 +241,7 @@ export default function Inventory() {
         });
       };
 
-      const logoInfo = await getBase64Image('/logo-altavik.png');
+      const logoInfo = await getBase64Image('/logo-lubens-arroyo.png');
       
       // Función para añadir cabecera premium
       const addHeader = () => {
@@ -267,7 +267,7 @@ export default function Inventory() {
         } else {
           doc.setTextColor(15, 23, 42);
           doc.setFontSize(10);
-          doc.text('ALTAVIK', 14, 12);
+          doc.text('LUBENS ARROYO', 14, 12);
         }
 
         // Título y Subtítulo

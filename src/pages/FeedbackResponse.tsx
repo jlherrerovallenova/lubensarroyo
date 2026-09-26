@@ -148,7 +148,7 @@ export default function FeedbackResponse() {
     <div className="min-h-screen bg-slate-50 py-10 px-4 sm:px-6 font-['Inter']">
       <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
         <div className="bg-white border-b-4 border-altavik-600 p-8 text-center flex flex-col items-center">
-          <img src="/logo-altavik.png" alt="Altavik Logo" className="h-16 mb-4 object-contain" />
+          <img src="/logo-lubens-arroyo.png" alt="Lubens Arroyo Logo" className="h-16 mb-4 object-contain" />
           <h1 className="text-2xl font-black tracking-tight text-slate-800">Breve Encuesta de Opinión</h1>
           <p className="text-slate-500 text-sm mt-2 font-medium">Hola {name}, nos tomará menos de 30 segundos.</p>
         </div>

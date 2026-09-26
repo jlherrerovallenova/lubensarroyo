@@ -238,7 +238,7 @@ export default function CommandPalette({ isOpen, onClose }: { isOpen: boolean; o
             <span className="flex items-center gap-1.5"><div className="w-8 h-4 bg-white border border-slate-200 rounded flex items-center justify-center text-[8px]">ENTER</div> Seleccionar</span>
           </div>
           <div className="flex items-center gap-1">
-            <Command size={10} /> ALTAVIK MAGIC BAR
+            <Command size={10} /> LUBENS ARROYO MAGIC BAR
           </div>
         </div>
       </div>

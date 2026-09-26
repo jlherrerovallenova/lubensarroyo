@@ -167,7 +167,7 @@ serve(async (req) => {
 
         if (!templateBody) {
           if (templateName === 'plantilla_mensaje_inicial' || templateName === 'hello_world') {
-            templateBody = `Mi nombre es Juan Herrero, de inmobiliaria TERRAVALL. Le escribo porque hemos recibido su solicitud de información sobre la promoción ALTAVIK (C/ Isaac Peral 20, Arroyo de la Encomienda).
+            templateBody = `Mi nombre es Juan Herrero, de inmobiliaria TERRAVALL. Le escribo porque hemos recibido su solicitud de información sobre la promoción LUBENS ARROYO (C/ Isaac Peral 20, Arroyo de la Encomienda).
 
 Para enviarle las opciones que mejor se ajusten a lo que busca, coménteme brevemente:
 

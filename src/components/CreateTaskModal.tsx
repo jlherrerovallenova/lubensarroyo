@@ -99,7 +99,7 @@ export default function CreateTaskModal({ isOpen, onClose, onSuccess }: Props) {
       googleCalUrl.searchParams.append('action', 'TEMPLATE');
       googleCalUrl.searchParams.append('text', `[${formData.type}] ${formData.title}`);
       
-      let details = `Tarea añadida desde Altavik CRM.`;
+      let details = `Tarea añadida desde Lubens Arroyo CRM.`;
       if (selectedLead) {
         details += `\nCliente vinculado: ${selectedLead.name}`;
       }

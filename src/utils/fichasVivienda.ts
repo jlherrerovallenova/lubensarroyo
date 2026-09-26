@@ -96,7 +96,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
   const eightyPercent = totalWithIVA * deedPct;
 
   const [logoAltavik, logoHabitarum, logoTerravall] = await Promise.all([
-    getBase64Image('/logo-altavik.png'),
+    getBase64Image('/logo-lubens-arroyo.png'),
     getBase64Image('/logo_habitarum.png'),
     getBase64Image('/logo-terravall.png')
   ]);
@@ -127,7 +127,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
   const drawFooter = () => {
     doc.setFontSize(7);
     doc.setTextColor(softGray[0], softGray[1], softGray[2]);
-    doc.text('Este documento tiene carácter meramente informativo y podrá ser modificado según condiciones comerciales. Altavik Residencial.', 15, 290);
+    doc.text('Este documento tiene carácter meramente informativo y podrá ser modificado según condiciones comerciales. Lubens Arroyo.', 15, 290);
     doc.text(`Generado el ${new Date().toLocaleDateString('es-ES')}`, 195, 290, { align: 'right' });
   };
 
@@ -151,7 +151,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
-    doc.text('RESIDENCIAL ALTAVIK', 25, 76);
+    doc.text('LUBENS ARROYO', 25, 76);
     doc.setFontSize(9);
     doc.setTextColor(softGray[0], softGray[1], softGray[2]);
     doc.text('SUPERFICIES Y DISTRIBUCIÓN', 115, 55);

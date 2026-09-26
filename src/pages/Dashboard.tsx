@@ -212,10 +212,10 @@ export default function Dashboard() {
     const phone = task.leads?.phone;
     const hour = new Date().getHours();
     const greeting = hour < 14 ? 'Buenos días' : 'Buenas tardes';
-    const promotionName = settings?.promotion_name || 'Residencial Altavik';
+    const promotionName = settings?.promotion_name || 'Lubens Arroyo';
     const promotionWebsite = settings?.promotion_name 
       ? `www.${settings.promotion_name.toLowerCase().replace(/\s+/g, '')}.com` 
-      : 'www.residencialaltavik.com';
+      : 'www.lubensarroyo.com';
     
     const agentName = profile?.full_name || 'Juan Herrero';
     

@@ -236,9 +236,9 @@ export default function MainLayout() {
         <div className="h-16 flex items-center justify-between px-6 bg-slate-950 border-b border-slate-800">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-altavik-500 rounded flex items-center justify-center text-white font-bold mr-3 shadow-lg shadow-altavik-900/20">
-              A
+              L
             </div>
-            <span className="text-white font-display font-bold text-lg tracking-tight">Altavik Residencial</span>
+            <span className="text-white font-display font-bold text-lg tracking-tight">Lubens Arroyo</span>
           </div>
           <button type="button" onClick={closeSidebar} className="lg:hidden text-slate-400 hover:text-white">
             <X size={20} />
@@ -299,9 +299,9 @@ export default function MainLayout() {
           {/* CENTRO: Logo */}
           <div className="flex justify-center w-1/3">
             <img
-              src="/logo-altavik.png"
-              alt="Altavik Residencial"
-              className="h-10 w-auto object-contain"
+              src="/logo-lubens-arroyo.png"
+              alt="Lubens Arroyo"
+              className="h-11 w-auto object-contain"
             />
           </div>
 

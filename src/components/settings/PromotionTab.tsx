@@ -11,9 +11,9 @@ export function PromotionTab() {
   const [saving, setSaving] = useState(false);
 
   // Form states - General
-  const [promotionName, setPromotionName] = useState('RESIDENCIAL ALTAVIK');
+  const [promotionName, setPromotionName] = useState('LUBENS ARROYO');
   const [location, setLocation] = useState('Vallenova');
-  const [promoter, setPromoter] = useState('RESIDENCIAL ALTAVIK, S.L.');
+  const [promoter, setPromoter] = useState('LUBENS ARROYO, S.L.');
   const [builder, setBuilder] = useState('');
   const [status, setStatus] = useState('active');
 
@@ -74,9 +74,9 @@ export function PromotionTab() {
       if (data) {
         data.forEach((s: any) => {
           switch (s.key) {
-            case 'promotion_name': setPromotionName(s.value || 'RESIDENCIAL ALTAVIK'); break;
+            case 'promotion_name': setPromotionName(s.value || 'LUBENS ARROYO'); break;
             case 'promotion_location': setLocation(s.value || 'Vallenova'); break;
-            case 'promotion_promoter': setPromoter(s.value || 'RESIDENCIAL ALTAVIK, S.L.'); break;
+            case 'promotion_promoter': setPromoter(s.value || 'LUBENS ARROYO, S.L.'); break;
             case 'promotion_builder': setBuilder(s.value || ''); break;
             case 'promotion_status': setStatus(s.value || 'active'); break;
             case 'promotion_reservation_amount': setReservationAmount(Number(s.value) || 3000); break;
@@ -234,7 +234,7 @@ export function PromotionTab() {
                 value={promotionName}
                 onChange={(e) => setPromotionName(e.target.value)}
                 className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
-                placeholder="Ej. RESIDENCIAL ALTAVIK"
+                placeholder="Ej. LUBENS ARROYO"
               />
             </div>
             <div className="space-y-1">
@@ -255,7 +255,7 @@ export function PromotionTab() {
                 value={promoter}
                 onChange={(e) => setPromoter(e.target.value)}
                 className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
-                placeholder="Ej. RESIDENCIAL ALTAVIK, S.L."
+                placeholder="Ej. LUBENS ARROYO, S.L."
               />
             </div>
             <div className="space-y-1">

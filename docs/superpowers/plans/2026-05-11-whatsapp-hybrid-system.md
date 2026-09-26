@@ -99,9 +99,9 @@ export const parseTemplate = (body: string, lead: { name: string }, metadata?: {
 
 export const getSystemTemplates = (): WhatsAppTemplate[] => [
   {
-    name: 'Primer Contacto (Altavik)',
+    name: 'Primer Contacto (Lubens Arroyo)',
     category: 'system',
-    body: '¡{saludo}, {nombre}! Mi nombre es Juan Herrero, de inmobiliaria TERRAVALL. Le escribo porque hemos recibido su solicitud de información sobre la promoción ALTAVIK. ¿Desea concertar una visita?'
+    body: '¡{saludo}, {nombre}! Mi nombre es Juan Herrero, de inmobiliaria TERRAVALL. Le escribo porque hemos recibido su solicitud de información sobre la promoción LUBENS ARROYO. ¿Desea concertar una visita?'
   },
   {
     name: 'Confirmación de Visita',

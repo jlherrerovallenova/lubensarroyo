@@ -63,7 +63,7 @@ export default function ExportLeadsModal({ isOpen, onClose }: Props) {
     const doc = new jsPDF({ orientation: 'landscape' });
 
     // 2. Título y Metadatos del documento
-    const title = 'Listado de Clientes - ALTAVIK';
+    const title = 'Listado de Clientes - LUBENS ARROYO';
     const subtitle = filterType === 'month'
       ? `Filtrado por mes: ${selectedMonth}`
       : 'Histórico completo';

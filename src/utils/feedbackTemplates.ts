@@ -1,6 +1,6 @@
 // src/utils/feedbackTemplates.ts
 
-export const getFeedbackEmailTemplate = (clientName: string, promotionName: string = "RESIDENCIAL ALTAVIK", leadId?: string, baseUrl?: string) => {
+export const getFeedbackEmailTemplate = (clientName: string, promotionName: string = "LUBENS ARROYO", leadId?: string, baseUrl?: string) => {
   const getFeedbackUrl = (rating: string) => {
     if (!baseUrl || !leadId) return '#';
     // Codificamos el nombre por si tiene espacios o caracteres especiales

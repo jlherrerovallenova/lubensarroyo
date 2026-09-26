@@ -136,7 +136,7 @@ async function syncEmails() {
                     emailData.tags.push('Escaneable IA');
                 }
 
-                if (senderEmail.includes('altavik') || bodyLower.includes('formulario web')) {
+                if (senderEmail.includes('altavik') || senderEmail.includes('lubens') || bodyLower.includes('formulario web')) {
                     emailData.tags.push('Web', 'Escaneable IA');
                 }
 
@@ -167,7 +167,7 @@ async function syncEmails() {
                                 const ai = new GoogleGenAI({ apiKey: process.env.VITE_GEMINI_API_KEY });
                                 
                                 const prompt = `
-Eres un asistente comercial inmobiliario de Altavik CRM. Extrae los datos del lead potencial de este correo.
+Eres un asistente comercial inmobiliario de Lubens Arroyo CRM. Extrae los datos del lead potencial de este correo.
 Devuelve EXCLUSIVAMENTE UN JSON, sin formato markdown.
 FORMATO PERFECTO:
 { "name": "Nombre extraído (o 'Desconocido')", "phone": "Teléfono (o 'No proporcionado')", "email": "Email (o 'No proporcionado')", "source": "Idealista / Web / ...", "notes": "- Notas..." }

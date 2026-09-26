@@ -1,7 +1,7 @@
-# Technical Requirements Document (TRD): Altavik CRM 2.0
+# Technical Requirements Document (TRD): Lubens Arroyo CRM 2.0
 
 ## 1. Introducción y Arquitectura General
-Altavik CRM 2.0 utiliza una arquitectura **Jamstack**, separando completamente el frontend del backend para maximizar el rendimiento, la seguridad y la escalabilidad.
+Lubens Arroyo CRM 2.0 utiliza una arquitectura **Jamstack**, separando completamente el frontend del backend para maximizar el rendimiento, la seguridad y la escalabilidad.
 - **Frontend:** Single Page Application (SPA) renderizada en el cliente.
 - **Backend:** Arquitectura Serverless y Base de Datos (BaaS) provista por Supabase.
 - **Procesamiento Asíncrono:** Scripts en Node.js para tareas en segundo plano (e.g., sincronización de correos IMAP).

@@ -101,7 +101,7 @@ export default function PaymentFormModal({ isOpen, onClose, property }: PaymentF
         {/* Header - Premium Apple Style */}
         <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-4">
-            <img src="/logo-altavik.png" alt="Altavik Logo" className="h-10 w-auto" />
+            <img src="/logo-lubens-arroyo.png" alt="Lubens Arroyo Logo" className="h-10 w-auto" />
             <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 leading-tight">FORMA DE PAGO</h2>
@@ -131,7 +131,7 @@ export default function PaymentFormModal({ isOpen, onClose, property }: PaymentF
                     <div className="text-3xl font-bold mb-1 text-slate-900">P{property.portal} · {property.planta} - {property.letra}</div>
                     <div className="text-slate-500 font-medium text-lg flex items-center gap-2">
                       <Building2 size={18} className="text-altavik-500" />
-                      {settings?.promotion_name || 'Residencial Altavik'}
+                      {settings?.promotion_name || 'Lubens Arroyo'}
                     </div>
                   </div>
                 </div>

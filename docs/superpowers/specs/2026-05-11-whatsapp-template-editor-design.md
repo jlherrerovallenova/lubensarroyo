@@ -1,6 +1,6 @@
 # Diseño Técnico: Gestor de Plantillas WhatsApp (Ajustes)
 
-Este documento detalla la implementación de una interfaz administrativa en Altavik CRM para gestionar las plantillas de WhatsApp, permitiendo al equipo crear, editar y previsualizar mensajes de marketing.
+Este documento detalla la implementación de una interfaz administrativa en Lubens Arroyo CRM para gestionar las plantillas de WhatsApp, permitiendo al equipo crear, editar y previsualizar mensajes de marketing.
 
 ## 1. Objetivos
 - Proporcionar una interfaz amigable para gestionar la tabla `whatsapp_templates`.

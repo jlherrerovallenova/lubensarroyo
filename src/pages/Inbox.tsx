@@ -151,7 +151,7 @@ export default function Inbox() {
           html: `<div style="font-family: sans-serif; color: #1e293b;">
             <p>${replyText.replace(/\n/g, '<br>')}</p>
             <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e2e8f0;" />
-            <p style="font-size: 12px; color: #64748b;">De: Residencial Altavik</p>
+            <p style="font-size: 12px; color: #64748b;">De: Lubens Arroyo</p>
           </div>`
         }
       });
@@ -356,7 +356,7 @@ export default function Inbox() {
 
               <div className="w-80 bg-slate-50 border-l border-slate-200 p-6 flex flex-col shrink-0 animate-in slide-in-from-right-4 duration-500">
                 <div className="flex items-center gap-2 text-indigo-600 font-black text-xs uppercase tracking-widest mb-6">
-                  <Wand2 size={16} /> Altavik Copilot
+                  <Wand2 size={16} /> Lubens Arroyo Copilot
                 </div>
 
                 {!extractionResult ? (

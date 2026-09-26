@@ -150,7 +150,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess }: Props) {
     // Limpieza final
     if (name) {
       name = name.replace(/^de:\s*/i, '').replace(/\.$/, '').trim();
-      if (name.toLowerCase().includes('altavik') || name.toLowerCase().includes('terraval')) {
+      if (name.toLowerCase().includes('altavik') || name.toLowerCase().includes('lubens') || name.toLowerCase().includes('terraval')) {
         name = '';
       }
     }

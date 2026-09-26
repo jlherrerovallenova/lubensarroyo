@@ -10,7 +10,7 @@ export interface GeminiExtractedLead {
 
 export const extractLeadDataFromEmail = async (emailBody: string, sender: string): Promise<GeminiExtractedLead> => {
   const prompt = `
-Eres un asistente comercial inmobiliario de Altavik CRM con precisión absoluta.
+Eres un asistente comercial inmobiliario de Lubens Arroyo CRM con precisión absoluta.
 Debes leer el siguiente texto de un correo entrante y extraer los datos del lead potencial.
 
 Devuelve EXCLUSIVAMENTE UN JSON, sin formato markdown.

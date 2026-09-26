@@ -1,6 +1,6 @@
-# Altavik CRM
+# Lubens Arroyo CRM
 
-Altavik CRM es una plataforma integral de gestión de clientes (Customer Relationship Management) diseñada específicamente para la gestión de ventas inmobiliarias, leads, inventario de propiedades y automatización de marketing.
+Lubens Arroyo CRM es una plataforma integral de gestión de clientes (Customer Relationship Management) diseñada específicamente para la gestión de ventas inmobiliarias, leads, inventario de propiedades y automatización de marketing.
 
 ## 🛠 Stack Tecnológico
 

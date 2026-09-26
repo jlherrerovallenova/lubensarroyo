@@ -234,10 +234,10 @@ export async function generarReservaPdf(datos: DatosReserva, download: boolean =
   const mensualidad = mensualidadTotal / installmentCount;
   const escritura = totalConIva * deedPct;
 
-  const promoterName = promotionSettings?.promotion_promoter || 'RESIDENCIAL ALTAVIK, S.L.';
+  const promoterName = promotionSettings?.promotion_promoter || 'LUBENS ARROYO, S.L.';
   const emailVal = promotionSettings?.promotion_name 
     ? `administracion@${promotionSettings.promotion_name.toLowerCase().replace(/\s+/g, '')}.es` 
-    : 'administracion@residencialaltavik.es';
+    : 'administracion@lubensarroyo.es';
 
   // ─── CABECERA ───────────────────────────────────────────────────
   doc.setFillColor(15, 52, 96);
@@ -266,7 +266,7 @@ export async function generarReservaPdf(datos: DatosReserva, download: boolean =
 
   // ─── PARTES ─────────────────────────────────────────────────────
   addSection('PARTE VENDEDORA');
-  addLine('Entidad', 'RESIDENCIAL ALTAVIK, S.L.');
+  addLine('Entidad', 'LUBENS ARROYO, S.L.');
   addLine('CIF', 'B-00000000');
   addLine('Domicilio', 'Paseo de Zorrilla 98, 1º B, Valladolid');
   addLine('Representante', 'D. ANTONIO ROBERTO PASTRANA GONZÁLEZ');

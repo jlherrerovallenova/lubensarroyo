@@ -30,7 +30,7 @@ export default function MonthlyReportModal({ isOpen, onClose, leads, statusLabel
 
     // Añadir logo (posicionamiento arriba a la derecha)
     try {
-      doc.addImage('/logo-altavik.png', 'PNG', 245, 10, 35, 15);
+      doc.addImage('/logo-lubens-arroyo.png', 'PNG', 245, 10, 35, 15);
     } catch (e) {
       console.warn('Logo not found for PDF');
     }

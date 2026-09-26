@@ -27,7 +27,7 @@ export default function ClientLayout() {
     navigate('/client/login');
   };
 
-  const promotionName = settings?.promotion_name || 'Residencial Altavik';
+  const promotionName = settings?.promotion_name || 'Lubens Arroyo';
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -37,7 +37,7 @@ export default function ClientLayout() {
           <div className="flex justify-between h-16 items-center">
             {/* Logo and Brand */}
             <div className="flex items-center gap-3">
-              <img src="/logo-altavik.png" alt={promotionName} className="h-8 object-contain" />
+              <img src="/logo-lubens-arroyo.png" alt={promotionName} className="h-8 object-contain" />
               <span className="text-lg font-semibold text-slate-800 hidden sm:block">Área de Clientes</span>
             </div>
 

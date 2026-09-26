@@ -268,7 +268,7 @@ export default function Stats() {
 
     // Añadir logo si existe (posicionamiento arriba a la derecha)
     try {
-      doc.addImage('/logo-altavik.png', 'PNG', 245, 10, 35, 15);
+      doc.addImage('/logo-lubens-arroyo.png', 'PNG', 245, 10, 35, 15);
     } catch (e) {
       console.warn('Logo not found for PDF');
     }
@@ -276,7 +276,7 @@ export default function Stats() {
     // Añadir título y fecha
     doc.setFontSize(18);
     doc.setTextColor(107, 148, 185); // Altavik Blue
-    doc.text('Informe Histórico de Clientes - Altavik CRM', 14, 20);
+    doc.text('Informe Histórico de Clientes - Lubens Arroyo CRM', 14, 20);
     
     doc.setFontSize(10);
     doc.setTextColor(100);
@@ -330,7 +330,7 @@ export default function Stats() {
 
     // Añadir logo (posicionamiento arriba a la derecha)
     try {
-      doc.addImage('/logo-altavik.png', 'PNG', 245, 10, 35, 15);
+      doc.addImage('/logo-lubens-arroyo.png', 'PNG', 245, 10, 35, 15);
     } catch (e) {
       console.warn('Logo not found for PDF');
     }

@@ -14,7 +14,7 @@ export const META_SEGUIMIENTO_TEMPLATE     = 'seguimiento_sin_respuesta';
 export const META_CIERRE_TEMPLATE          = 'cierre_solicitud';
 
 // Texto real de la plantilla aprobada (con variables)
-export const META_PRIMER_CONTACTO_BODY = `Mi nombre es {agente}, de inmobiliaria TERRAVALL. Le escribo porque hemos recibido su solicitud de información sobre la promoción ALTAVIK (C/ Isaac Peral 20, Arroyo de la Encomienda).
+export const META_PRIMER_CONTACTO_BODY = `Mi nombre es {agente}, de inmobiliaria TERRAVALL. Le escribo porque hemos recibido su solicitud de información sobre la promoción LUBENS ARROYO (C/ Isaac Peral 20, Arroyo de la Encomienda).
 
 Para enviarle las opciones que mejor se ajusten a lo que busca, coménteme brevemente:
 
@@ -63,9 +63,9 @@ export const parseTemplate = (
 
 export const getSystemTemplates = (): WhatsAppTemplate[] => [
   {
-    name: 'Primer Contacto (Altavik)',
+    name: 'Primer Contacto (Lubens Arroyo)',
     category: 'system',
-    body: '¡{saludo}, {nombre}! Mi nombre es {agente}, de inmobiliaria TERRAVALL. Le escribo porque hemos recibido su solicitud de información sobre la promoción ALTAVIK. ¿Desea concertar una visita?'
+    body: '¡{saludo}, {nombre}! Mi nombre es {agente}, de inmobiliaria TERRAVALL. Le escribo porque hemos recibido su solicitud de información sobre la promoción LUBENS ARROYO. ¿Desea concertar una visita?'
   },
   {
     name: 'Confirmación de Visita',
@@ -75,7 +75,7 @@ export const getSystemTemplates = (): WhatsAppTemplate[] => [
   {
     name: 'Recordatorio de Visita',
     category: 'system',
-    body: '{saludo}, {nombre}.\nLe recuerdo la cita que tenemos programada para hoy {fecha_visita} a las {hora_visita} para informarle de la promoción ALTAVIK RESIDENCIAL de Arroyo.\nNuestras oficinas están en Plaza Mayor 8 1ºA. TERRAVALL.\nAtentamente'
+    body: '{saludo}, {nombre}.\nLe recuerdo la cita que tenemos programada para hoy {fecha_visita} a las {hora_visita} para informarle de la promoción LUBENS ARROYO de Arroyo.\nNuestras oficinas están en Plaza Mayor 8 1ºA. TERRAVALL.\nAtentamente'
   }
 ];
 
