@@ -19,7 +19,8 @@ import {
   Users,
   Plus,
   Phone,
-  MapPin
+  MapPin,
+  FileSpreadsheet
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useDocuments } from '../hooks/useDocuments';
@@ -195,6 +196,7 @@ export default function Leads() {
               placeholder="Cualquier Origen"
               options={[
                    { id: '', label: 'Cualquier Origen' },
+                   { id: 'Importado', label: 'Importado', icon: FileSpreadsheet, color: 'text-amber-500' },
                    { id: 'Idealista', label: 'Idealista', icon: IdealistaIcon, color: 'text-[#deff30]' },
                    { id: 'Web', label: 'Web', icon: Globe, color: 'text-blue-500' },
                    { id: 'Google SEM', label: 'Google SEM', icon: Search, color: 'text-blue-600' },

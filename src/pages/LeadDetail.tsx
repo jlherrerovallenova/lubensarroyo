@@ -419,6 +419,7 @@ export default function LeadDetail() {
                       onChange={e => setFormData({ ...formData, source: e.target.value })}
                       className="w-full bg-slate-50 border-b-2 border-altavik-500 outline-none px-2 py-1 rounded font-bold cursor-pointer"
                     >
+                      <option value="Importado">Importado</option>
                       <option value="Idealista">Idealista</option>
                       <option value="Web">Web</option>
                       <option value="Google SEM">Google SEM</option>

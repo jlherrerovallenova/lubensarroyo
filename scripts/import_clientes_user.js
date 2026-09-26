@@ -117,7 +117,7 @@ async function run() {
             name: client.name,
             email: client.email || null,
             phone: client.phone || null,
-            source: 'Idealista',
+            source: 'Importado',
             notes: 'Importado desde listado CSV de clientes'
           }
         });

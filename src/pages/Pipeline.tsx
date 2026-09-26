@@ -8,7 +8,8 @@ import {
   Users,
   Phone,
   HelpCircle,
-  TrendingUp
+  TrendingUp,
+  FileSpreadsheet
 } from 'lucide-react';
 import { useLeads, useUpdateLead } from '../hooks/useLeads';
 import { PageHeader } from '../components/ui/PageHeader';
@@ -87,6 +88,13 @@ export default function Pipeline() {
   const getSourceIcon = (sourceName: string | null) => {
     if (!sourceName) return <HelpCircle size={12} />;
     const lower = sourceName.toLowerCase();
+    if (lower.includes('importado') || lower.includes('excel') || lower.includes('csv')) {
+      return (
+        <div className="w-3.5 h-3.5 bg-amber-100 flex items-center justify-center rounded shadow-sm border border-amber-200 overflow-hidden shrink-0">
+          <FileSpreadsheet size={10} className="text-amber-700" />
+        </div>
+      );
+    }
     if (lower.includes('idealista')) {
       return (
         <div className="w-3.5 h-3.5 bg-[#deff30] flex items-center justify-center rounded shadow-sm border border-black/10 overflow-hidden shrink-0">

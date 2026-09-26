@@ -1,6 +1,8 @@
 // src/layouts/MainLayout.tsx
 import { useState, useRef, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '../lib/supabase';
 
 import { useAuth } from '../context/AuthContext';
 import { AppNotification } from '../components/AppNotification';
@@ -161,6 +163,43 @@ export default function MainLayout() {
       return () => clearTimeout(timer);
     }
   }, [importError]);
+
+  // 4. Migración automática: cambiar origen de todos los contactos a 'Importado'
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!session) return;
+    const migrationKey = 'migration_leads_source_importado_v1';
+    if (localStorage.getItem(migrationKey) === 'true') return;
+
+    const migrateSources = async () => {
+      try {
+        const { error } = await (supabase as any)
+          .from('leads')
+          .update({ source: 'Importado' })
+          .not('id', 'is', null);
+
+        if (!error) {
+          console.log('✅ Migración completada: todos los clientes actualizados a origen "Importado".');
+          localStorage.setItem(migrationKey, 'true');
+          queryClient.invalidateQueries({ queryKey: ['leads'] });
+          queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+          queryClient.invalidateQueries({ queryKey: ['stats'] });
+          setNotificationData({
+            title: "Origen Actualizado",
+            message: "Se ha actualizado el origen de los contactos a 'Importado' en la base de datos.",
+            type: "success"
+          });
+          setShowNotification(true);
+        } else {
+          console.error('Error migrando origen de leads:', error);
+        }
+      } catch (err) {
+        console.error('Error al ejecutar migración de origen:', err);
+      }
+    };
+
+    migrateSources();
+  }, [session, queryClient]);
 
   // 1. PANTALLA DE CARGA
   if (loading) {

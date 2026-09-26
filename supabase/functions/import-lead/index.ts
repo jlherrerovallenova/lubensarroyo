@@ -40,7 +40,7 @@ serve(async (req) => {
           name, 
           email: email || null, 
           phone: phone || null, 
-          source: source || 'Web', 
+          source: source || 'Importado', 
           notes: notes || null,
           company: company || null,
           value: value || 0,

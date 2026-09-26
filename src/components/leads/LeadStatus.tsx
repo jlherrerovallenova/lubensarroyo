@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, Smartphone, Users, MapPin, Phone, HelpCircle, Search } from 'lucide-react';
+import { Globe, Smartphone, Users, MapPin, Phone, HelpCircle, Search, FileSpreadsheet } from 'lucide-react';
 import { IdealistaIcon } from '../Shared';
 
 interface SourceIconProps {
@@ -10,6 +10,17 @@ export function SourceIcon({ source }: SourceIconProps) {
   const s = source?.trim() || 'Directo';
   const lower = s.toLowerCase();
   
+  if (lower.includes('importado') || lower.includes('excel') || lower.includes('csv')) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-1 group/source" title={s}>
+        <div className="w-5 h-5 bg-amber-50 flex items-center justify-center rounded border border-amber-200 shadow-sm">
+          <FileSpreadsheet strokeWidth={2.5} size={11} className="text-amber-600" />
+        </div>
+        <span className="text-[7px] font-bold text-amber-700 uppercase tracking-tight">Importado</span>
+      </div>
+    );
+  }
+
   if (lower.includes('idealista')) {
     return (
       <div className="flex flex-col items-center justify-center gap-1 group/source" title="Idealista">

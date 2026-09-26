@@ -1,6 +1,6 @@
 // src/components/leads/CreateLeadModal.tsx
 import { useState } from 'react';
-import { X, Loader2, AlertCircle, ClipboardPaste, Sparkles, Globe, Users, Plus, Smartphone, ChevronDown, ChevronUp, MapPin, Search } from 'lucide-react';
+import { X, Loader2, AlertCircle, ClipboardPaste, Sparkles, Globe, Users, Plus, Smartphone, ChevronDown, ChevronUp, MapPin, Search, FileSpreadsheet } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { CustomSelect, IdealistaIcon } from '../Shared';
@@ -15,6 +15,7 @@ import { useCreateLead } from '../../hooks/useLeads';
 import { useAutosave } from '../../hooks/useAutosave';
 
 const SOURCE_CONFIG = [
+  { id: 'Importado', label: 'Importado', icon: FileSpreadsheet, color: 'text-amber-500' },
   { id: 'Idealista', label: 'Idealista', icon: IdealistaIcon, color: 'text-[#deff30]' },
   { id: 'Web', label: 'Web', icon: Globe, color: 'text-blue-500' },
   { id: 'Google SEM', label: 'Google SEM', icon: Search, color: 'text-blue-600' },

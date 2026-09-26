@@ -1,6 +1,6 @@
 // src/components/leads/LeadDetailModal.tsx
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, Mail, Phone, Save, Trash2, Loader as Loader2, Send, Clock, Compass, MessageCircle, Calendar as CalendarIcon, CircleCheck as CheckCircle2, Circle, Plus, Pencil, RotateCcw, ShoppingCart, Smartphone, ChevronDown, ChevronUp, Globe, Users, FileText, Share, Bell, MessageSquareQuote, Heart, Circle as HelpCircle, Circle as XCircle, StickyNote, Check, Hop as Home, Zap, User, MapPin, Star, Search } from 'lucide-react';
+import { X, Mail, Phone, Save, Trash2, Loader as Loader2, Send, Clock, Compass, MessageCircle, Calendar as CalendarIcon, CircleCheck as CheckCircle2, Circle, Plus, Pencil, RotateCcw, ShoppingCart, Smartphone, ChevronDown, ChevronUp, Globe, Users, FileText, Share, Bell, MessageSquareQuote, Heart, Circle as HelpCircle, Circle as XCircle, StickyNote, Check, Hop as Home, Zap, User, MapPin, Star, Search, FileSpreadsheet } from 'lucide-react';
 import FeedbackEmailModal from './FeedbackEmailModal';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
@@ -30,6 +30,7 @@ const STATUS_CONFIG: Record<string, { dot: string; pill: string; label: string; 
 };
 
 const SOURCE_CONFIG = [
+  { id: 'Importado', label: 'Importado', icon: FileSpreadsheet, color: 'text-amber-500' },
   { id: 'Idealista', label: 'Idealista', icon: IdealistaIcon },
   { id: 'Web', label: 'Web', icon: Globe, color: 'text-blue-500' },
   { id: 'Google SEM', label: 'Google SEM', icon: Search, color: 'text-blue-600' },

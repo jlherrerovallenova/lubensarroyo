@@ -1,7 +1,7 @@
 // src/pages/Dashboard.tsx
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Globe, Smartphone, Clock, Calendar, CircleCheck as CheckCircle2, Search, Plus, LayoutDashboard, Target, TrendingUp, Wand as Wand2, User, Mail, Sun, Sunset } from 'lucide-react';
+import { Users, Globe, Smartphone, Clock, Calendar, CircleCheck as CheckCircle2, Search, Plus, LayoutDashboard, Target, TrendingUp, Wand as Wand2, User, Mail, Sun, Sunset, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../context/DialogContext';
 import { supabase } from '../lib/supabase';
@@ -242,6 +242,13 @@ ${promotionWebsite}`;
 
   const getSourceIcon = (sourceName: string) => {
     const lower = sourceName.toLowerCase();
+    if (lower.includes('importado') || lower.includes('excel') || lower.includes('csv')) {
+      return (
+        <div className="w-[22px] h-[22px] bg-amber-50 flex items-center justify-center rounded-md border border-amber-200">
+          <FileSpreadsheet className="text-amber-600" size={13} />
+        </div>
+      );
+    }
     if (lower.includes('idealista')) {
       return (
         <div className="w-[22px] h-[22px] bg-slate-100 flex items-center justify-center rounded-md border border-slate-200">

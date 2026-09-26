@@ -27,3 +27,4 @@ dist-ssr
 # Scratch files and scripts
 scratch/
 scratch_test*
+supabase/.temp/
