@@ -6,16 +6,20 @@ export const ConnectionStatus = () => {
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
     // Solo monitorizamos la conexión a nivel de hardware/navegador
     const handleOnline = () => {
       setIsOnline(true);
       // Mantenemos el mensaje verde de "Conexión restaurada" visible por 3 segundos
-      setTimeout(() => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
         setShowAlert(false);
       }, 3000);
     };
 
     const handleOffline = () => {
+      if (timer) clearTimeout(timer);
       setIsOnline(false);
       setShowAlert(true);
     };
@@ -28,6 +32,7 @@ export const ConnectionStatus = () => {
     setShowAlert(!navigator.onLine);
 
     return () => {
+      if (timer) clearTimeout(timer);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
