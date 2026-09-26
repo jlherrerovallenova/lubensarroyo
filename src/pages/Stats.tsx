@@ -25,10 +25,17 @@ import {
   Target,
   FileText
 } from 'lucide-react';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 import { supabase } from '../lib/supabase';
 import { StatCard } from '../components/Shared';
+
+const loadPdfModules = async () => {
+  const [{ default: jsPDF }, autoTableModule] = await Promise.all([
+    import('jspdf'),
+    import('jspdf-autotable')
+  ]);
+  const autoTable = autoTableModule.default || autoTableModule;
+  return { jsPDF, autoTable };
+};
 
 // Paleta corporativa Altavik
 const COLORS = ['#6b94b9', '#466383', '#88aec9', '#3a516b', '#abc6d9', '#2d3f54', '#adb5bd'];
@@ -36,6 +43,7 @@ const BRAND_BLUE = '#6b94b9';
 
 export default function Stats() {
   const [loading, setLoading] = useState(true);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
   type TimeRange = '1w' | '1m' | '3m' | '6m' | '12m' | 'all';
   const [timeRange, setTimeRange] = useState<TimeRange>('1m');
   const [leadsData, setLeadsData] = useState<any[]>([]);
@@ -186,7 +194,7 @@ export default function Stats() {
 
     setSourceData(
       Object.entries(sources)
-        .map(([name, value]) => ({ name, value }))
+        .map(([name, value], idx) => ({ name, value, color: COLORS[idx % COLORS.length] }))
         .sort((a, b) => b.value - a.value)
     );
 
@@ -208,7 +216,7 @@ export default function Stats() {
 
     setStatusData(
       Object.entries(statuses)
-        .map(([name, value]) => ({ name, value }))
+        .map(([name, value], idx) => ({ name, value, color: COLORS[(idx + 2) % COLORS.length] }))
         .sort((a, b) => b.value - a.value)
     );
   };
@@ -257,84 +265,97 @@ export default function Stats() {
     URL.revokeObjectURL(url);
   };
 
-  const handleDownloadPDF = () => {
-    if (rawLeads.length === 0) return;
+  const handleDownloadPDF = async () => {
+    if (rawLeads.length === 0 || isExportingPdf) return;
 
-    // Crear documento en horizontal (landscape)
-    const doc = new jsPDF({
-      orientation: 'landscape',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    // Añadir logo si existe (posicionamiento arriba a la derecha)
+    setIsExportingPdf(true);
     try {
-      doc.addImage('/logo-lubens-arroyo.png', 'PNG', 245, 10, 35, 15);
-    } catch (e) {
-      console.warn('Logo not found for PDF');
-    }
+      const { jsPDF, autoTable } = await loadPdfModules();
 
-    // Añadir título y fecha
-    doc.setFontSize(18);
-    doc.setTextColor(107, 148, 185); // Altavik Blue
-    doc.text('Informe Histórico de Clientes - Lubens Arroyo CRM', 14, 20);
-    
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text(`Fecha de generación: ${new Date().toLocaleString()}`, 14, 28);
-    doc.text(`Total de registros: ${rawLeads.length}`, 14, 33);
+      // Crear documento en horizontal (landscape)
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
 
-    // Preparar datos para la tabla
-    const tableColumn = ["Nombre", "Email", "Teléfono", "Origen", "Estado", "Fecha"];
-    const tableRows = rawLeads.map(l => [
-      l.name,
-      l.email || 'N/A',
-      l.phone || 'N/A',
-      l.source || 'Directo',
-      (STATUS_MAP[l.status] || l.status).toUpperCase(),
-      new Date(l.created_at).toLocaleDateString()
-    ]);
-
-    // Generar tabla
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 40,
-      theme: 'grid',
-      headStyles: { 
-        fillColor: [107, 148, 185], 
-        textColor: 255, 
-        fontSize: 10,
-        fontStyle: 'bold' 
-      },
-      styles: { 
-        fontSize: 9,
-        cellPadding: 3
-      },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252]
+      // Añadir logo si existe (posicionamiento arriba a la derecha)
+      try {
+        doc.addImage('/logo-lubens-arroyo.png', 'PNG', 245, 10, 35, 15);
+      } catch (e) {
+        console.warn('Logo not found for PDF');
       }
-    });
 
-    // Guardar PDF
-    doc.save(`informe_clientes_${new Date().toISOString().split('T')[0]}.pdf`);
+      // Añadir título y fecha
+      doc.setFontSize(18);
+      doc.setTextColor(107, 148, 185); // Altavik Blue
+      doc.text('Informe Histórico de Clientes - Lubens Arroyo CRM', 14, 20);
+      
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text(`Fecha de generación: ${new Date().toLocaleString()}`, 14, 28);
+      doc.text(`Total de registros: ${rawLeads.length}`, 14, 33);
+
+      // Preparar datos para la tabla
+      const tableColumn = ["Nombre", "Email", "Teléfono", "Origen", "Estado", "Fecha"];
+      const tableRows = rawLeads.map(l => [
+        l.name,
+        l.email || 'N/A',
+        l.phone || 'N/A',
+        l.source || 'Directo',
+        (STATUS_MAP[l.status] || l.status).toUpperCase(),
+        new Date(l.created_at).toLocaleDateString()
+      ]);
+
+      // Generar tabla
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 40,
+        theme: 'grid',
+        headStyles: { 
+          fillColor: [107, 148, 185], 
+          textColor: 255, 
+          fontSize: 10,
+          fontStyle: 'bold' 
+        },
+        styles: { 
+          fontSize: 9,
+          cellPadding: 3
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252]
+        }
+      });
+
+      // Guardar PDF
+      doc.save(`informe_clientes_${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+    } finally {
+      setIsExportingPdf(false);
+    }
   };
 
-  const handleDownloadStatusPDF = () => {
-    if (rawLeads.length === 0) return;
+  const handleDownloadStatusPDF = async () => {
+    if (rawLeads.length === 0 || isExportingPdf) return;
 
-    const doc = new jsPDF({
-      orientation: 'landscape',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    // Añadir logo (posicionamiento arriba a la derecha)
+    setIsExportingPdf(true);
     try {
-      doc.addImage('/logo-lubens-arroyo.png', 'PNG', 245, 10, 35, 15);
-    } catch (e) {
-      console.warn('Logo not found for PDF');
-    }
+      const { jsPDF, autoTable } = await loadPdfModules();
+
+      const doc = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      // Añadir logo (posicionamiento arriba a la derecha)
+      try {
+        doc.addImage('/logo-lubens-arroyo.png', 'PNG', 245, 10, 35, 15);
+      } catch (e) {
+        console.warn('Logo not found for PDF');
+      }
 
     // Obtener leads del mes seleccionado o el actual si es 'all'
     const now = new Date();
@@ -455,8 +476,13 @@ export default function Stats() {
     doc.setTextColor(150);
     doc.text('* Este informe es de carácter cuantitativo y no contiene datos personales identificativos.', 14, finalY);
 
-    // Guardar PDF
-    doc.save(`estadisticas_estados_semanal_${new Date().toISOString().split('T')[0]}.pdf`);
+      // Guardar PDF
+      doc.save(`estadisticas_estados_semanal_${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (err) {
+      console.error('Error generating status PDF:', err);
+    } finally {
+      setIsExportingPdf(false);
+    }
   };
 
   return (
@@ -489,7 +515,7 @@ export default function Stats() {
             <Button type="button" 
               variant="secondary"
               onClick={handleDownloadPDF}
-              disabled={loading || rawLeads.length === 0}
+              disabled={loading || rawLeads.length === 0 || isExportingPdf}
               title="Descargar Informe PDF"
             >
               <FileText size={18} className="text-red-500" />
@@ -647,8 +673,8 @@ export default function Stats() {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {sourceData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  {sourceData.map((entry) => (
+                    <Cell key={entry.name} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip 
@@ -691,6 +717,7 @@ export default function Stats() {
                 size="sm" 
                 className="h-8 text-[10px] font-black tracking-widest gap-1.5 border-slate-200"
                 onClick={handleDownloadStatusPDF}
+                disabled={loading || rawLeads.length === 0 || isExportingPdf}
               >
                 <Download size={14} />
                 PDF ESTADOS
@@ -709,8 +736,8 @@ export default function Stats() {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {statusData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[(index + 2) % COLORS.length]} />
+                  {statusData.map((entry) => (
+                    <Cell key={entry.name} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip 

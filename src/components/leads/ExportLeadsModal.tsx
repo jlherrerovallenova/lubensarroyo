@@ -161,16 +161,17 @@ export default function ExportLeadsModal({ isOpen, onClose }: Props) {
               <span className="text-sm font-bold text-slate-700">Exportar todo el histórico</span>
             </label>
 
-            <label className="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+            <div className="flex items-center gap-3 p-3 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
               <input
+                id="filter-month"
                 type="radio"
                 name="filter"
                 checked={filterType === 'month'}
                 onChange={() => setFilterType('month')}
-                className="text-altavik-600 focus:ring-altavik-500"
+                className="text-altavik-600 focus:ring-altavik-500 cursor-pointer"
               />
               <div className="flex-1">
-                <span className="text-sm font-bold text-slate-700 block mb-1">Filtrar por mes</span>
+                <label htmlFor="filter-month" className="text-sm font-bold text-slate-700 block mb-1 cursor-pointer">Filtrar por mes</label>
                 <div className="flex items-center gap-2">
                   <Calendar size={14} className="text-slate-400" />
                   <input
@@ -182,7 +183,7 @@ export default function ExportLeadsModal({ isOpen, onClose }: Props) {
                   />
                 </div>
               </div>
-            </label>
+            </div>
           </div>
 
           <div className="pt-2 flex gap-3">

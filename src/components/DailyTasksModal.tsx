@@ -37,40 +37,48 @@ export const DailyTasksModal: React.FC<DailyTasksModalProps> = ({ isOpen, onClos
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isOpen) {
-      fetchTodayTasks();
-    }
+    if (!isOpen) return;
+    let isMounted = true;
+
+    const fetchTodayTasks = async () => {
+      setLoading(true);
+      try {
+        const now = new Date();
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+        const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
+
+        const { data, error } = await supabase
+          .from('agenda')
+          .select(`
+            *,
+            leads (
+              first_name,
+              last_name
+            )
+          `)
+          .eq('completed', false)
+          .gte('due_date', startOfDay)
+          .lte('due_date', endOfDay)
+          .order('due_date', { ascending: true });
+
+        if (error) throw error;
+        if (isMounted) {
+          setTasks(data || []);
+        }
+      } catch (err) {
+        console.error('Error fetching today tasks:', err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchTodayTasks();
+    return () => {
+      isMounted = false;
+    };
   }, [isOpen]);
-
-  const fetchTodayTasks = async () => {
-    setLoading(true);
-    try {
-      const now = new Date();
-      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-      const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
-
-      const { data, error } = await supabase
-        .from('agenda')
-        .select(`
-          *,
-          leads (
-            first_name,
-            last_name
-          )
-        `)
-        .eq('completed', false)
-        .gte('due_date', startOfDay)
-        .lte('due_date', endOfDay)
-        .order('due_date', { ascending: true });
-
-      if (error) throw error;
-      setTasks(data || []);
-    } catch (err) {
-      console.error('Error fetching today tasks:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (!isOpen) return null;
 
@@ -118,13 +126,14 @@ export const DailyTasksModal: React.FC<DailyTasksModalProps> = ({ isOpen, onClos
               </div>
 
               {tasks.map((task) => (
-                <div 
+                <button 
+                  type="button"
                   key={task.id}
                   onClick={() => {
                     navigate('/agenda');
                     onClose();
                   }}
-                  className="group bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-altavik-200 transition-all cursor-pointer flex items-center gap-4"
+                  className="w-full text-left group bg-white p-4 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-altavik-200 transition-all cursor-pointer flex items-center gap-4"
                 >
                   <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center group-hover:bg-altavik-50 transition-colors">
                     <Clock className="text-slate-400 group-hover:text-altavik-500" size={18} />
@@ -147,7 +156,7 @@ export const DailyTasksModal: React.FC<DailyTasksModalProps> = ({ isOpen, onClos
                   </div>
 
                   <ChevronRight className="text-slate-300 group-hover:text-altavik-400 group-hover:translate-x-1 transition-all" size={20} />
-                </div>
+                </button>
               ))}
             </div>
           ) : (

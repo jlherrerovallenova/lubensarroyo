@@ -36,21 +36,20 @@ export function ClientsTab() {
   };
 
   const handleDeleteLead = async () => {
-    if (!leadToDelete) return;
+    if (!leadToDelete || isDeleting) return;
 
     const lead = leads.find(l => l.id === leadToDelete);
     
-    const confirmed = await showConfirm({
-      title: 'Eliminar Cliente',
-      message: `¿Estás seguro de que deseas eliminar permanentemente a "${lead?.name}"? Se borrará también su historial de actividad.`,
-      confirmText: 'Sí, eliminar permanentemente',
-      cancelText: 'Cancelar'
-    });
-
-    if (!confirmed) return;
-
     setIsDeleting(true);
     try {
+      const confirmed = await showConfirm({
+        title: 'Eliminar Cliente',
+        message: `¿Estás seguro de que deseas eliminar permanentemente a "${lead?.name}"? Se borrará también su historial de actividad.`,
+        confirmText: 'Sí, eliminar permanentemente',
+        cancelText: 'Cancelar'
+      });
+
+      if (!confirmed) return;
       // 1. Borrar historial y tareas
       await (supabase as any).from('lead_history').delete().eq('lead_id', leadToDelete);
       await (supabase as any).from('agenda').delete().eq('lead_id', leadToDelete);

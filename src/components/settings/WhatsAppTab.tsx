@@ -18,19 +18,22 @@ export const WhatsAppTab: React.FC = () => {
 
   const fetchTemplates = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('whatsapp_templates' as any)
-      .select('*')
-      .order('category', { ascending: false })
-      .order('name');
-    
-    if (!error && data) {
-      setTemplates(data);
-      if (data.length > 0 && !selectedId) {
-        handleSelect(data[0]);
+    try {
+      const { data, error } = await supabase
+        .from('whatsapp_templates' as any)
+        .select('*')
+        .order('category', { ascending: false })
+        .order('name');
+      
+      if (!error && data) {
+        setTemplates(data);
+        if (data.length > 0 && !selectedId) {
+          handleSelect(data[0]);
+        }
       }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSelect = (template: WhatsAppTemplate) => {

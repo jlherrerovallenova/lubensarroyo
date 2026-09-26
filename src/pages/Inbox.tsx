@@ -34,6 +34,7 @@ export default function Inbox() {
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractionResult, setExtractionResult] = useState<GeminiExtractedLead | null>(null);
   const [extractionError, setExtractionError] = useState<string | null>(null);
+  const [isApprovingLead, setIsApprovingLead] = useState(false);
   const [notification, setNotification] = useState<{
     show: boolean;
     title: string;
@@ -71,8 +72,9 @@ export default function Inbox() {
   };
 
   const handleApproveLead = async () => {
-    if (!extractionResult || !selectedMail) return;
+    if (!extractionResult || !selectedMail || isApprovingLead || createLeadMutation.isPending) return;
 
+    setIsApprovingLead(true);
     try {
       // 1. Verificar duplicados por Email o Teléfono
       const emailToCheck = extractionResult.email === 'No proporcionado' ? null : extractionResult.email;
@@ -136,11 +138,13 @@ export default function Inbox() {
         message: err.message || 'No se pudo guardar el lead en la base de datos.',
         type: 'error'
       });
+    } finally {
+      setIsApprovingLead(false);
     }
   };
 
   const handleSendReply = async () => {
-    if (!selectedMail || !replyText.trim()) return;
+    if (!selectedMail || !replyText.trim() || isSendingReply) return;
 
     setIsSendingReply(true);
     try {
@@ -422,10 +426,10 @@ export default function Inbox() {
 
                     <button type="button" 
                       onClick={handleApproveLead}
-                      disabled={createLeadMutation.isPending}
+                      disabled={createLeadMutation.isPending || isApprovingLead}
                       className="w-full bg-[#1e293b] hover:bg-slate-800 text-white font-black text-[11px] uppercase tracking-widest py-3 rounded-xl transition-all shadow-lg flex justify-center items-center gap-2 disabled:opacity-70"
                     >
-                      {createLeadMutation.isPending ? (
+                      {createLeadMutation.isPending || isApprovingLead ? (
                         <>Guardando en CRM<Loader2 size={14} className="animate-spin" /></>
                       ) : (
                         <>Aprobar y Crear Ficha</>

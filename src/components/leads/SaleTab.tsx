@@ -343,35 +343,41 @@ export default function SaleTab({ lead, onLeadUpdate }: Props) {
 
   async function savePersonalData() {
     setSavingPersonal(true);
-    await onLeadUpdate({
-      ...personalForm,
-      property_id: personalForm.property_id || null,
-      joint_buyer_name: hasJointBuyer ? personalForm.joint_buyer_name : null,
-      joint_buyer_dni: hasJointBuyer ? personalForm.joint_buyer_dni : null,
-      joint_buyer_email: hasJointBuyer ? personalForm.joint_buyer_email : null,
-      joint_buyer_phone: hasJointBuyer ? personalForm.joint_buyer_phone : null,
-    });
-    setSavingPersonal(false);
+    try {
+      await onLeadUpdate({
+        ...personalForm,
+        property_id: personalForm.property_id || null,
+        joint_buyer_name: hasJointBuyer ? personalForm.joint_buyer_name : null,
+        joint_buyer_dni: hasJointBuyer ? personalForm.joint_buyer_dni : null,
+        joint_buyer_email: hasJointBuyer ? personalForm.joint_buyer_email : null,
+        joint_buyer_phone: hasJointBuyer ? personalForm.joint_buyer_phone : null,
+      });
+    } finally {
+      setSavingPersonal(false);
+    }
   }
 
   async function formalizarReserva() {
     if (!personalForm.property_id || !precio) return;
     setLoading(true);
-    const { data, error } = await (supabase as any).from('sales').insert([{
-      lead_id: lead.id,
-      property_id: personalForm.property_id,
-      sale_status: 'reserva',
-      sale_price: precio,
-      iva_percentage: 10,
-      reservation_amount: reservation,
-      reservation_date: new Date().toISOString().slice(0, 10),
-    }]).select().single();
-    if (!error && data) {
-      setSale(data);
-      await onLeadUpdate({ sale_status: 'reserva', property_id: personalForm.property_id });
-      setShowDocModal(true); // Mostrar modal para descargar documentos
+    try {
+      const { data, error } = await (supabase as any).from('sales').insert([{
+        lead_id: lead.id,
+        property_id: personalForm.property_id,
+        sale_status: 'reserva',
+        sale_price: precio,
+        iva_percentage: 10,
+        reservation_amount: reservation,
+        reservation_date: new Date().toISOString().slice(0, 10),
+      }]).select().single();
+      if (!error && data) {
+        setSale(data);
+        await onLeadUpdate({ sale_status: 'reserva', property_id: personalForm.property_id });
+        setShowDocModal(true); // Mostrar modal para descargar documentos
+      }
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   async function advanceSaleStatus(newStatus: Sale['sale_status']) {

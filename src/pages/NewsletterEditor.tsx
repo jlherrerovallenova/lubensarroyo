@@ -22,39 +22,42 @@ export default function NewsletterEditor() {
     const [notification, setNotification] = useState<{ title: string, message: string, type: 'success' | 'error' | 'info' } | null>(null);
 
     useEffect(() => {
-        let cleanup: (() => void) | void;
+        let isMounted = true;
         if (id) {
-            loadNewsletter(id).then(fn => cleanup = fn);
+            const loadNewsletter = async (newsletterId: string) => {
+                setLoading(true);
+                try {
+                    const { data, error } = await supabase
+                        .from('newsletters')
+                        .select('*')
+                        .eq('id', newsletterId)
+                        .single();
+
+                    if (error) throw error;
+                    if (data && isMounted) {
+                        setSubject((data as any).subject || '');
+                        setStatus((data as any).status);
+                        if ((data as any).design) {
+                            setDesignToLoad((data as any).design);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading newsletter:', error);
+                    if (isMounted) {
+                        showMsg('error', 'Error', 'No pudimos cargar la plantilla. Revisa tu conexión.');
+                    }
+                } finally {
+                    if (isMounted) {
+                        setLoading(false);
+                    }
+                }
+            };
+            loadNewsletter(id);
         }
         return () => {
-            if (cleanup) cleanup();
+            isMounted = false;
         };
     }, [id]);
-
-    const loadNewsletter = async (newsletterId: string) => {
-        setLoading(true);
-        try {
-            const { data, error } = await supabase
-                .from('newsletters')
-                .select('*')
-                .eq('id', newsletterId)
-                .single();
-
-            if (error) throw error;
-            if (data) {
-                setSubject((data as any).subject || '');
-                setStatus((data as any).status);
-                if ((data as any).design) {
-                    setDesignToLoad((data as any).design);
-                }
-            }
-        } catch (error) {
-            console.error('Error loading newsletter:', error);
-            showMsg('error', 'Error', 'No pudimos cargar la plantilla. Revisa tu conexión.');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const [designToLoad, setDesignToLoad] = useState<any>(null);
 

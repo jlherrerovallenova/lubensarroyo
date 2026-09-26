@@ -9,19 +9,22 @@ export const useWhatsAppTemplates = () => {
   useEffect(() => {
     const fetchTemplates = async () => {
       setLoading(true);
-      const systemTemplates = getSystemTemplates();
-      
-      const { data, error } = await supabase
-        .from('whatsapp_templates' as any)
-        .select('*')
-        .eq('is_active', true);
-      
-      if (!error && data) {
-        setTemplates([...systemTemplates, ...data]);
-      } else {
-        setTemplates(systemTemplates);
+      try {
+        const systemTemplates = getSystemTemplates();
+        
+        const { data, error } = await supabase
+          .from('whatsapp_templates' as any)
+          .select('*')
+          .eq('is_active', true);
+        
+        if (!error && data) {
+          setTemplates([...systemTemplates, ...data]);
+        } else {
+          setTemplates(systemTemplates);
+        }
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchTemplates();

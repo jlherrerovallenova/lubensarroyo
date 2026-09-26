@@ -244,9 +244,11 @@ ${agentName} - TERRAVALL`);
     try {
       const newFichas: { name: string; url: string; category?: string }[] = [];
       const newIds = [...selectedPropertyIds];
+      const newIdsSet = new Set(selectedPropertyIds);
 
       for (const prop of properties) {
-        if (newIds.includes(prop.id)) continue;
+        if (newIdsSet.has(prop.id)) continue;
+        newIdsSet.add(prop.id);
 
         // 1. Generar el PDF Blob
         const pdfBlob = await generatePropertyPDFBlob(prop);
@@ -688,11 +690,11 @@ ${agentName} - TERRAVALL`);
                     <h4 className="text-[10px] font-black text-altavik-700 uppercase tracking-wider">Archivos Locales (Sueltos)</h4>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-slate-100">
-                    {customDocs.map((doc, idx) => {
+                    {customDocs.map((doc) => {
                       const isSelected = selectedDocs.find(d => d.url === doc.url);
                       return (
                         <button
-                          key={`custom-${idx}`}
+                          key={doc.url || doc.name}
                           type="button"
                           onClick={() => toggleDoc(doc)}
                           className={`flex items-center gap-2.5 px-4 py-3 text-left transition-all ${
@@ -715,11 +717,11 @@ ${agentName} - TERRAVALL`);
                   <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Repositorio de Archivos</h4>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-slate-100">
-                  {availableDocs.map((doc, idx) => {
+                  {availableDocs.map((doc) => {
                     const isSelected = selectedDocs.find(d => d.url === doc.url);
                     return (
                       <button
-                        key={idx}
+                        key={doc.url || doc.name}
                         type="button"
                         onClick={() => toggleDoc(doc)}
                         className={`flex items-center gap-2.5 px-4 py-3 text-left transition-all ${

@@ -32,7 +32,8 @@ import {
 import CommandPalette from '../components/ui/CommandPalette';
 import { useAgendaAlerts } from '../hooks/useAgendaAlerts';
 import { useWhatsAppReplies } from '../hooks/useWhatsAppReplies';
-import { DailyBriefingModal, briefingShownToday, markBriefingShown } from '../components/DailyBriefingModal';
+import { DailyBriefingModal } from '../components/DailyBriefingModal';
+import { briefingShownToday, markBriefingShown } from '../utils/briefingStorage';
 import { MessageSquare } from 'lucide-react';
 import { DailyTasksModal } from '../components/DailyTasksModal';
 import { useAutoLeadImporter } from '../hooks/useAutoLeadImporter';

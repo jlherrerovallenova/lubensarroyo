@@ -30,7 +30,9 @@ const propertyCurrencyFormatter = new Intl.NumberFormat('es-ES', {
   maximumFractionDigits: 0
 });
 
-export default function PropertySelector({ isOpen, onClose, onSelect, alreadySelected = [] }: Props) {
+const DEFAULT_ALREADY_SELECTED: string[] = [];
+
+export default function PropertySelector({ isOpen, onClose, onSelect, alreadySelected = DEFAULT_ALREADY_SELECTED }: Props) {
   const { data: properties = [], isLoading } = useInventory();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   
@@ -59,15 +61,18 @@ export default function PropertySelector({ isOpen, onClose, onSelect, alreadySel
     });
   }, [properties, portal, planta, letra, orientacion, dormitorios]);
 
+  const alreadySelectedSet = useMemo(() => new Set(alreadySelected), [alreadySelected]);
+  const selectedIdsSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+
   const toggleProperty = (id: string) => {
-    if (alreadySelected.includes(id)) return;
+    if (alreadySelectedSet.has(id)) return;
     setSelectedIds(prev => 
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
     );
   };
 
   const handleFinish = () => {
-    const selectedObjects = properties.filter(p => selectedIds.includes(p.id)) as unknown as Property[];
+    const selectedObjects = properties.filter(p => selectedIdsSet.has(p.id)) as unknown as Property[];
     onSelect(selectedObjects);
     setSelectedIds([]);
     onClose();
@@ -191,8 +196,8 @@ export default function PropertySelector({ isOpen, onClose, onSelect, alreadySel
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
               {filteredProperties.map(p => {
-                const isSelected = selectedIds.includes(p.id);
-                const isAlreadyIn = alreadySelected.includes(p.id);
+                const isSelected = selectedIdsSet.has(p.id);
+                const isAlreadyIn = alreadySelectedSet.has(p.id);
                 
                 return (
                   <button type="button"

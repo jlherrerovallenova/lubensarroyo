@@ -25,7 +25,8 @@ export default function UploadFichasModal({ isOpen, onClose, onSuccess }: Props)
 
   const handleUpload = async () => {
     setUploading(true);
-    await Promise.all(files.map(async (file, i) => {
+    try {
+      await Promise.all(files.map(async (file, i) => {
       const fileName = file.name.toUpperCase();
       let matchedProperties: { id: string }[] = [];
 
@@ -95,8 +96,10 @@ export default function UploadFichasModal({ isOpen, onClose, onSuccess }: Props)
       }
     }));
 
-    setUploading(false);
-    if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess();
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (

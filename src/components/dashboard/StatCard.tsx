@@ -38,10 +38,15 @@ export function StatCard({ title, value, subtitle, icon, onClick, color = 'slate
   const bgColor = bgColors[color] || bgColors.slate;
   const textColor = textColors[color] || textColors.slate;
 
+  const Component = onClick ? 'button' : 'div';
+  const buttonProps = onClick ? { type: 'button' as const, onClick } : {};
+
   return (
-    <div
-      onClick={onClick}
-      className="bg-white rounded-[1.5rem] border border-slate-100 shadow-sm transition-all duration-300 flex flex-col justify-between h-full min-h-[140px] group hover:shadow-md hover:-translate-y-1 cursor-pointer overflow-hidden relative active:scale-95"
+    <Component
+      {...buttonProps}
+      className={`bg-white rounded-[1.5rem] border border-slate-100 shadow-sm transition-all duration-300 flex flex-col justify-between h-full min-h-[140px] overflow-hidden relative text-left w-full ${
+        onClick ? 'group hover:shadow-md hover:-translate-y-1 cursor-pointer active:scale-95' : ''
+      }`}
     >
       <div className={`flex justify-between items-center px-6 py-4 ${bgColor}`}>
         <span className={`text-[11px] font-bold ${textColor} uppercase tracking-wide`}>{title}</span>
@@ -57,6 +62,6 @@ export function StatCard({ title, value, subtitle, icon, onClick, color = 'slate
 
       {/* Bottom accent bar */}
       <div className={`absolute bottom-0 left-0 right-0 h-1 ${barColor} opacity-90`} />
-    </div>
+    </Component>
   );
 }

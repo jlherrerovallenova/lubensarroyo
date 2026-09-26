@@ -37,21 +37,20 @@ export function InventoryTab() {
   };
 
   const handleDeleteSingleProperty = async () => {
-    if (!propertyToDelete) return;
+    if (!propertyToDelete || isDeleting) return;
 
     const property = properties.find(p => p.id === propertyToDelete);
     
-    const confirmed = await showConfirm({
-      title: 'Eliminar Vivienda',
-      message: `¿Estás seguro de que deseas eliminar la vivienda Nº ${property?.n_orden}?`,
-      confirmText: 'Sí, eliminar',
-      cancelText: 'Cancelar'
-    });
-
-    if (!confirmed) return;
-
     setIsDeleting(true);
     try {
+      const confirmed = await showConfirm({
+        title: 'Eliminar Vivienda',
+        message: `¿Estás seguro de que deseas eliminar la vivienda Nº ${property?.n_orden}?`,
+        confirmText: 'Sí, eliminar',
+        cancelText: 'Cancelar'
+      });
+
+      if (!confirmed) return;
       // Validar si tiene leads asociados
       const { data: leads, error: leadsErr } = await supabase.from('leads').select('id').eq('property_id', propertyToDelete).limit(1);
       if (leadsErr) throw leadsErr;

@@ -127,29 +127,27 @@ export function PromotionTab() {
     e.preventDefault();
     setSaving(true);
 
-    // Validate payment terms
-    const sumPct = Number(contractPercentage) + Number(installmentPercentage) + Number(courtesyPercentage);
-    if (sumPct > 100) {
-      await showAlert({
-        title: 'Error de Validación',
-        message: 'La suma de los porcentajes de Firma, Cuotas y Cortesía no puede superar el 100%.'
-      });
-      setSaving(false);
-      return;
-    }
-
-    // Validate billing milestones
-    const sumBilling = Number(billingPctReservation) + Number(billingPctContract) + Number(billingPctDeed);
-    if (sumBilling !== 100) {
-      await showAlert({
-        title: 'Error de Validación',
-        message: 'La suma de los hitos de facturación (Reserva, Contrato y Escritura) debe sumar exactamente el 100%.'
-      });
-      setSaving(false);
-      return;
-    }
-
     try {
+      // Validate payment terms
+      const sumPct = Number(contractPercentage) + Number(installmentPercentage) + Number(courtesyPercentage);
+      if (sumPct > 100) {
+        await showAlert({
+          title: 'Error de Validación',
+          message: 'La suma de los porcentajes de Firma, Cuotas y Cortesía no puede superar el 100%.'
+        });
+        return;
+      }
+
+      // Validate billing milestones
+      const sumBilling = Number(billingPctReservation) + Number(billingPctContract) + Number(billingPctDeed);
+      if (sumBilling !== 100) {
+        await showAlert({
+          title: 'Error de Validación',
+          message: 'La suma de los hitos de facturación (Reserva, Contrato y Escritura) debe sumar exactamente el 100%.'
+        });
+        return;
+      }
+
       const settingsPayload = [
         { key: 'promotion_name', value: promotionName },
         { key: 'promotion_location', value: location },

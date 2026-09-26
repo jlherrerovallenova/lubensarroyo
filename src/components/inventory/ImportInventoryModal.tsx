@@ -37,12 +37,6 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
   const [rawData, setRawData] = useState<any[]>([]);
   const [mapping, setMapping] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    if (isOpen) {
-      resetState();
-    }
-  }, [isOpen]);
-
   const resetState = () => {
     setStep(1);
     setLoading(false);
@@ -52,6 +46,11 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
     setRawData([]);
     setMapping({});
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleClose = () => {
+    resetState();
+    onClose();
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,6 +155,7 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
 
       setStep(3);
       setTimeout(() => {
+        resetState();
         onSuccess();
         onClose();
       }, 2000);
@@ -183,7 +183,7 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
             </h2>
             <p className="text-sm text-slate-500 mt-1">Sube tu Excel y relaciona las columnas con los campos del sistema.</p>
           </div>
-          <button type="button" onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors p-2 hover:bg-slate-100 rounded-lg">
+          <button type="button" onClick={handleClose} className="text-slate-400 hover:text-slate-600 transition-colors p-2 hover:bg-slate-100 rounded-lg">
             <X size={24} />
           </button>
         </div>
@@ -198,8 +198,11 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
           )}
 
           {step === 1 && (
-            <div className="flex flex-col items-center justify-center py-16 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50 hover:bg-slate-100/50 transition-all cursor-pointer group"
-                 onClick={() => fileInputRef.current?.click()}>
+            <button 
+              type="button"
+              className="w-full flex flex-col items-center justify-center py-16 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50 hover:bg-slate-100/50 transition-all cursor-pointer group"
+              onClick={() => fileInputRef.current?.click()}
+            >
               <div className="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                 <Upload className="text-altavik-600" size={32} />
               </div>
@@ -207,7 +210,7 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
               <p className="text-slate-500 text-sm max-w-sm text-center">Haz clic para buscar o arrastra el documento aquí.</p>
               <input type="file" ref={fileInputRef} className="hidden" accept=".xlsx,.xls,.csv" onChange={handleFileUpload} />
               {loading && <Loader2 className="animate-spin text-altavik-600 mt-6" size={32} />}
-            </div>
+            </button>
           )}
 
           {step === 2 && (
@@ -263,7 +266,7 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
         <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3 shrink-0">
           {step === 2 && (
             <>
-              <button type="button" onClick={onClose} className="px-6 py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-all">
+              <button type="button" onClick={handleClose} className="px-6 py-3 text-slate-500 font-bold hover:bg-slate-100 rounded-xl transition-all">
                 Cancelar
               </button>
               <button type="button"

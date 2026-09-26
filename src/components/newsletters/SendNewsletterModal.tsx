@@ -1,5 +1,4 @@
-// src/components/newsletters/SendNewsletterModal.tsx
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useLeads } from '../../hooks/useLeads';
 import { X, Send, Loader2, Users, Filter, UserCheck, AlertCircle } from 'lucide-react';
 import type { Database } from '../../types/supabase';
@@ -33,6 +32,8 @@ export function SendNewsletterModal({ isOpen, onClose, onSend, isSending }: Send
     const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
 
+    const selectedLeadsSet = useMemo(() => new Set(selectedLeads), [selectedLeads]);
+
     const { data, isLoading: leadsLoading } = useLeads({
         page: 1,
         pageSize: 5000, // Traer todos para poder filtrar manualmente en el modal
@@ -51,7 +52,7 @@ export function SendNewsletterModal({ isOpen, onClose, onSend, isSending }: Send
     );
 
     const handleToggleLead = (id: string) => {
-        if (selectedLeads.includes(id)) {
+        if (selectedLeadsSet.has(id)) {
             setSelectedLeads(selectedLeads.filter(l => l !== id));
         } else {
             setSelectedLeads([...selectedLeads, id]);
@@ -108,8 +109,9 @@ export function SendNewsletterModal({ isOpen, onClose, onSend, isSending }: Send
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 {/* All */}
-                                <div
-                                    className={`border rounded-xl p-4 cursor-pointer transition-all ${audience === 'all' ? 'border-altavik-500 bg-altavik-50 ring-2 ring-altavik-500/20' : 'border-slate-200 hover:border-emerald-300'}`}
+                                <button
+                                    type="button"
+                                    className={`text-left border rounded-xl p-4 cursor-pointer transition-all ${audience === 'all' ? 'border-altavik-500 bg-altavik-50 ring-2 ring-altavik-500/20' : 'border-slate-200 hover:border-emerald-300'}`}
                                     onClick={() => setAudience('all')}
                                 >
                                     <div className="flex items-center gap-3 mb-2">
@@ -121,11 +123,12 @@ export function SendNewsletterModal({ isOpen, onClose, onSend, isSending }: Send
                                     <p className="text-xs text-slate-500 leading-relaxed">
                                         Envía a toda la base de datos de suscritos.
                                     </p>
-                                </div>
+                                </button>
 
                                 {/* Phase */}
-                                <div
-                                    className={`border rounded-xl p-4 cursor-pointer transition-all ${audience === 'phase' ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500/20' : 'border-slate-200 hover:border-blue-300'}`}
+                                <button
+                                    type="button"
+                                    className={`text-left border rounded-xl p-4 cursor-pointer transition-all ${audience === 'phase' ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-500/20' : 'border-slate-200 hover:border-blue-300'}`}
                                     onClick={() => setAudience('phase')}
                                 >
                                     <div className="flex items-center gap-3 mb-2">
@@ -137,11 +140,12 @@ export function SendNewsletterModal({ isOpen, onClose, onSend, isSending }: Send
                                     <p className="text-xs text-slate-500 leading-relaxed">
                                         Filtra usando el túnel de ventas.
                                     </p>
-                                </div>
+                                </button>
 
                                 {/* Manual */}
-                                <div
-                                    className={`border rounded-xl p-4 cursor-pointer transition-all ${audience === 'manual' ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-500/20' : 'border-slate-200 hover:border-purple-300'}`}
+                                <button
+                                    type="button"
+                                    className={`text-left border rounded-xl p-4 cursor-pointer transition-all ${audience === 'manual' ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-500/20' : 'border-slate-200 hover:border-purple-300'}`}
                                     onClick={() => setAudience('manual')}
                                 >
                                     <div className="flex items-center gap-3 mb-2">
@@ -153,7 +157,7 @@ export function SendNewsletterModal({ isOpen, onClose, onSend, isSending }: Send
                                     <p className="text-xs text-slate-500 leading-relaxed">
                                         Selecciona los contactos de una lista.
                                     </p>
-                                </div>
+                                </button>
                             </div>
                         </div>
 
@@ -204,7 +208,7 @@ export function SendNewsletterModal({ isOpen, onClose, onSend, isSending }: Send
                                                         <input
                                                             type="checkbox"
                                                             className="w-5 h-5 rounded border-slate-300 text-purple-600 focus:ring-purple-500"
-                                                            checked={selectedLeads.includes(lead.id)}
+                                                            checked={selectedLeadsSet.has(lead.id)}
                                                             onChange={() => handleToggleLead(lead.id)}
                                                         />
                                                         <div className="flex-1 overflow-hidden">

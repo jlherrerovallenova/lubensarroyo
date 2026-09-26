@@ -15,8 +15,6 @@ export interface WhatsAppReply {
   summary: string;
 }
 
-const TODAY_KEY = 'altavik_briefing_shown_date';
-
 interface AgendaTask {
   id: number;
   title: string;
@@ -40,6 +38,7 @@ export function DailyBriefingModal({ waReplies, onClose, onMarkRepliesSeen }: Da
 
   useEffect(() => {
     if (!session) return;
+    let isMounted = true;
     const fetchTasks = async () => {
       const now = new Date();
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
@@ -63,11 +62,16 @@ export function DailyBriefingModal({ waReplies, onClose, onMarkRepliesSeen }: Da
           .limit(3),
       ]);
 
-      setTodayTasks(todayRes.data || []);
-      setOverdueTasks(overdueRes.data || []);
-      setLoading(false);
+      if (isMounted) {
+        setTodayTasks(todayRes.data || []);
+        setOverdueTasks(overdueRes.data || []);
+        setLoading(false);
+      }
     };
     fetchTasks();
+    return () => {
+      isMounted = false;
+    };
   }, [session]);
 
   const handleClose = () => {
@@ -99,7 +103,12 @@ export function DailyBriefingModal({ waReplies, onClose, onMarkRepliesSeen }: Da
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onClick={handleClose} />
+      <button 
+        type="button" 
+        aria-label="Cerrar modal" 
+        className="absolute inset-0 bg-slate-900/70 backdrop-blur-sm cursor-default w-full h-full border-0 p-0" 
+        onClick={handleClose} 
+      />
 
       {/* Modal */}
       <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
@@ -233,14 +242,4 @@ export function DailyBriefingModal({ waReplies, onClose, onMarkRepliesSeen }: Da
       </div>
     </div>
   );
-}
-
-/** Devuelve true si el briefing ya se mostró hoy */
-export function briefingShownToday(): boolean {
-  return localStorage.getItem(TODAY_KEY) === new Date().toDateString();
-}
-
-/** Marca el briefing como mostrado hoy */
-export function markBriefingShown() {
-  localStorage.setItem(TODAY_KEY, new Date().toDateString());
 }

@@ -1,5 +1,4 @@
-// src/components/leads/BulkWhatsAppModal.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, MessageCircle, User, CircleCheck as CheckCircle2, ExternalLink, Loader as Loader2, LayoutGrid as Layout } from 'lucide-react';
 import type { Database } from '../../types/supabase';
 import { useWhatsAppTemplates } from '../../hooks/useWhatsAppTemplates';
@@ -22,6 +21,7 @@ export default function BulkWhatsAppModal({ isOpen, onClose, leads, title }: Bul
   const { templates, loading } = useWhatsAppTemplates();
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
   const [sentLeads, setSentLeads] = useState<string[]>([]);
+  const sentSet = useMemo(() => new Set(sentLeads), [sentLeads]);
 
   useEffect(() => {
     if (templates.length > 0 && !selectedTemplateId) {
@@ -100,38 +100,42 @@ export default function BulkWhatsAppModal({ isOpen, onClose, leads, title }: Bul
     if (!template) return;
 
     setIsSendingAll(true);
-    const leadsToSend = leads.filter(l => !sentLeads.includes(l.id) && l.phone);
+    try {
+      const currentSentSet = new Set(sentLeads);
+      const leadsToSend = leads.filter(l => !currentSentSet.has(l.id) && l.phone);
 
-    for (const lead of leadsToSend) {
-      try {
-        const variables = [lead.name.split(' ')[0], getGreeting()];
-        await sendWhatsAppCloudAPI(lead.phone || '', template.name.toLowerCase().replace(/\s+/g, '_'), 'es_ES', [
-          {
-            type: 'body',
-            parameters: variables.map(v => ({ type: 'text', text: v }))
-          }
-        ]);
-        setSentLeads(prev => [...prev, lead.id]);
+      for (const lead of leadsToSend) {
+        try {
+          const variables = [lead.name.split(' ')[0], getGreeting()];
+          await sendWhatsAppCloudAPI(lead.phone || '', template.name.toLowerCase().replace(/\s+/g, '_'), 'es_ES', [
+            {
+              type: 'body',
+              parameters: variables.map(v => ({ type: 'text', text: v }))
+            }
+          ]);
+          setSentLeads(prev => [...prev, lead.id]);
 
-        await (supabase as any).from('lead_history').insert([{
-          lead_id: lead.id,
-          user_id: session?.user.id,
-          event_type: 'whatsapp',
-          description: `Mensaje de WhatsApp oficial enviado (Envío Masivo, Plantilla: ${template.name})`,
-          metadata: { 
-            method: 'whatsapp', 
-            template_name: template.name, 
-            type: 'outbound_bulk_all'
-          }
-        }]);
+          await (supabase as any).from('lead_history').insert([{
+            lead_id: lead.id,
+            user_id: session?.user.id,
+            event_type: 'whatsapp',
+            description: `Mensaje de WhatsApp oficial enviado (Envío Masivo, Plantilla: ${template.name})`,
+            metadata: { 
+              method: 'whatsapp', 
+              template_name: template.name, 
+              type: 'outbound_bulk_all'
+            }
+          }]);
 
-        // Pequeño delay para no saturar
-        await new Promise(r => setTimeout(r, 500));
-      } catch (err) {
-        console.error(`Error enviando a ${lead.name}:`, err);
+          // Pequeño delay para no saturar
+          await new Promise(r => setTimeout(r, 500));
+        } catch (err) {
+          console.error(`Error enviando a ${lead.name}:`, err);
+        }
       }
+    } finally {
+      setIsSendingAll(false);
     }
-    setIsSendingAll(false);
   };
 
   const selectedTemplate = templates.find(t => (t.id || t.name) === selectedTemplateId);
@@ -224,8 +228,8 @@ export default function BulkWhatsAppModal({ isOpen, onClose, leads, title }: Bul
 
             {/* List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-slate-50/50 custom-scrollbar">
-              {leads.map((lead, index) => {
-                const isSent = sentLeads.includes(lead.id);
+              {leads.map((lead) => {
+                const isSent = sentSet.has(lead.id);
                 return (
                   <div 
                     key={lead.id}
