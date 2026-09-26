@@ -21,27 +21,37 @@ export default function SurveyResults() {
   const { session } = useAuth();
 
   useEffect(() => {
+    let isMounted = true;
+    const fetchSurveys = async () => {
+      setLoading(true);
+      try {
+        const { data, error: dbError } = await (supabase as any)
+          .from('leads')
+          .select('id, name, feedback_sent, feedback_sent_at, feedback_responded_at, feedback_rating, survey_data')
+          .eq('feedback_sent', true)
+          .order('feedback_sent_at', { ascending: false });
+
+        if (dbError) throw dbError;
+        if (isMounted) {
+          setLeads(data || []);
+        }
+      } catch (err: any) {
+        console.error('Error fetching surveys:', err);
+        if (isMounted) {
+          setError('No se pudieron cargar los datos de las encuestas.');
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     fetchSurveys();
+    return () => {
+      isMounted = false;
+    };
   }, [session]);
-
-  const fetchSurveys = async () => {
-    setLoading(true);
-    try {
-      const { data, error: dbError } = await (supabase as any)
-        .from('leads')
-        .select('id, name, feedback_sent, feedback_sent_at, feedback_responded_at, feedback_rating, survey_data')
-        .eq('feedback_sent', true)
-        .order('feedback_sent_at', { ascending: false });
-
-      if (dbError) throw dbError;
-      setLeads(data || []);
-    } catch (err: any) {
-      console.error('Error fetching surveys:', err);
-      setError('No se pudieron cargar los datos de las encuestas.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (

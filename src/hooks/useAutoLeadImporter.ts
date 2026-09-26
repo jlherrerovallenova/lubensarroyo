@@ -19,6 +19,7 @@ export function useAutoLeadImporter(session: Session | null): AutoImportResult {
     if (!session || sessionStorage.getItem('auto_import_executed') === 'true') {
       return;
     }
+    let isMounted = true;
 
     const runAutoImport = async () => {
       setIsImporting(true);
@@ -135,16 +136,23 @@ export function useAutoLeadImporter(session: Session | null): AutoImportResult {
       } catch (err) {
         console.error('❌ [Auto IA] Error crítico en el escaneo automático:', err);
         const errMsg = err instanceof Error ? err.message : 'Error en importación automática';
-        setError(errMsg);
+        if (isMounted) {
+          setError(errMsg);
+        }
       } finally {
-        setIsImporting(false);
-        setImportCount(importedCount);
+        if (isMounted) {
+          setIsImporting(false);
+          setImportCount(importedCount);
+        }
         // Registrar que ya se ha ejecutado el escaneo en esta sesión del navegador
         sessionStorage.setItem('auto_import_executed', 'true');
       }
     };
 
     runAutoImport();
+    return () => {
+      isMounted = false;
+    };
   }, [session]);
 
   return { isImporting, importCount, error };

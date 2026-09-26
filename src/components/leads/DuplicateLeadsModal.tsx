@@ -38,61 +38,69 @@ export const DuplicateLeadsModal: React.FC<DuplicateLeadsModalProps> = ({ isOpen
   const { showConfirm, showAlert } = useDialog();
 
   useEffect(() => {
-    if (isOpen) {
-      fetchAndFindDuplicates();
-    }
-  }, [isOpen]);
+    if (!isOpen) return;
+    let isMounted = true;
 
-  const fetchAndFindDuplicates = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('leads')
-        .select('id, name, email, phone, created_at')
-        .order('created_at', { ascending: false });
+    const fetchAndFindDuplicates = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('leads')
+          .select('id, name, email, phone, created_at')
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      const leads = data as Lead[];
-      const groups: DuplicateGroup[] = [];
+        const leads = data as Lead[];
+        const groups: DuplicateGroup[] = [];
 
-      // Find by Email
-      const emailMap = new Map<string, Lead[]>();
-      leads.forEach(l => {
-        if (l.email && l.email.trim()) {
-          const email = l.email.toLowerCase().trim();
-          emailMap.set(email, [...(emailMap.get(email) || []), l]);
-        }
-      });
-      emailMap.forEach((groupLeads, email) => {
-        if (groupLeads.length > 1) {
-          groups.push({ key: email, type: 'email', leads: groupLeads });
-        }
-      });
-
-      // Find by Phone
-      const phoneMap = new Map<string, Lead[]>();
-      leads.forEach(l => {
-        if (l.phone && l.phone.trim()) {
-          const phone = l.phone.replace(/\s+/g, '').trim();
-          if (phone.length > 5) {
-            phoneMap.set(phone, [...(phoneMap.get(phone) || []), l]);
+        // Find by Email
+        const emailMap = new Map<string, Lead[]>();
+        leads.forEach(l => {
+          if (l.email && l.email.trim()) {
+            const email = l.email.toLowerCase().trim();
+            emailMap.set(email, [...(emailMap.get(email) || []), l]);
           }
-        }
-      });
-      phoneMap.forEach((groupLeads, phone) => {
-        if (groupLeads.length > 1) {
-          groups.push({ key: phone, type: 'phone', leads: groupLeads });
-        }
-      });
+        });
+        emailMap.forEach((groupLeads, email) => {
+          if (groupLeads.length > 1) {
+            groups.push({ key: email, type: 'email', leads: groupLeads });
+          }
+        });
 
-      setDuplicates(groups);
-    } catch (err) {
-      console.error('Error fetching duplicates:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+        // Find by Phone
+        const phoneMap = new Map<string, Lead[]>();
+        leads.forEach(l => {
+          if (l.phone && l.phone.trim()) {
+            const phone = l.phone.replace(/\s+/g, '').trim();
+            if (phone.length > 5) {
+              phoneMap.set(phone, [...(phoneMap.get(phone) || []), l]);
+            }
+          }
+        });
+        phoneMap.forEach((groupLeads, phone) => {
+          if (groupLeads.length > 1) {
+            groups.push({ key: phone, type: 'phone', leads: groupLeads });
+          }
+        });
+
+        if (isMounted) {
+          setDuplicates(groups);
+        }
+      } catch (err) {
+        console.error('Error fetching duplicates:', err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchAndFindDuplicates();
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen]);
 
   const handleDeleteLead = async (leadId: string, leadName: string) => {
     const confirmed = await showConfirm({

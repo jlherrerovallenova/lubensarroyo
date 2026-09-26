@@ -81,8 +81,8 @@ export function useWhatsAppReplies() {
         summary: r.metadata?.extracted?.summary || r.description,
       }));
 
-      const seenIds = getSeenIds();
-      const unseen = formatted.filter(r => !seenIds.includes(r.id));
+      const seenIdsSet = new Set(getSeenIds());
+      const unseen = formatted.filter(r => !seenIdsSet.has(r.id));
 
       setReplies(formatted);
       setUnseenCount(unseen.length);

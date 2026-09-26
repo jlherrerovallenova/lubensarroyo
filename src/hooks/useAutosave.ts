@@ -15,20 +15,6 @@ export function useAutosave<T>(key: string, initialValue: T) {
 
   useEffect(() => {
     try {
-      const item = window.localStorage.getItem(key);
-      if (item) {
-        setValue(JSON.parse(item));
-      } else {
-        setValue(initialValue);
-      }
-    } catch (error) {
-      setValue(initialValue);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
-
-  useEffect(() => {
-    try {
       window.localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
       console.warn('Error writing to localStorage', error);

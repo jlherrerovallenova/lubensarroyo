@@ -11,6 +11,11 @@ const promoCurrencyFormatter = new Intl.NumberFormat('de-DE', {
   maximumFractionDigits: 0
 });
 
+const safeNumber = (val: string, fallback = 0) => {
+  const n = Number(val);
+  return Number.isNaN(n) ? fallback : n;
+};
+
 export function PromotionTab() {
   const { showAlert } = useDialog();
   const queryClient = useQueryClient();
@@ -296,7 +301,7 @@ export function PromotionTab() {
                 required
                 min="0"
                 value={reservationAmount}
-                onChange={(e) => setReservationAmount(Number(e.target.value))}
+                onChange={(e) => setReservationAmount(safeNumber(e.target.value))}
                 className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
               />
             </div>
@@ -308,7 +313,7 @@ export function PromotionTab() {
                 min="0"
                 max="100"
                 value={contractPercentage}
-                onChange={(e) => setContractPercentage(Number(e.target.value))}
+                onChange={(e) => setContractPercentage(safeNumber(e.target.value))}
                 className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
               />
             </div>
@@ -320,7 +325,7 @@ export function PromotionTab() {
                 min="0"
                 max="100"
                 value={installmentPercentage}
-                onChange={(e) => setInstallmentPercentage(Number(e.target.value))}
+                onChange={(e) => setInstallmentPercentage(safeNumber(e.target.value))}
                 className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
               />
             </div>
@@ -331,7 +336,7 @@ export function PromotionTab() {
                 required
                 min="1"
                 value={installmentCount}
-                onChange={(e) => setInstallmentCount(Number(e.target.value))}
+                onChange={(e) => setInstallmentCount(safeNumber(e.target.value, 1))}
                 className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
               />
             </div>
@@ -343,7 +348,7 @@ export function PromotionTab() {
                 min="0"
                 max="100"
                 value={courtesyPercentage}
-                onChange={(e) => setCourtesyPercentage(Number(e.target.value))}
+                onChange={(e) => setCourtesyPercentage(safeNumber(e.target.value))}
                 className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
               />
             </div>
@@ -376,7 +381,7 @@ export function PromotionTab() {
                 min="0"
                 max="100"
                 value={commissionPercentage}
-                onChange={(e) => setCommissionPercentage(Number(e.target.value))}
+                onChange={(e) => setCommissionPercentage(safeNumber(e.target.value))}
                 className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
               />
             </div>
@@ -391,7 +396,7 @@ export function PromotionTab() {
                 min="0"
                 max="100"
                 value={captadorCommissionPercentage}
-                onChange={(e) => setCaptadorCommissionPercentage(Number(e.target.value))}
+                onChange={(e) => setCaptadorCommissionPercentage(safeNumber(e.target.value))}
                 className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
               />
             </div>
@@ -406,7 +411,7 @@ export function PromotionTab() {
                 min="0"
                 max="100"
                 value={vendedorCommissionPercentage}
-                onChange={(e) => setVendedorCommissionPercentage(Number(e.target.value))}
+                onChange={(e) => setVendedorCommissionPercentage(safeNumber(e.target.value))}
                 className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
               />
             </div>
@@ -428,7 +433,7 @@ export function PromotionTab() {
                   min="0"
                   max="100"
                   value={billingPctReservation}
-                  onChange={(e) => setBillingPctReservation(Number(e.target.value))}
+                  onChange={(e) => setBillingPctReservation(safeNumber(e.target.value))}
                   className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
                 />
               </div>
@@ -443,7 +448,7 @@ export function PromotionTab() {
                   min="0"
                   max="100"
                   value={billingPctContract}
-                  onChange={(e) => setBillingPctContract(Number(e.target.value))}
+                  onChange={(e) => setBillingPctContract(safeNumber(e.target.value))}
                   className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
                 />
               </div>
@@ -458,7 +463,7 @@ export function PromotionTab() {
                   min="0"
                   max="100"
                   value={billingPctDeed}
-                  onChange={(e) => setBillingPctDeed(Number(e.target.value))}
+                  onChange={(e) => setBillingPctDeed(safeNumber(e.target.value))}
                   className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
                 />
               </div>
@@ -476,7 +481,7 @@ export function PromotionTab() {
                   required
                   min="0"
                   value={maxPromoterSales}
-                  onChange={(e) => setMaxPromoterSales(Number(e.target.value))}
+                  onChange={(e) => setMaxPromoterSales(safeNumber(e.target.value))}
                   className="w-full p-2.5 text-sm border bg-white border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 transition-all"
                 />
               </div>

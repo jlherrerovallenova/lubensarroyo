@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Sparkles, Loader as Loader2, UserPlus, Mail, CircleAlert as AlertCircle, CircleCheck as CheckCircle2, Wand as Wand2, Search, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { extractLeadDataFromEmail } from '../services/geminiService';
@@ -27,6 +26,7 @@ export default function Discovery() {
   const [viewMode, setViewMode] = useState<'pending' | 'imported'>('pending');
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const selectedIdsSet = useMemo(() => new Set(selectedIds), [selectedIds]);
   const [notification, setNotification] = useState<{ show: boolean, title: string, message: string, type: 'success' | 'error' }>({
     show: false, title: '', message: '', type: 'success'
   });
@@ -300,7 +300,7 @@ export default function Discovery() {
 
     if (!confirmed) return;
 
-    const leadsToProcess = discoveredLeads.filter(l => selectedIds.includes(l.emailId));
+    const leadsToProcess = discoveredLeads.filter(l => selectedIdsSet.has(l.emailId));
     let successCount = 0;
     let errorCount = 0;
 
@@ -430,19 +430,21 @@ export default function Discovery() {
                 </tr>
               </thead>
               <tbody>
-                {discoveredLeads.map((lead) => (
-                  <tr 
-                    key={lead.emailId} 
-                    className={`border-b border-slate-50 transition-colors group ${selectedIds.includes(lead.emailId) ? 'bg-altavik-50/50' : 'hover:bg-slate-50'}`}
-                  >
-                    <td className="p-4">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedIds.includes(lead.emailId)}
-                        onChange={() => handleToggleSelect(lead.emailId)}
-                        className="rounded border-slate-300 text-altavik-600 focus:ring-altavik-500 cursor-pointer w-4 h-4"
-                      />
-                    </td>
+                {discoveredLeads.map((lead) => {
+                  const isSelected = selectedIdsSet.has(lead.emailId);
+                  return (
+                    <tr 
+                      key={lead.emailId} 
+                      className={`border-b border-slate-50 transition-colors group ${isSelected ? 'bg-altavik-50/50' : 'hover:bg-slate-50'}`}
+                    >
+                      <td className="p-4">
+                        <input 
+                          type="checkbox" 
+                          checked={isSelected}
+                          onChange={() => handleToggleSelect(lead.emailId)}
+                          className="rounded border-slate-300 text-altavik-600 focus:ring-altavik-500 cursor-pointer w-4 h-4"
+                        />
+                      </td>
                     <td className="p-4">
                       <div className="flex flex-col">
                         <span className="text-sm font-bold text-slate-800">{lead.senderName}</span>
@@ -495,8 +497,9 @@ export default function Discovery() {
                         )}
                       </div>
                     </td>
-                  </tr>
-                ))}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

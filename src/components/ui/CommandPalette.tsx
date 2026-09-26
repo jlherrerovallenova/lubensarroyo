@@ -113,11 +113,15 @@ export default function CommandPalette({ isOpen, onClose }: { isOpen: boolean; o
     cmd.description.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleClose = () => {
+    setSearch('');
+    setSelectedIndex(0);
+    onClose();
+  };
+
   useEffect(() => {
     let timeout: NodeJS.Timeout;
     if (isOpen) {
-      setSearch('');
-      setSelectedIndex(0);
       timeout = setTimeout(() => inputRef.current?.focus(), 10);
     }
     return () => clearTimeout(timeout);
@@ -137,25 +141,27 @@ export default function CommandPalette({ isOpen, onClose }: { isOpen: boolean; o
         e.preventDefault();
         if (filteredCommands[selectedIndex]) {
           filteredCommands[selectedIndex].action();
-          onClose();
+          handleClose();
         }
       } else if (e.key === 'Escape') {
-        onClose();
+        handleClose();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, filteredCommands, selectedIndex, onClose]);
+  }, [isOpen, filteredCommands, selectedIndex]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
       {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200"
-        onClick={onClose}
+      <button 
+        type="button"
+        aria-label="Cerrar paleta de comandos"
+        className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200 border-0 p-0 cursor-default"
+        onClick={handleClose}
       />
       
       {/* Palette Container */}
@@ -191,16 +197,17 @@ export default function CommandPalette({ isOpen, onClose }: { isOpen: boolean; o
             <div className="space-y-1">
               {/* Grouping by category would be better but let's keep it simple first */}
               {filteredCommands.map((cmd, index) => (
-                <div
+                <button
+                  type="button"
                   key={cmd.id}
                   onClick={() => {
                     cmd.action();
-                    onClose();
+                    handleClose();
                   }}
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`
-                    flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200
-                    ${index === selectedIndex ? 'bg-altavik-600 text-white shadow-lg shadow-altavik-600/20 translate-x-1' : 'hover:bg-slate-50 text-slate-700'}
+                    w-full text-left flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 border-0
+                    ${index === selectedIndex ? 'bg-altavik-600 text-white shadow-lg shadow-altavik-600/20 translate-x-1' : 'hover:bg-slate-50 text-slate-700 bg-transparent'}
                   `}
                 >
                   <div className={`
@@ -225,7 +232,7 @@ export default function CommandPalette({ isOpen, onClose }: { isOpen: boolean; o
                       <div className="bg-white/20 px-2 py-1 rounded text-[10px] font-bold">ENTER</div>
                     </div>
                   )}
-                </div>
+                </button>
               ))}
             </div>
           )}

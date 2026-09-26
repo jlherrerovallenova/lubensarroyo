@@ -25,6 +25,11 @@ const currencyFormatter = new Intl.NumberFormat('de-DE', {
 });
 const fmt = (n: number) => currencyFormatter.format(n);
 
+const safeNumber = (val: string, fallback = 0) => {
+  const n = Number(val);
+  return Number.isNaN(n) ? fallback : n;
+};
+
 export default function MortgageSimulatorModal({ isOpen, onClose, property, onGenerate, isGenerating }: Props) {
   const totalWithIVA = property.precio * 1.1;
 
@@ -92,7 +97,7 @@ export default function MortgageSimulatorModal({ isOpen, onClose, property, onGe
               <input
                 type="number" min={5} max={100} step={1}
                 value={entryPct}
-                onChange={e => setEntryPct(Number(e.target.value))}
+                onChange={e => setEntryPct(safeNumber(e.target.value))}
                 className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-altavik-500/30 focus:border-altavik-400 transition-all"
               />
             </div>
@@ -103,7 +108,7 @@ export default function MortgageSimulatorModal({ isOpen, onClose, property, onGe
               <input
                 type="number" min={0.1} max={15} step={0.1}
                 value={interestPct}
-                onChange={e => setInterestPct(Number(e.target.value))}
+                onChange={e => setInterestPct(safeNumber(e.target.value))}
                 className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-altavik-500/30 focus:border-altavik-400 transition-all"
               />
             </div>
@@ -114,7 +119,7 @@ export default function MortgageSimulatorModal({ isOpen, onClose, property, onGe
               <input
                 type="number" min={5} max={40} step={1}
                 value={loanYears}
-                onChange={e => setLoanYears(Number(e.target.value))}
+                onChange={e => setLoanYears(safeNumber(e.target.value))}
                 className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-slate-800 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-altavik-500/30 focus:border-altavik-400 transition-all"
               />
             </div>
