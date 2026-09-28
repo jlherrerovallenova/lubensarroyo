@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X, Loader2, AlertCircle, Upload, FileSpreadsheet, CheckCircle, Settings2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import * as XLSX from 'xlsx';
+import { ALTAVIK_VIVIENDAS_70 } from '../../data/altavikViviendas';
 
 interface Props {
   isOpen: boolean;
@@ -51,6 +52,30 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
   const handleClose = () => {
     resetState();
     onClose();
+  };
+
+  const handleDirectSeedAltavik = async () => {
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      const chunkSize = 50;
+      for (let i = 0; i < ALTAVIK_VIVIENDAS_70.length; i += chunkSize) {
+        const chunk = ALTAVIK_VIVIENDAS_70.slice(i, i + chunkSize);
+        const { error } = await (supabase as any).from('inventory').insert(chunk);
+        if (error) throw error;
+      }
+      setStep(3);
+      setTimeout(() => {
+        resetState();
+        onSuccess();
+        onClose();
+      }, 1500);
+    } catch (err: any) {
+      console.error('Seed error:', err);
+      setErrorMsg(err.message || 'Error al importar viviendas.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -198,19 +223,43 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
           )}
 
           {step === 1 && (
-            <button 
-              type="button"
-              className="w-full flex flex-col items-center justify-center py-16 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50 hover:bg-slate-100/50 transition-all cursor-pointer group"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <div className="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Upload className="text-altavik-600" size={32} />
+            <div className="space-y-4">
+              <button 
+                type="button"
+                className="w-full flex flex-col items-center justify-center py-12 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50/50 hover:bg-slate-100/50 transition-all cursor-pointer group"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Upload className="text-altavik-600" size={28} />
+                </div>
+                <h3 className="text-lg font-bold text-slate-800 mb-1">Sube tu archivo .xlsx, .xls o .csv</h3>
+                <p className="text-slate-500 text-xs max-w-sm text-center">Haz clic para buscar (ej. viviendas_altavik_70.xlsx) o arrastra el documento aquí.</p>
+                <input type="file" ref={fileInputRef} className="hidden" accept=".xlsx,.xls,.csv" onChange={handleFileUpload} />
+                {loading && <Loader2 className="animate-spin text-altavik-600 mt-4" size={28} />}
+              </button>
+
+              <div className="relative flex py-2 items-center">
+                <div className="flex-grow border-t border-slate-200"></div>
+                <span className="flex-shrink mx-4 text-xs font-bold text-slate-400 uppercase tracking-wider">o también</span>
+                <div className="flex-grow border-t border-slate-200"></div>
               </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-2">Sube tu archivo .xlsx, .xls o .csv</h3>
-              <p className="text-slate-500 text-sm max-w-sm text-center">Haz clic para buscar o arrastra el documento aquí.</p>
-              <input type="file" ref={fileInputRef} className="hidden" accept=".xlsx,.xls,.csv" onChange={handleFileUpload} />
-              {loading && <Loader2 className="animate-spin text-altavik-600 mt-6" size={32} />}
-            </button>
+
+              <div className="p-4 bg-gradient-to-r from-altavik-50 to-indigo-50 border border-altavik-200/60 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                <div>
+                  <h4 className="font-bold text-slate-900 text-sm">Carga Rápida: Promoción Altavik (70 Viviendas)</h4>
+                  <p className="text-xs text-slate-500 mt-0.5">Importa directamente las 70 viviendas estándar (Portales 9 al 12, Plantas 1ª a 5ª) sin subir archivos.</p>
+                </div>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handleDirectSeedAltavik}
+                  className="px-4 py-2.5 bg-altavik-600 text-white text-xs font-bold rounded-xl shadow-md hover:bg-altavik-700 transition-all whitespace-nowrap flex items-center gap-2 active:scale-95 disabled:opacity-50 cursor-pointer"
+                >
+                  {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
+                  Importar 70 Viviendas
+                </button>
+              </div>
+            </div>
           )}
 
           {step === 2 && (

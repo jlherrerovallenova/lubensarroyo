@@ -18,7 +18,8 @@ import {
   PencilRuler,
   Plus,
   Download,
-  FileDown
+  FileDown,
+  Upload
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -386,13 +387,43 @@ export default function Inventory() {
           </p>
         }
         actions={
-          <Button type="button"
-            onClick={handleExportPDF}
-            disabled={loading || isExporting || filteredProperties.length === 0}
-            isLoading={isExporting}
-          >
-            <FileText size={18} /> Exportar PDF
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsImportModalOpen(true)}
+              className="bg-white/80 shadow-sm"
+            >
+              <Upload size={18} /> Importar Catálogo
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsFichasModalOpen(true)}
+              className="bg-white/80 shadow-sm"
+            >
+              <FileDown size={18} /> Subir Fichas
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                setEditingProperty(null);
+                setIsModalOpen(true);
+              }}
+            >
+              <Plus size={18} /> Nueva Vivienda
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleExportPDF}
+              disabled={loading || isExporting || filteredProperties.length === 0}
+              isLoading={isExporting}
+              className="bg-white/80 shadow-sm"
+            >
+              <FileText size={18} /> Exportar PDF
+            </Button>
+          </div>
         }
       />
 
