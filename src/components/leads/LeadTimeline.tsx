@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { 
   UserPlus, 
@@ -48,14 +48,20 @@ export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProp
     setExpandedEmails(prev => ({ ...prev, [eventId]: !prev[eventId] }));
   };
 
-  useEffect(() => {
-    fetchAggregatedEvents();
+  const isMountedRef = useRef(true);
+
   // react-doctor-disable-next-line exhaustive-deps
+  useEffect(() => {
+    isMountedRef.current = true;
+    fetchAggregatedEvents();
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [leadId]);
 
   async function fetchAggregatedEvents() {
     try {
-      setLoading(true);
+      if (isMountedRef.current) setLoading(true);
       
       // Fetch the history, agenda, and sent docs in parallel
       const [
@@ -74,7 +80,7 @@ export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProp
         .select('*')
         .eq('lead_id', leadId);
 
-      if (trackingData) {
+      if (trackingData && isMountedRef.current) {
         setTrackingRecords(trackingData);
       }
 
@@ -131,11 +137,15 @@ export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProp
       // Ordenar por fecha descendente
       allEvents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       
-      setEvents(allEvents);
+      if (isMountedRef.current) {
+        setEvents(allEvents);
+      }
     } catch (err) {
       console.error('Error fetching aggregated timeline:', err);
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   }
 

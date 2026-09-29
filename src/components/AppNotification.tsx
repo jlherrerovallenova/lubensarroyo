@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { CheckCircle2, AlertCircle, X, Info } from 'lucide-react';
 
 interface AppNotificationProps {
@@ -16,12 +16,17 @@ export const AppNotification: React.FC<AppNotificationProps> = ({
   onClose,
   duration = 5000,
 }) => {
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
+
   useEffect(() => {
     const timer = setTimeout(() => {
-      onClose();
+      onCloseRef.current();
     }, duration);
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [duration]);
 
   const themes = {
     success: {

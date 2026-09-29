@@ -390,7 +390,7 @@ export default function Inventory() {
           <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={() => setIsImportModalOpen(true)}
               className="bg-white/80 shadow-sm"
             >
@@ -398,7 +398,7 @@ export default function Inventory() {
             </Button>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={() => setIsFichasModalOpen(true)}
               className="bg-white/80 shadow-sm"
             >
@@ -415,7 +415,7 @@ export default function Inventory() {
             </Button>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={handleExportPDF}
               disabled={loading || isExporting || filteredProperties.length === 0}
               isLoading={isExporting}

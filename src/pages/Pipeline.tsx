@@ -1,5 +1,5 @@
 // src/pages/Pipeline.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Loader2,
@@ -30,7 +30,7 @@ const COLUMNS = [
 export default function Pipeline() {
   const navigate = useNavigate();
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [draggedLeadId, setDraggedLeadId] = useState<string | null>(null);
+  const draggedLeadIdRef = useRef<string | null>(null);
 
   // React Query para obtener todos los leads activos
   const { data, isLoading: loading } = useLeads({
@@ -45,8 +45,7 @@ export default function Pipeline() {
   const leads = (data?.leads || []).filter(l => l.status !== 'lost');
 
   const handleDragStart = (e: React.DragEvent, leadId: string) => {
-    // react-doctor-disable-next-line no-impure-state-updater
-    setDraggedLeadId(leadId);
+    draggedLeadIdRef.current = leadId;
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', leadId);
 
@@ -57,7 +56,7 @@ export default function Pipeline() {
   };
 
   const handleDragEnd = (_e: React.DragEvent, leadId: string) => {
-    setDraggedLeadId(null);
+    draggedLeadIdRef.current = null;
     const element = document.getElementById(`lead-card-${leadId}`);
     if (element) element.classList.remove('opacity-50');
   };
@@ -69,7 +68,7 @@ export default function Pipeline() {
 
   const handleDrop = (e: React.DragEvent, newStatus: string) => {
     e.preventDefault();
-    const leadId = e.dataTransfer.getData('text/plain') || draggedLeadId;
+    const leadId = e.dataTransfer.getData('text/plain') || draggedLeadIdRef.current;
 
     if (!leadId) return;
 
@@ -82,7 +81,7 @@ export default function Pipeline() {
       updates: { status: newStatus as any }
     });
     
-    setDraggedLeadId(null);
+    draggedLeadIdRef.current = null;
   };
 
   const getSourceIcon = (sourceName: string | null) => {

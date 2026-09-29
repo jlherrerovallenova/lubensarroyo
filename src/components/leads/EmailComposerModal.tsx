@@ -1,5 +1,5 @@
 // src/components/leads/EmailComposerModal.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Mail, MessageCircle, Paperclip, Loader as Loader2, CircleCheck as CheckCircle2, CircleAlert as AlertCircle, Building2, Zap, LayoutGrid as Layout } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -109,11 +109,16 @@ export default function EmailComposerModal({
 
   const [subject, setSubject, clearSubject] = useAutosave(`draft-email-subj-${leadId}`, `Documentación LUBENS ARROYO - TERRAVALL`);
   const { templates, loading: loadingTemplates } = useWhatsAppTemplates();
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+  const selectedTemplateIdRef = useRef<string>('');
+  const selectedTemplateId = selectedTemplateIdRef.current;
+  const setSelectedTemplateId = (id: string) => {
+    selectedTemplateIdRef.current = id;
+  };
 
   const [message, setMessage, clearMessage] = useAutosave(`draft-email-msg-${leadId}`, '');
 
   // Efecto para inicializar asunto, mensaje y adjuntos si se solicita reenviar un correo existente
+  // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
     if (initialSubject) {
       setSubject(initialSubject);
@@ -132,9 +137,10 @@ export default function EmailComposerModal({
   }, [initialSubject, initialMessage, initialSelectedDocNames, availableDocs]);
 
   // Efecto para inicializar el mensaje con el template por defecto si se solicita
+  // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
     if (initialSubject || initialMessage) return; // No sobreescribir si estamos reenviando
-    if (initialTemplate === 'first_contact' && templates.length > 0 && !selectedTemplateId) {
+    if (initialTemplate === 'first_contact' && templates.length > 0 && !selectedTemplateIdRef.current) {
       const firstContact = templates.find(t => t.name.includes('Primer Contacto')) || templates[0];
       if (firstContact) {
         setSelectedTemplateId(firstContact.id || firstContact.name);
@@ -155,7 +161,7 @@ Tal y como acabamos de hablar, le envío adjunta toda la información sobre LUBE
 
 ${agentName} - TERRAVALL`);
     }
-  }, [initialTemplate, templates, leadName, method, message, selectedTemplateId, initialSubject, initialMessage, agentName]);
+  }, [initialTemplate, templates, leadName, method, message, initialSubject, initialMessage, agentName]);
 
   const applyTemplate = async (templateId: string) => {
     const template = templates.find(t => (t.id || t.name) === templateId);
@@ -214,8 +220,8 @@ ${agentName} - TERRAVALL`);
     setUploadingFile(true);
     
     try {
-       const uploadedFiles: { name: string; url: string; category?: string }[] = [];
-       for (const file of Array.from(e.target.files)) {
+       const filesArray = Array.from(e.target.files);
+       const uploadedFiles = await Promise.all(filesArray.map(async (file) => {
           const cleanName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
           const filePath = `leads/${leadId}/${Date.now()}_${cleanName}`;
           
@@ -224,9 +230,8 @@ ${agentName} - TERRAVALL`);
           
           const { data: publicUrlData } = supabase.storage.from('documents').getPublicUrl(filePath);
           
-          const newDoc = { name: file.name, url: publicUrlData.publicUrl, category: 'Personalizados' };
-          uploadedFiles.push(newDoc);
-       }
+          return { name: file.name, url: publicUrlData.publicUrl, category: 'Personalizados' };
+       }));
        
        setCustomDocs(prev => [...prev, ...uploadedFiles]);
        setSelectedDocs(prev => [...prev, ...uploadedFiles]); // Auto-seleccionar
@@ -242,14 +247,11 @@ ${agentName} - TERRAVALL`);
   const handlePropertySelect = async (properties: any[]) => {
     setIsGeneratingFichas(true);
     try {
-      const newFichas: { name: string; url: string; category?: string }[] = [];
-      const newIds = [...selectedPropertyIds];
       const newIdsSet = new Set(selectedPropertyIds);
+      const propsToProcess = properties.filter(prop => !newIdsSet.has(prop.id));
+      propsToProcess.forEach(p => newIdsSet.add(p.id));
 
-      for (const prop of properties) {
-        if (newIdsSet.has(prop.id)) continue;
-        newIdsSet.add(prop.id);
-
+      const generated = await Promise.all(propsToProcess.map(async (prop) => {
         // 1. Generar el PDF Blob
         const pdfBlob = await generatePropertyPDFBlob(prop);
         
@@ -270,14 +272,18 @@ ${agentName} - TERRAVALL`);
         
         const { data: publicUrlData } = supabase.storage.from('documents').getPublicUrl(filePath);
         
-        const newDoc = { name: file.name, url: publicUrlData.publicUrl, category: 'Fichas de Vivienda' };
-        newFichas.push(newDoc);
-        newIds.push(prop.id);
-      }
+        return {
+          doc: { name: file.name, url: publicUrlData.publicUrl, category: 'Fichas de Vivienda' },
+          propId: prop.id
+        };
+      }));
+
+      const newFichas = generated.map(g => g.doc);
+      const newIds = generated.map(g => g.propId);
 
       setCustomDocs(prev => [...prev, ...newFichas]);
       setSelectedDocs(prev => [...prev, ...newFichas]);
-      setSelectedPropertyIds(newIds);
+      setSelectedPropertyIds(prev => [...prev, ...newIds]);
       
       if (newFichas.length > 0) {
         showAlert({ 

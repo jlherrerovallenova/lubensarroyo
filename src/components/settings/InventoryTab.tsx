@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Upload, FileText, Trash2, Hop as Home, Loader as Loader2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useDialog } from '../../context/DialogContext';
@@ -14,6 +14,7 @@ export function InventoryTab() {
   const [properties, setProperties] = useState<any[]>([]);
   const [propertyToDelete, setPropertyToDelete] = useState<string>('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const isDeletingRef = useRef(false);
 
   useEffect(() => {
     fetchProperties();
@@ -37,10 +38,11 @@ export function InventoryTab() {
   };
 
   const handleDeleteSingleProperty = async () => {
-    if (!propertyToDelete || isDeleting) return;
+    if (!propertyToDelete || isDeleting || isDeletingRef.current) return;
 
     const property = properties.find(p => p.id === propertyToDelete);
     
+    isDeletingRef.current = true;
     setIsDeleting(true);
     try {
       const confirmed = await showConfirm({
@@ -77,6 +79,7 @@ export function InventoryTab() {
       console.error('Error al intentar borrar vivienda:', error);
       await showAlert({ title: 'Error', message: 'Hubo un error al intentar borrar la vivienda.' });
     } finally {
+      isDeletingRef.current = false;
       setIsDeleting(false);
     }
   };

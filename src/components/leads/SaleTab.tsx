@@ -81,11 +81,51 @@ export default function SaleTab({ lead, onLeadUpdate }: Props) {
     joint_buyer_email: lead.joint_buyer_email || '',
     joint_buyer_phone: lead.joint_buyer_phone || '',
   });
-  const [hasJointBuyer, setHasJointBuyer] = useState(!!lead.joint_buyer_name);
+  const [hasJointBuyerOverride, setHasJointBuyerOverride] = useState<boolean | null>(null);
+  const hasJointBuyer = hasJointBuyerOverride ?? !!lead.joint_buyer_name;
+  const setHasJointBuyer = (val: boolean) => setHasJointBuyerOverride(val);
 
   useEffect(() => {
-    fetchProperties();
-    fetchSale();
+    let isMounted = true;
+
+    async function loadInitialData() {
+      const { data: propData } = await supabase
+        .from('inventory')
+        .select('*');
+        
+      if (propData && isMounted) {
+        const sorted = ((propData as InventoryRow[]) || []).sort((a, b) => {
+          const valA = a.n_orden || '';
+          const valB = b.n_orden || '';
+          const numA = parseInt(valA) || 0;
+          const numB = parseInt(valB) || 0;
+          if (numA !== numB) return numA - numB;
+          return valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
+        });
+        setProperties(sorted);
+      }
+
+      const { data: saleData } = await (supabase as any)
+        .from('sales')
+        .select('*')
+        .eq('lead_id', lead.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (saleData && isMounted) {
+        setSale(saleData);
+        fetchInstallments(saleData.id);
+        fetchDocuments(saleData.id);
+        fetchPromoterInvoices(saleData.id);
+      }
+    }
+
+    loadInitialData();
+
+    return () => {
+      isMounted = false;
+    };
   // react-doctor-disable-next-line exhaustive-deps
   }, [lead.id]);
 
@@ -983,7 +1023,7 @@ export default function SaleTab({ lead, onLeadUpdate }: Props) {
                   <iframe
                     src={previewUrl}
                     title={previewName || 'Vista previa PDF'}
-                    sandbox="allow-scripts allow-same-origin"
+                    sandbox="allow-scripts"
                     className="w-full h-full rounded-xl border border-slate-200/60 shadow-lg bg-white"
                   />
                 )}

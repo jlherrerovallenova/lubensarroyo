@@ -1,5 +1,5 @@
 // src/pages/LeadDetail.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
@@ -76,11 +76,17 @@ export default function LeadDetail() {
     time: (new Date().getHours() + 1).toString().padStart(2, '0') + ':00',
   });
 
+  const isMountedRef = useRef(true);
+
+  // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
+    isMountedRef.current = true;
     if (id) {
       fetchLeadData();
     }
-  // react-doctor-disable-next-line exhaustive-deps
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [id]);
 
   // 1. CARGA DE DATOS DEL CLIENTE Y SUS TAREAS
@@ -96,20 +102,24 @@ export default function LeadDetail() {
       if (leadResponse.error) throw leadResponse.error;
       if (agendaResponse.error) throw agendaResponse.error;
 
-      setLead(leadResponse.data);
-      setCurrentStatus(leadResponse.data.status || 'new');
-      setFormData({
-        name: leadResponse.data.name || '',
-        email: leadResponse.data.email || '',
-        phone: leadResponse.data.phone || '',
-        source: leadResponse.data.source || 'Web'
-      });
-      setTasks(agendaResponse.data || []);
+      if (isMountedRef.current) {
+        setLead(leadResponse.data);
+        setCurrentStatus(leadResponse.data.status || 'new');
+        setFormData({
+          name: leadResponse.data.name || '',
+          email: leadResponse.data.email || '',
+          phone: leadResponse.data.phone || '',
+          source: leadResponse.data.source || 'Web'
+        });
+        setTasks(agendaResponse.data || []);
+      }
 
     } catch (error) {
       console.error("Error cargando perfil del cliente:", error);
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 

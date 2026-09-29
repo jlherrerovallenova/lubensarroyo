@@ -172,6 +172,7 @@ export default function MainLayout() {
     const migrationKey = 'migration_leads_source_importado_v1';
     if (localStorage.getItem(migrationKey) === 'true') return;
 
+    let isMounted = true;
     const migrateSources = async () => {
       try {
         const { error } = await (supabase as any)
@@ -179,7 +180,7 @@ export default function MainLayout() {
           .update({ source: 'Importado' })
           .not('id', 'is', null);
 
-        if (!error) {
+        if (!error && isMounted) {
           console.log('✅ Migración completada: todos los clientes actualizados a origen "Importado".');
           localStorage.setItem(migrationKey, 'true');
           queryClient.invalidateQueries({ queryKey: ['leads'] });
@@ -191,7 +192,7 @@ export default function MainLayout() {
             type: "success"
           });
           setShowNotification(true);
-        } else {
+        } else if (error) {
           console.error('Error migrando origen de leads:', error);
         }
       } catch (err) {
@@ -200,6 +201,9 @@ export default function MainLayout() {
     };
 
     migrateSources();
+    return () => {
+      isMounted = false;
+    };
   }, [session, queryClient]);
 
   // 1. PANTALLA DE CARGA

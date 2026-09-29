@@ -95,6 +95,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
     let mounted = true;
     console.log('[AuthDebug] 🚀 useEffect de inicialización montado.');

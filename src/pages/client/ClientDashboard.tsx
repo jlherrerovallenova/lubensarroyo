@@ -21,9 +21,10 @@ export default function ClientDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     async function loadData() {
       if (!client || !client.sale) {
-        setLoading(false);
+        if (isMounted) setLoading(false);
         return;
       }
 
@@ -35,7 +36,7 @@ export default function ClientDashboard() {
           .eq('id', client.sale.property_id)
           .single();
 
-        if (propData) setProperty(propData);
+        if (propData && isMounted) setProperty(propData);
 
         // Load installments
         const { data: instData } = await supabase
@@ -44,7 +45,7 @@ export default function ClientDashboard() {
           .eq('sale_id', client.sale.id)
           .order('installment_number', { ascending: true });
 
-        if (instData) setInstallments(instData);
+        if (instData && isMounted) setInstallments(instData);
 
         // Load documents
         const { data: docData } = await supabase
@@ -53,15 +54,21 @@ export default function ClientDashboard() {
           .eq('sale_id', client.sale.id)
           .order('created_at', { ascending: false });
 
-        if (docData) setDocuments(docData);
+        if (docData && isMounted) setDocuments(docData);
       } catch (err) {
         console.error('Error loading client dashboard data:', err);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
     loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [client]);
 
   async function handlePreview(filePath: string) {

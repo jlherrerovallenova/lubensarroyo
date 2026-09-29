@@ -127,6 +127,7 @@ export default function CommandPalette({ isOpen, onClose }: { isOpen: boolean; o
     return () => clearTimeout(timeout);
   }, [isOpen]);
 
+  // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;

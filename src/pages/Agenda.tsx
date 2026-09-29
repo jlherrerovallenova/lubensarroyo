@@ -1,5 +1,5 @@
 // src/pages/Agenda.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
@@ -38,31 +38,33 @@ export default function Agenda() {
 
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'completed' | 'today' | 'overdue'>('pending');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const location = useLocation();
+  const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const urlFilter = searchParams.get('filter') as 'all' | 'pending' | 'completed' | 'today' | 'overdue' | null;
+  const validUrlFilter = urlFilter && ['all', 'pending', 'completed', 'today', 'overdue'].includes(urlFilter) ? urlFilter : null;
+  const [userFilterStatus, setUserFilterStatus] = useState<'all' | 'pending' | 'completed' | 'today' | 'overdue' | null>(null);
+  const filterStatus = userFilterStatus ?? validUrlFilter ?? 'pending';
+  const setFilterStatus = (s: 'all' | 'pending' | 'completed' | 'today' | 'overdue') => setUserFilterStatus(s);
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { showConfirm, showAlert } = useDialog();
 
   useEffect(() => {
-    // Check for query parameters (?filter=today, ?filter=overdue, etc.)
-    const searchParams = new URLSearchParams(location.search);
-    const filterParam = searchParams.get('filter') as any;
-    
-    if (filterParam && ['all', 'pending', 'completed', 'today', 'overdue'].includes(filterParam)) {
-      setFilterStatus(filterParam);
-    }
-
     // Check for "create=true" to open the New Task modal
     if (searchParams.get('create') === 'true') {
       setIsCreateModalOpen(true);
     }
-  }, [location.search]); // React to URL changes
+  }, [searchParams]);
 
+  const isMountedRef = useRef(true);
   useEffect(() => {
-    fetchAgenda();
-  }, [page, filterStatus]);
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
-  const fetchAgenda = async () => {
+  const fetchAgenda = useCallback(async () => {
     if (!session) return;
     setLoading(true);
     try {
@@ -109,15 +111,24 @@ export default function Agenda() {
         leads: Array.isArray((item as any).leads) ? (item as any).leads[0] : (item as any).leads
       })) as AgendaItem[];
 
-      setItems(formattedData);
-      if (count !== null) setTotalItems(count);
+      if (isMountedRef.current) {
+        setItems(formattedData);
+        if (count !== null) setTotalItems(count);
+      }
 
     } catch (error) {
       console.error('Error fetching agenda:', error);
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
-  };
+  }, [session, page, filterStatus]);
+
+  useEffect(() => {
+    fetchAgenda();
+  }, [fetchAgenda]);
+
 
   const toggleStatus = async (item: AgendaItem) => {
     const newStatus = !item.completed;

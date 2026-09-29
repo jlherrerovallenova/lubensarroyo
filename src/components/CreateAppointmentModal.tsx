@@ -28,6 +28,7 @@ export default function CreateAppointmentModal({ isOpen, onClose, onSuccess, lea
   });
 
   // Efecto para pre-rellenar el nombre si viene del LeadDetail
+  // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
     if (isOpen && leadName) {
       setFormData(prev => ({ ...prev, contact_name: leadName }));

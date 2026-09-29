@@ -59,11 +59,14 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
     setErrorMsg(null);
     try {
       const chunkSize = 50;
+      const chunks: (typeof ALTAVIK_VIVIENDAS_70)[] = [];
       for (let i = 0; i < ALTAVIK_VIVIENDAS_70.length; i += chunkSize) {
-        const chunk = ALTAVIK_VIVIENDAS_70.slice(i, i + chunkSize);
+        chunks.push(ALTAVIK_VIVIENDAS_70.slice(i, i + chunkSize));
+      }
+      await Promise.all(chunks.map(async (chunk) => {
         const { error } = await (supabase as any).from('inventory').insert(chunk);
         if (error) throw error;
-      }
+      }));
       setStep(3);
       setTimeout(() => {
         resetState();

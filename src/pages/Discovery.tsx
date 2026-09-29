@@ -83,8 +83,59 @@ export default function Discovery() {
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+  // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
-    fetchDiscoveryData();
+    let isMounted = true;
+    const run = async () => {
+      setLoading(true);
+      try {
+        const { data: emails, error: emailError } = await (supabase as any)
+          .from('incoming_emails')
+          .select('*')
+          .not('tags', 'cs', '{"Descartado"}')
+          .contains('tags', ['Escaneable IA'])
+          .order('date_received', { ascending: false });
+
+        if (emailError) throw emailError;
+
+        const { data: leads, error: leadError } = await (supabase as any)
+          .from('leads')
+          .select('email');
+
+        if (leadError) throw leadError;
+
+        const existingEmails = new Set((leads as any[]).map((l: any) => l.email?.toLowerCase()).filter(Boolean));
+
+        const filtered = ((emails as any[]) || []).filter((e: any) => {
+          const isExisting = existingEmails.has(e.sender_email?.toLowerCase());
+          const isImported = e.is_processed || isExisting;
+          return viewMode === 'pending' ? !isImported : isImported;
+        }).map((e: any) => ({
+            emailId: e.id,
+            senderName: e.sender_name,
+            senderEmail: e.sender_email,
+            subject: e.subject,
+            date: e.date_received,
+            body: e.body,
+            tags: e.tags
+          }));
+
+        if (isMounted) {
+          setDiscoveredLeads(filtered);
+        }
+      } catch (err: any) {
+        console.error("Error en Discovery:", err);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+          setSelectedIds([]);
+        }
+      }
+    };
+    run();
+    return () => {
+      isMounted = false;
+    };
   }, [viewMode]);
 
   const handleProcessLead = async (lead: DiscoveredLead) => {

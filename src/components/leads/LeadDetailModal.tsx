@@ -1,5 +1,5 @@
 // src/components/leads/LeadDetailModal.tsx
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { X, Mail, Phone, Save, Trash2, Loader as Loader2, Send, Clock, Compass, MessageCircle, Calendar as CalendarIcon, CircleCheck as CheckCircle2, Circle, Plus, Pencil, RotateCcw, ShoppingCart, Smartphone, ChevronDown, ChevronUp, Globe, Users, FileText, Share, Bell, MessageSquareQuote, Heart, Circle as HelpCircle, Circle as XCircle, StickyNote, Check, Hop as Home, Zap, User, MapPin, Star, Search, FileSpreadsheet } from 'lucide-react';
 import FeedbackEmailModal from './FeedbackEmailModal';
 import { supabase } from '../../lib/supabase';
@@ -59,7 +59,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
   const [activeTab, setActiveTab] = useState<'ficha' | 'venta' | 'historial' | 'notas' | 'encuesta'>('ficha');
   const { data: rawDocs = [] } = useDocuments();
   const availableDocs = rawDocs.filter(d => d.url).map(d => ({ name: d.name, url: d.url!, category: d.category }));
-  const [sentHistory, setSentHistory] = useState<any[]>([]);
+  const sentHistoryRef = useRef<any[]>([]);
   const [waData, setWaData] = useState<any | null>(null);
   const [resendDraft, setResendDraft] = useState<{ subject?: string; message?: string; docs?: string[] } | null>(null);
 
@@ -94,7 +94,8 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
     comentario: ''
   });
   // Edición inline del comentario de una tarea existente
-  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const editingCommentIdRef = useRef<number | null>(null);
+  const setEditingCommentId = (id: number | null) => { editingCommentIdRef.current = id; };
   const [commentDraft, setCommentDraft] = useState('');
 
   const [showDocsHistory, setShowDocsHistory] = useState(false);
@@ -128,11 +129,17 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
     }
   };
 
+  const isMountedRef = useRef(true);
+
+  // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
+    isMountedRef.current = true;
     fetchHistory();
     fetchTasks();
     fetchWaData();
-  // react-doctor-disable-next-line exhaustive-deps
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [lead.id]);
 
   useEffect(() => {
@@ -197,7 +204,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
 
   async function fetchHistory() {
     const { data } = await (supabase as any).from('sent_documents').select('*').eq('lead_id', lead.id).order('sent_at', { ascending: false });
-    if (data) setSentHistory(data);
+    if (data) sentHistoryRef.current = data;
   }
 
   async function fetchWaData() {
@@ -210,7 +217,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
       .limit(10);
     if (!data) return;
     const waEntry = data.find((r: any) => r.metadata?.source === 'whatsapp_webhook');
-    if (waEntry) setWaData({ ...waEntry.metadata?.extracted, created_at: waEntry.created_at, raw: waEntry.metadata?.raw_message });
+    if (waEntry && isMountedRef.current) setWaData({ ...waEntry.metadata?.extracted, created_at: waEntry.created_at, raw: waEntry.metadata?.raw_message });
   }
 
   // Cargar tareas de la tabla agenda filtrando por ID del cliente
@@ -221,7 +228,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
       .eq('lead_id', lead.id)
       .order('due_date', { ascending: true });
 
-    if (data) {
+    if (data && isMountedRef.current) {
       const formatted = (data as any[]).map(item => ({
         ...item,
         email_tracking: Array.isArray(item.email_tracking) ? item.email_tracking[0] : item.email_tracking
@@ -549,45 +556,6 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
   const mailtoUrl = formData.email ? `mailto:${formData.email}?subject=Información%20Finca%20Lubens%20Arroyo` : '#';
 
   const statusCfg = STATUS_CONFIG[formData.status || 'new'] || STATUS_CONFIG['new'];
-
-  const [expandedDocs, setExpandedDocs] = useState<Record<string, boolean>>({});
-
-  const toggleDocs = (id: string) => {
-    setExpandedDocs(prev => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const groupedHistory = useMemo(() => {
-    const combined = [...tasks, ...sentHistory].sort((a, b) => 
-      new Date(b.sent_at || b.due_date).getTime() - new Date(a.sent_at || a.due_date).getTime()
-    );
-
-    const result: any[] = [];
-    let currentGroup: any = null;
-
-    combined.forEach((item) => {
-      const isDoc = !!item.method;
-      if (!isDoc) {
-        result.push(item);
-        currentGroup = null;
-        return;
-      }
-
-      const time = new Date(item.sent_at).getTime();
-      const groupTime = currentGroup ? new Date(currentGroup.sent_at).getTime() : 0;
-
-      // Group if same method and within 30 seconds
-      if (currentGroup && currentGroup.method === item.method && Math.abs(time - groupTime) < 30000) {
-        const names = item.doc_name?.includes('||') ? item.doc_name.split('||') : [item.doc_name];
-        currentGroup.allDocs = [...currentGroup.allDocs, ...names];
-      } else {
-        const names = item.doc_name?.includes('||') ? item.doc_name.split('||') : [item.doc_name];
-        currentGroup = { ...item, allDocs: names };
-        result.push(currentGroup);
-      }
-    });
-
-    return result;
-  }, [tasks, sentHistory]);
 
   return (
     <>

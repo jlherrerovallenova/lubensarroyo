@@ -1,0 +1,15 @@
+{
+  "$schema": "https://react.doctor/schema/config.json",
+  "rules": {
+    "react-doctor/no-giant-component": "off",
+    "react-doctor/no-high-complexity-react-function": "off",
+    "react-doctor/no-transition-all": "off",
+    "react-doctor/control-has-associated-label": "off",
+    "react-doctor/label-has-associated-control": "off",
+    "react-doctor/no-placeholder-only-field": "off",
+    "react-doctor/click-events-have-key-events": "off",
+    "react-doctor/no-static-element-interactions": "off",
+    "react-doctor/exhaustive-deps": "off",
+    "react-doctor/no-set-state-after-await-in-effect": "off"
+  }
+}

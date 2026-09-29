@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Mail, MailOpen, Star, Trash, Wand2, Search, Filter, MoreVertical, Reply, CheckCircle2, AlertCircle, Loader2, Send } from 'lucide-react';
 import { extractLeadDataFromEmail, type GeminiExtractedLead } from '../services/geminiService';
 import { useCreateLead } from '../hooks/useLeads';
@@ -18,6 +18,7 @@ export default function Inbox() {
   const [replyText, setReplyText] = useState('');
   const [existingLeadEmails, setExistingLeadEmails] = useState<Set<string>>(new Set());
   const [isSendingReply, setIsSendingReply] = useState(false);
+  const isSendingReplyRef = useRef(false);
   
   const filteredEmails = emails.filter(m => {
     const matchesFilter = filterType === 'leads' ? m.tags.includes('Escaneable IA') : true;
@@ -144,8 +145,9 @@ export default function Inbox() {
   };
 
   const handleSendReply = async () => {
-    if (!selectedMail || !replyText.trim() || isSendingReply) return;
+    if (!selectedMail || !replyText.trim() || isSendingReply || isSendingReplyRef.current) return;
 
+    isSendingReplyRef.current = true;
     setIsSendingReply(true);
     try {
       const { error } = await supabase.functions.invoke('send-email', {
@@ -185,6 +187,7 @@ export default function Inbox() {
         type: 'error'
       });
     } finally {
+      isSendingReplyRef.current = false;
       setIsSendingReply(false);
     }
   };

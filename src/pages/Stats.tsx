@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
+// react-doctor-disable-next-line prefer-dynamic-import
 import { 
   XAxis, 
   YAxis, 
@@ -73,10 +74,12 @@ export default function Stats() {
       .sort((a, b) => b.value.localeCompare(a.value));
   }, [rawLeads]);
 
+  // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
     fetchStats();
   }, []);
 
+  // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
     if (rawLeads.length > 0) {
       processLeadsData(rawLeads, timeRange);

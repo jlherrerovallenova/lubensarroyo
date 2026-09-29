@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Users, Upload, Download, Trash2, Loader as Loader2, Search } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useDialog } from '../../context/DialogContext';
@@ -16,6 +16,7 @@ export function ClientsTab() {
   const [leads, setLeads] = useState<any[]>([]);
   const [leadToDelete, setLeadToDelete] = useState<string>('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const isDeletingRef = useRef(false);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -36,10 +37,11 @@ export function ClientsTab() {
   };
 
   const handleDeleteLead = async () => {
-    if (!leadToDelete || isDeleting) return;
+    if (!leadToDelete || isDeleting || isDeletingRef.current) return;
 
     const lead = leads.find(l => l.id === leadToDelete);
     
+    isDeletingRef.current = true;
     setIsDeleting(true);
     try {
       const confirmed = await showConfirm({
@@ -66,6 +68,7 @@ export function ClientsTab() {
       console.error('Error al intentar borrar lead:', error);
       await showAlert({ title: 'Error', message: 'Hubo un error al intentar borrar el cliente.' });
     } finally {
+      isDeletingRef.current = false;
       setIsDeleting(false);
     }
   };

@@ -79,10 +79,15 @@ export const AppNotification: React.FC<AppNotificationProps> = ({
   onClose,
   duration = 5000,
 }) => {
+  const onCloseRef = React.useRef(onClose);
   React.useEffect(() => {
-    const timer = setTimeout(() => onClose(), duration);
+    onCloseRef.current = onClose;
+  });
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => onCloseRef.current(), duration);
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [duration]);
 
   const themes = {
     success: { icon: <CheckCircle2 strokeWidth={2.5} size={20} />, style: 'bg-altavik-600 text-white' },
