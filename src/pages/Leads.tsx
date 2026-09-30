@@ -40,11 +40,14 @@ import { AppNotification } from '../components/AppNotification';
 import { LeadListItem } from '../components/leads/LeadListItem';
 import { STATUS_LABELS, STATUS_CONFIG } from '../components/leads/LeadStatus';
 
+import { usePromotion } from '../context/PromotionContext';
+
 type Lead = Database['public']['Tables']['leads']['Row'];
 const ITEMS_PER_PAGE = 10;
 
 export default function Leads() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { activePromotion, activePromotionId } = usePromotion();
   const { data: rawDocs = [] } = useDocuments();
   const availableDocs = rawDocs
     .filter(doc => doc.url)
@@ -53,6 +56,7 @@ export default function Leads() {
   const [searchTerm, setSearchTerm] = useState(() => searchParams.get('search') || '');
   const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get('status') || '');
   const [sourceFilter, setSourceFilter] = useState<string>(() => searchParams.get('source') || '');
+  const [promocionFilter, setPromocionFilter] = useState<string>(() => searchParams.get('promo') || activePromotionId);
   const [page, setPage] = useState(1);
   const [sortField, setSortField] = useState<'name' | 'created_at' | 'client_quality_rating'>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -72,12 +76,20 @@ export default function Leads() {
     type: 'success' | 'error' | 'info';
   }>({ show: false, title: '', message: '', type: 'success' });
 
+  // Sincronizar filtro cuando cambia la promoción activa en la cabecera si no viene fijado en URL
+  useEffect(() => {
+    if (!searchParams.get('promo')) {
+      setPromocionFilter(activePromotionId);
+    }
+  }, [activePromotionId, searchParams]);
+
   const { data, isLoading: loading, refetch } = useLeads({
     page,
     pageSize: ITEMS_PER_PAGE,
     searchTerm,
     statusFilter,
     sourceFilter,
+    promocionFilter,
     sortField,
     sortDirection
   });
@@ -89,6 +101,9 @@ export default function Leads() {
     setSearchTerm(searchParams.get('search') || '');
     setStatusFilter(searchParams.get('status') || '');
     setSourceFilter(searchParams.get('source') || '');
+    if (searchParams.get('promo')) {
+      setPromocionFilter(searchParams.get('promo')!);
+    }
   }, [searchParams]);
 
   const handleSort = (field: 'name' | 'created_at' | 'client_quality_rating') => {
@@ -132,11 +147,12 @@ export default function Leads() {
     setSearchTerm('');
     setStatusFilter('');
     setSourceFilter('');
+    setPromocionFilter(activePromotionId);
     setPage(1);
     setSearchParams({}, { replace: true });
   };
 
-  const hasActiveFilters = searchTerm !== '' || statusFilter !== '' || sourceFilter !== '';
+  const hasActiveFilters = searchTerm !== '' || statusFilter !== '' || sourceFilter !== '' || promocionFilter !== activePromotionId;
   const totalPages = Math.ceil(totalLeads / ITEMS_PER_PAGE);
 
   return (
@@ -175,9 +191,23 @@ export default function Leads() {
             />
           </div>
 
-          <div className="flex w-full lg:w-auto gap-3">
+          <div className="flex flex-wrap w-full lg:w-auto gap-3">
             <CustomSelect
               className="flex-1 lg:w-48"
+              value={promocionFilter}
+              // react-doctor-disable-next-line no-impure-state-updater
+              onChange={(val) => { setPromocionFilter(val); setPage(1); updateURLParams('promo', val); }}
+              placeholder="Promoción"
+              options={[
+                { id: activePromotionId, label: `Interés: ${activePromotion.name}` },
+                { id: activePromotionId === 'arroyo' ? 'farnesio' : 'arroyo', label: `Interés: ${activePromotionId === 'arroyo' ? 'Lubens Farnesio' : 'Lubens Arroyo'}` },
+                { id: 'ambas', label: 'Interés: Ambas' },
+                { id: 'all', label: 'Todos los Clientes' }
+              ]}
+            />
+
+            <CustomSelect
+              className="flex-1 lg:w-44"
               value={statusFilter}
               // react-doctor-disable-next-line no-impure-state-updater
               onChange={(val) => { setStatusFilter(val); setPage(1); updateURLParams('status', val); }}
@@ -189,7 +219,7 @@ export default function Leads() {
             />
 
             <CustomSelect
-              className="flex-1 lg:w-48"
+              className="flex-1 lg:w-44"
               value={sourceFilter}
               // react-doctor-disable-next-line no-impure-state-updater
               onChange={(val) => { setSourceFilter(val); setPage(1); updateURLParams('source', val); }}
@@ -208,7 +238,7 @@ export default function Leads() {
             />
 
             {hasActiveFilters && (
-              <Button type="button" variant="danger" size="sm" onClick={clearFilters} className="shrink-0 aspect-square p-0 w-11 h-11">
+              <Button type="button" variant="danger" size="sm" onClick={clearFilters} className="shrink-0 aspect-square p-0 w-11 h-11" title="Limpiar filtros">
                 <FilterX strokeWidth={3} size={20} />
               </Button>
             )}
@@ -280,7 +310,12 @@ export default function Leads() {
         )}
       </Card>
 
-      <CreateLeadModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} onSuccess={() => { refetch(); showMsg('success', '¡Completado!', 'Cliente creado.'); }} />
+      <CreateLeadModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+        defaultPromotionId={activePromotionId}
+        onSuccess={() => { refetch(); showMsg('success', '¡Completado!', 'Cliente creado.'); }} 
+      />
       {selectedLead && <LeadDetailModal lead={selectedLead} onClose={() => setSelectedLead(null)} onUpdate={(del) => { refetch(); showMsg(del ? 'success' : 'info', del ? 'Borrado' : 'Actualizado', del ? 'Cliente borrado.' : 'Cambios guardados.'); }} />}
       {emailLead && <EmailComposerModal isOpen={!!emailLead} onClose={() => { setEmailLead(null); setInitialTemplate(undefined); }} leadId={emailLead.id} leadName={emailLead.name!} leadEmail={emailLead.email} leadPhone={emailLead.phone} availableDocs={availableDocs} onSentSuccess={() => showMsg('success', 'Mensaje enviado', 'Registrado.')} initialMethod={initialMethod} initialTemplate={initialTemplate} />}
       {notification.show && <AppNotification title={notification.title} message={notification.message} type={notification.type} onClose={() => setNotification({ ...notification, show: false })} />}

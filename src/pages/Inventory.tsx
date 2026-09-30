@@ -34,6 +34,7 @@ import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { useSettings } from '../hooks/useSettings';
+import { usePromotion } from '../context/PromotionContext';
 
 interface Property {
   id: string;
@@ -54,6 +55,7 @@ interface Property {
   estado_vivienda?: string;
   ficha_url?: string;
   created_at: string;
+  promocion?: string;
 }
 
 const currencyFormatter = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' });
@@ -61,6 +63,7 @@ const currencyFormatterCompact = new Intl.NumberFormat('es-ES', { style: 'curren
 
 export default function Inventory() {
   const { data: settings } = useSettings();
+  const { activePromotion, activePromotionId } = usePromotion();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -98,31 +101,44 @@ export default function Inventory() {
 
   useEffect(() => {
     fetchProperties();
-  }, []);
+  }, [activePromotionId]);
 
-
+  const sortItems = (items: Property[]) => {
+    return items.sort((a, b) => {
+      const valA = a.n_orden || '';
+      const valB = b.n_orden || '';
+      const numA = parseInt(valA) || 0;
+      const numB = parseInt(valB) || 0;
+      if (numA !== numB) return numA - numB;
+      return valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
+    });
+  };
 
   const fetchProperties = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('inventory')
-        .select('*');
+      let query = supabase.from('inventory').select('*');
 
-      if (error) throw error;
+      if (activePromotionId === 'arroyo') {
+        query = query.or('promocion.eq.arroyo,promocion.is.null');
+      } else {
+        query = query.eq('promocion', activePromotionId);
+      }
 
-      // Ordenar numéricamente por n_orden (1, 2, 3... en lugar de 1, 10, 11...)
-      const sortedData = ((data as Property[]) || []).sort((a, b) => {
-        const valA = a.n_orden || '';
-        const valB = b.n_orden || '';
-        const numA = parseInt(valA) || 0;
-        const numB = parseInt(valB) || 0;
-        if (numA !== numB) return numA - numB;
-        // Si los números son iguales (o ambos 0), comparamos como string por si acaso (natural sort)
-        return valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
-      });
+      const { data, error } = await query;
 
-      setProperties(sortedData);
+      if (error) {
+        // Fallback por si la columna promocion aún no está en Supabase
+        if (error.message?.includes('promocion') || (error as any).code === '42703') {
+          const fallback = await supabase.from('inventory').select('*');
+          if (fallback.error) throw fallback.error;
+          setProperties(sortItems((fallback.data as Property[]) || []));
+          return;
+        }
+        throw error;
+      }
+
+      setProperties(sortItems((data as Property[]) || []));
     } catch (error) {
       console.error('Error fetching inventory:', error);
     } finally {
@@ -245,7 +261,7 @@ export default function Inventory() {
         });
       };
 
-      const logoInfo = await getBase64Image('/logo-lubens-arroyo.png');
+      const logoInfo = await getBase64Image(activePromotion.logo);
       
       // Función para añadir cabecera premium
       const addHeader = () => {
@@ -271,14 +287,14 @@ export default function Inventory() {
         } else {
           doc.setTextColor(15, 23, 42);
           doc.setFontSize(10);
-          doc.text('LUBENS ARROYO', 14, 12);
+          doc.text(activePromotion.name.toUpperCase(), 14, 12);
         }
 
         // Título y Subtítulo
         doc.setTextColor(15, 23, 42);
         doc.setFontSize(22);
         doc.setFont('helvetica', 'bold');
-        doc.text('CATÁLOGO DE VIVIENDAS', 14, 30);
+        doc.text(`CATÁLOGO DE VIVIENDAS - ${activePromotion.name.toUpperCase()}`, 14, 30);
         
         doc.setFontSize(10);
         doc.setFont('helvetica', 'normal');
@@ -821,6 +837,7 @@ export default function Inventory() {
             setNotification({ show: true, type: 'success', title: 'Completado', message: 'Vivienda guardada con éxito.' });
           }}
           initialData={editingProperty}
+          promotionId={activePromotionId}
         />
       )}
 
@@ -828,6 +845,7 @@ export default function Inventory() {
         <ImportInventoryModal
           isOpen={isImportModalOpen}
           onClose={() => setIsImportModalOpen(false)}
+          promotionId={activePromotionId}
           onSuccess={() => {
             fetchProperties();
             setNotification({ show: true, type: 'success', title: 'Importación Finalizada', message: 'El catálogo se ha actualizado correctamente.' });

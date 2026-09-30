@@ -16,12 +16,13 @@ interface FetchLeadsParams {
   searchTerm?: string;
   statusFilter?: string;
   sourceFilter?: string;
+  promocionFilter?: string;
   sortField?: string;
   sortDirection?: 'asc' | 'desc';
 }
 
 export function useLeads(params: FetchLeadsParams) {
-  const { page, pageSize, searchTerm, statusFilter, sourceFilter, sortField = 'created_at', sortDirection = 'desc' } = params;
+  const { page, pageSize, searchTerm, statusFilter, sourceFilter, promocionFilter, sortField = 'created_at', sortDirection = 'desc' } = params;
   
   // Sincronización en tiempo real
   useRealtimeSync('leads', LEADS_QUERY_KEY);
@@ -52,9 +53,40 @@ export function useLeads(params: FetchLeadsParams) {
         query = query.ilike('source', `%${sourceFilter}%`);
       }
 
+      // Apply promotion filter
+      if (promocionFilter && promocionFilter !== 'all') {
+        if (promocionFilter === 'arroyo') {
+          query = query.or('promocion_interes.eq.arroyo,promocion_interes.eq.ambas,promocion_interes.is.null');
+        } else if (promocionFilter === 'farnesio') {
+          query = query.or('promocion_interes.eq.farnesio,promocion_interes.eq.ambas');
+        } else {
+          query = query.eq('promocion_interes', promocionFilter);
+        }
+      }
+
       const { data, error, count } = await query.range(from, to);
 
-      if (error) throw error;
+      if (error) {
+        // Fallback si la columna promocion_interes aún no ha sido creada en Supabase
+        if (error.message?.includes('promocion_interes') || error.code === '42703') {
+          let fallbackQuery = supabase
+            .from('leads')
+            .select('*', { count: 'exact' })
+            .order(sortField as keyof Lead, { ascending: sortDirection === 'asc' });
+          if (searchTerm) {
+            fallbackQuery = fallbackQuery.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`);
+          }
+          if (statusFilter) fallbackQuery = fallbackQuery.eq('status', statusFilter);
+          if (sourceFilter) fallbackQuery = fallbackQuery.ilike('source', `%${sourceFilter}%`);
+          const fbResult = await fallbackQuery.range(from, to);
+          if (fbResult.error) throw fbResult.error;
+          return {
+            leads: (fbResult.data || []) as Lead[],
+            totalCount: fbResult.count || 0
+          };
+        }
+        throw error;
+      }
 
       return {
         leads: (data || []) as Lead[],

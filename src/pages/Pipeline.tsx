@@ -16,6 +16,7 @@ import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
 import type { Database } from '../types/supabase';
 import LeadDetailModal from '../components/leads/LeadDetailModal';
+import { usePromotion } from '../context/PromotionContext';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 
@@ -29,6 +30,8 @@ const COLUMNS = [
 
 export default function Pipeline() {
   const navigate = useNavigate();
+  const { activePromotion, activePromotionId } = usePromotion();
+  const [promoFilter, setPromoFilter] = useState<'current' | 'all'>('current');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const draggedLeadIdRef = useRef<string | null>(null);
 
@@ -37,6 +40,7 @@ export default function Pipeline() {
     page: 1,
     pageSize: 1000, // En el pipeline queremos ver todos los activos a la vez
     statusFilter: undefined, // No filtramos por status aquí porque los separamos por columnas
+    promocionFilter: promoFilter === 'current' ? activePromotionId : 'all',
     sortField: 'created_at',
     sortDirection: 'desc'
   });
@@ -127,8 +131,34 @@ export default function Pipeline() {
             <span className="tabular-nums font-bold text-altavik-600 bg-altavik-50 px-2 py-0.5 rounded-lg border border-altavik-100">
               {leads.length}
             </span> 
-            clientes activos (arrastra las tarjetas para avanzar)
+            clientes activos {promoFilter === 'current' ? `(${activePromotion.name})` : '(Todas las promociones)'}
           </p>
+        }
+        actions={
+          <div className="flex items-center gap-1 bg-white/80 border border-slate-200 p-1 rounded-xl shadow-xs">
+            <button
+              type="button"
+              onClick={() => setPromoFilter('current')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                promoFilter === 'current'
+                  ? 'bg-altavik-600 text-white shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              {activePromotion.name}
+            </button>
+            <button
+              type="button"
+              onClick={() => setPromoFilter('all')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                promoFilter === 'all'
+                  ? 'bg-altavik-600 text-white shadow-xs'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              Todas
+            </button>
+          </div>
         }
       />
 
@@ -173,10 +203,27 @@ export default function Pipeline() {
                       onDoubleClick={() => navigate(`/leads?search=${encodeURIComponent(lead.name)}`)}
                       className="bg-white p-2 rounded-lg shadow-sm border border-slate-100 cursor-grab active:cursor-grabbing hover:shadow-md hover:border-altavik-400 transition-all group relative overflow-hidden"
                     >
-                      {/* Name */}
-                      <h4 className="font-bold text-slate-900 text-[10px] sm:text-[11px] leading-tight break-words group-hover:text-altavik-700 transition-colors mb-2">
-                        {lead.name}
-                      </h4>
+                      {/* Name & Promotion Badge */}
+                      <div className="flex items-start justify-between gap-1 mb-2">
+                        <h4 className="font-bold text-slate-900 text-[10px] sm:text-[11px] leading-tight break-words group-hover:text-altavik-700 transition-colors">
+                          {lead.name}
+                        </h4>
+                        {lead.promocion_interes === 'farnesio' && (
+                          <span className="shrink-0 text-[7px] font-black uppercase px-1 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            F
+                          </span>
+                        )}
+                        {lead.promocion_interes === 'arroyo' && (
+                          <span className="shrink-0 text-[7px] font-black uppercase px-1 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                            A
+                          </span>
+                        )}
+                        {lead.promocion_interes === 'ambas' && (
+                          <span className="shrink-0 text-[7px] font-black uppercase px-1 py-0.2 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                            A+F
+                          </span>
+                        )}
+                      </div>
 
                       {/* Footer: Ultra compact */}
                       <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-slate-50">

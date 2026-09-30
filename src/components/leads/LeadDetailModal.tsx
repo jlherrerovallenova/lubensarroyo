@@ -106,6 +106,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
     phone: lead.phone || '',
     status: lead.status || 'new',
     source: lead.source || 'Web',
+    promocion_interes: lead.promocion_interes || 'arroyo',
     notes: lead.notes || '',
     is_subscribed: lead.is_subscribed ?? true,
     created_at_date: lead.created_at ? new Date(lead.created_at).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),

@@ -35,9 +35,10 @@ interface Props {
   onClose: () => void;
   onSuccess?: () => void;
   initialData?: any;
+  promotionId?: string;
 }
 
-export default function CreatePropertyModal({ isOpen, onClose, onSuccess, initialData }: Props) {
+export default function CreatePropertyModal({ isOpen, onClose, onSuccess, initialData, promotionId = 'arroyo' }: Props) {
   const [loading, setLoading] = useState(false);
   const { showAlert } = useDialog();
   const [formData, setFormData, clearFormData] = useAutosave<PropertyFormData>(`draft-property-${initialData?.id || 'new'}`, {
@@ -87,10 +88,16 @@ export default function CreatePropertyModal({ isOpen, onClose, onSuccess, initia
         estado_vivienda: formData.estado_vivienda
       };
 
+      const targetPromotion = initialData?.promocion || promotionId || 'arroyo';
+
       let query = supabase
         .from('inventory')
         .select('id')
         .eq('n_orden', propertyData.n_orden);
+
+      if (targetPromotion) {
+        query = query.eq('promocion', targetPromotion);
+      }
 
       if (initialData?.id) {
         query = query.neq('id', initialData.id);
@@ -98,12 +105,10 @@ export default function CreatePropertyModal({ isOpen, onClose, onSuccess, initia
 
       const { data: existing, error: checkError } = await query;
 
-      if (checkError) throw checkError;
-
-      if (existing && existing.length > 0) {
+      if (!checkError && existing && existing.length > 0) {
         await showAlert({ 
           title: 'Vivienda Duplicada', 
-          message: `Ya existe una vivienda con el nº de orden ${propertyData.n_orden}.` 
+          message: `Ya existe una vivienda con el nº de orden ${propertyData.n_orden} en esta promoción.` 
         });
         setLoading(false);
         return;
@@ -118,8 +123,15 @@ export default function CreatePropertyModal({ isOpen, onClose, onSuccess, initia
       } else {
         const { error } = await (supabase as any)
           .from('inventory')
-          .insert([propertyData]);
-        if (error) throw error;
+          .insert([{ ...propertyData, promocion: targetPromotion }]);
+        if (error) {
+          if (error.message?.includes('promocion')) {
+            const fallback = await (supabase as any).from('inventory').insert([propertyData]);
+            if (fallback.error) throw fallback.error;
+          } else {
+            throw error;
+          }
+        }
       }
 
       onSuccess?.();

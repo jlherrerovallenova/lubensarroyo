@@ -27,7 +27,8 @@ import {
   Sparkles,
   Command,
   BadgeDollarSign,
-  MessageSquareQuote
+  MessageSquareQuote,
+  ChevronDown
 } from 'lucide-react';
 import CommandPalette from '../components/ui/CommandPalette';
 import { useAgendaAlerts } from '../hooks/useAgendaAlerts';
@@ -38,6 +39,7 @@ import { MessageSquare } from 'lucide-react';
 import { DailyTasksModal } from '../components/DailyTasksModal';
 import { useAutoLeadImporter } from '../hooks/useAutoLeadImporter';
 import { useEmailTrackingNotifications } from '../hooks/useEmailTrackingNotifications';
+import { usePromotion } from '../context/PromotionContext';
 
 
 
@@ -46,6 +48,7 @@ export default function MainLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { activePromotion, activePromotionId, openSelectorModal } = usePromotion();
 
   // Estados para el buscador y notificaciones
   const [searchTerm, setSearchTerm] = useState('');
@@ -277,14 +280,25 @@ export default function MainLayout() {
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
 
-        <div className="h-16 flex items-center justify-between px-6 bg-slate-950 border-b border-slate-800">
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-altavik-500 rounded flex items-center justify-center text-white font-bold mr-3 shadow-lg shadow-altavik-900/20">
-              L
+        <div className="h-16 flex items-center justify-between px-4 bg-slate-950 border-b border-slate-800">
+          <button
+            type="button"
+            onClick={openSelectorModal}
+            className="flex items-center gap-2.5 text-left group hover:opacity-90 transition-opacity flex-1 min-w-0"
+            title="Cambiar promoción"
+          >
+            <div className={`w-8 h-8 ${activePromotion.badgeColor} rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-md shrink-0`}>
+              {activePromotionId === 'arroyo' ? 'A' : 'F'}
             </div>
-            <span className="text-white font-display font-bold text-lg tracking-tight">Lubens Arroyo</span>
-          </div>
-          <button type="button" onClick={closeSidebar} className="lg:hidden text-slate-400 hover:text-white">
+            <div className="flex flex-col min-w-0">
+              <span className="text-white font-display font-bold text-sm tracking-tight truncate flex items-center gap-1">
+                {activePromotion.name}
+                <ChevronDown size={13} className="text-slate-400 group-hover:text-white transition-colors" />
+              </span>
+              <span className="text-[10px] text-slate-400 font-medium">LUBENS PROYECTO</span>
+            </div>
+          </button>
+          <button type="button" onClick={closeSidebar} className="lg:hidden text-slate-400 hover:text-white ml-2">
             <X size={20} />
           </button>
         </div>
@@ -340,13 +354,29 @@ export default function MainLayout() {
             </button>
           </div>
 
-          {/* CENTRO: Logo */}
+          {/* CENTRO: Logo y Selector de Promoción */}
           <div className="flex justify-center w-1/3">
-            <img
-              src="/logo-lubens-arroyo.png"
-              alt="Lubens Arroyo"
-              className="h-11 w-auto object-contain"
-            />
+            <button
+              type="button"
+              onClick={openSelectorModal}
+              className="group flex items-center gap-3 px-3 py-1.5 rounded-2xl bg-white/80 hover:bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all duration-200"
+              title="Haz clic para cambiar de promoción"
+            >
+              <img
+                src={activePromotion.logo}
+                alt={activePromotion.name}
+                className="h-8 max-w-[130px] w-auto object-contain rounded"
+              />
+              <div className="hidden sm:flex flex-col text-left border-l border-slate-200 pl-2.5">
+                <span className="text-xs font-black text-slate-900 leading-tight flex items-center gap-1">
+                  {activePromotion.name}
+                  <ChevronDown size={13} className="text-slate-400 group-hover:text-slate-900 transition-colors" />
+                </span>
+                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                  Cambiar
+                </span>
+              </div>
+            </button>
           </div>
 
           {/* DERECHA: Buscador y campana */}

@@ -3,6 +3,7 @@ import { Save, Loader as Loader2, Building, DollarSign, Percent, BadgeCheck } fr
 import { supabase } from '../../lib/supabase';
 import { useDialog } from '../../context/DialogContext';
 import { useQueryClient } from '@tanstack/react-query';
+import { usePromotion } from '../../context/PromotionContext';
 
 const promoCurrencyFormatter = new Intl.NumberFormat('de-DE', {
   style: 'currency',
@@ -19,6 +20,7 @@ const safeNumber = (val: string, fallback = 0) => {
 export function PromotionTab() {
   const { showAlert } = useDialog();
   const queryClient = useQueryClient();
+  const { activePromotion, activePromotionId, openSelectorModal } = usePromotion();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -51,7 +53,7 @@ export function PromotionTab() {
 
   useEffect(() => {
     fetchPromotionSettings();
-  }, []);
+  }, [activePromotionId]);
 
   const fetchPromotionSettings = async () => {
     setLoading(true);
@@ -107,10 +109,20 @@ export function PromotionTab() {
         });
       }
 
-      // Fetch stats from inventory
-      const { data: propertiesData } = await supabase
+      // Fetch stats from inventory for active promotion
+      let propertiesQuery = supabase
         .from('inventory')
         .select('precio, estado_vivienda');
+
+      if (activePromotionId) {
+        propertiesQuery = propertiesQuery.eq('promocion', activePromotionId);
+      }
+
+      let { data: propertiesData, error: propErr } = await propertiesQuery;
+      if (propErr && propErr.message && propErr.message.includes('promocion')) {
+        const fallback = await supabase.from('inventory').select('precio, estado_vivienda');
+        propertiesData = fallback.data;
+      }
 
       if (propertiesData) {
         const soldReserved = propertiesData.filter((p: any) => p.estado_vivienda === 'RESERVADO' || p.estado_vivienda === 'VENDIDO');
@@ -214,13 +226,28 @@ export function PromotionTab() {
 
   return (
     <div className="p-8 space-y-8 animate-in fade-in duration-300">
-      <div className="border-b pb-4 flex justify-between items-center">
+      <div className="border-b pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
             <Building className="text-altavik-600" size={24} />
             Datos de la Promoción Inmobiliaria
           </h2>
           <p className="text-sm text-slate-500 mt-1">Configura la información básica, condiciones de pago, comisiones e hitos de facturación.</p>
+        </div>
+
+        <div className="flex items-center gap-3 bg-altavik-50/70 border border-altavik-200/80 px-3.5 py-2 rounded-xl">
+          <img src={activePromotion.logo} alt={activePromotion.name} className="h-6 w-auto object-contain max-w-[120px]" />
+          <div>
+            <span className="text-[10px] text-altavik-600 font-bold uppercase tracking-wider block">Promoción Activa</span>
+            <span className="text-xs font-bold text-slate-800">{activePromotion.name}</span>
+          </div>
+          <button
+            type="button"
+            onClick={openSelectorModal}
+            className="ml-2 text-xs bg-white text-altavik-700 hover:bg-altavik-100 border border-altavik-300 font-medium px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+          >
+            Cambiar
+          </button>
         </div>
       </div>
 

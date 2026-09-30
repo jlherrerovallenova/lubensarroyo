@@ -39,6 +39,7 @@ if (typeof window !== 'undefined') {
 }
 
 import { ClientAuthProvider } from './context/ClientAuthContext'
+import { PromotionProvider } from './context/PromotionContext'
 
 createRoot(document.getElementById('root')!).render(
   <PersistQueryClientProvider client={queryClient} persistOptions={{ persister: asyncStoragePersister }}>
@@ -46,7 +47,9 @@ createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <ClientAuthProvider>
           <DialogProvider>
-            <App />
+            <PromotionProvider>
+              <App />
+            </PromotionProvider>
           </DialogProvider>
         </ClientAuthProvider>
       </AuthProvider>

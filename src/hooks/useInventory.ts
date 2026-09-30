@@ -6,31 +6,50 @@ import type { Database } from '../types/supabase';
 type PropertyInfo = Database['public']['Tables']['inventory']['Row'];
 
 /**
- * Hook para obtener el listado del Inventario 
+ * Hook para obtener el listado del Inventario filtrado opcionalmente por promoción
  */
-export function useInventory() {
+export function useInventory(promotionId?: string) {
     return useQuery({
-        queryKey: ['inventory'],
+        queryKey: ['inventory', promotionId || 'all'],
         queryFn: async () => {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('inventory')
                 .select('*');
 
-            if (error) throw new Error(error.message);
+            if (promotionId) {
+                if (promotionId === 'arroyo') {
+                    query = query.or('promocion.eq.arroyo,promocion.is.null');
+                } else {
+                    query = query.eq('promocion', promotionId);
+                }
+            }
+
+            const { data, error } = await query;
+
+            if (error) {
+                // Si la columna promocion todavía no existe en Supabase (antes de ejecutar la migración SQL)
+                // hacemos un fallback a select('*') general para no romper la app
+                if (error.message?.includes('promocion') || error.code === '42703') {
+                    const fallback = await supabase.from('inventory').select('*');
+                    if (fallback.error) throw new Error(fallback.error.message);
+                    return sortProperties((fallback.data as PropertyInfo[]) || []);
+                }
+                throw new Error(error.message);
+            }
             
-            // Ordenar numéricamente por n_orden (1, 2, 3... en lugar de 1, 10, 11...)
-            const sorted = ((data as PropertyInfo[]) || []).sort((a, b) => {
-                const valA = a.n_orden || '';
-                const valB = b.n_orden || '';
-                const numA = parseInt(valA) || 0;
-                const numB = parseInt(valB) || 0;
-                if (numA !== numB) return numA - numB;
-                // Si los números son iguales (o ambos 0), comparamos como string por si acaso (natural sort)
-                return valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
-            });
-            
-            return sorted;
+            return sortProperties((data as PropertyInfo[]) || []);
         },
+    });
+}
+
+function sortProperties(items: PropertyInfo[]) {
+    return items.sort((a, b) => {
+        const valA = a.n_orden || '';
+        const valB = b.n_orden || '';
+        const numA = parseInt(valA) || 0;
+        const numB = parseInt(valB) || 0;
+        if (numA !== numB) return numA - numB;
+        return valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
     });
 }
 

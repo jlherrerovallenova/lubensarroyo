@@ -9,6 +9,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  defaultPromotionId?: 'arroyo' | 'farnesio' | 'ambas';
 }
 
 import { useCreateLead } from '../../hooks/useLeads';
@@ -24,7 +25,7 @@ const SOURCE_CONFIG = [
   { id: 'Valla', label: 'Valla', icon: MapPin, color: 'text-orange-500' },
 ];
 
-export default function CreateLeadModal({ isOpen, onClose, onSuccess }: Props) {
+export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPromotionId = 'arroyo' }: Props) {
   const { user, profile } = useAuth();
   const createMutation = useCreateLead();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -35,6 +36,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess }: Props) {
     secondary_email: '',
     phone: '',
     source: 'Idealista',
+    promocion_interes: defaultPromotionId || 'arroyo',
     notes: ''
   });
   const [pasteText, setPasteText] = useState('');
@@ -200,6 +202,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess }: Props) {
         phone: formData.phone ? formData.phone.replace(/\s+/g, '') : null,
         notes: formData.notes || null,
         source: formData.source,
+        promocion_interes: formData.promocion_interes || defaultPromotionId || 'arroyo',
         status: 'new',
         assigned_to: (profile?.id || user?.id) || null,
         is_subscribed: true
@@ -354,6 +357,30 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess }: Props) {
                   color: s.color
                 }))}
               />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Promoción de Interés</label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: 'arroyo', label: 'Lubens Arroyo', color: 'border-blue-500 bg-blue-50 text-blue-700' },
+                { id: 'farnesio', label: 'Lubens Farnesio', color: 'border-emerald-500 bg-emerald-50 text-emerald-700' },
+                { id: 'ambas', label: 'Ambas', color: 'border-purple-500 bg-purple-50 text-purple-700' },
+              ].map(promo => (
+                <button
+                  key={promo.id}
+                  type="button"
+                  onClick={() => setFormData({ ...formData, promocion_interes: promo.id as any })}
+                  className={`py-2 px-2 text-xs font-bold rounded-xl border text-center transition-all ${
+                    formData.promocion_interes === promo.id
+                      ? `${promo.color} shadow-xs font-black ring-1 ring-current`
+                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  {promo.label}
+                </button>
+              ))}
             </div>
           </div>
 

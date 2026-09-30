@@ -27,8 +27,23 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
           <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-100 shrink-0">
             <User size={18} strokeWidth={2.5} />
           </div>
-          <div className="min-w-0 flex items-center">
+          <div className="min-w-0 flex items-center gap-2">
             <h3 className="font-bold text-slate-900 text-sm truncate group-hover:text-altavik-700 transition-colors leading-tight">{lead.name}</h3>
+            {lead.promocion_interes === 'farnesio' && (
+              <span className="shrink-0 text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                Farnesio
+              </span>
+            )}
+            {lead.promocion_interes === 'arroyo' && (
+              <span className="shrink-0 text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                Arroyo
+              </span>
+            )}
+            {lead.promocion_interes === 'ambas' && (
+              <span className="shrink-0 text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                Ambas
+              </span>
+            )}
           </div>
         </div>
 
@@ -91,7 +106,24 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
               <User size={18} strokeWidth={2.5} />
             </div>
             <div className="min-w-0">
-              <h3 className="font-bold text-slate-900 text-sm truncate leading-tight">{lead.name}</h3>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h3 className="font-bold text-slate-900 text-sm truncate leading-tight">{lead.name}</h3>
+                {lead.promocion_interes === 'farnesio' && (
+                  <span className="shrink-0 text-[8px] font-black uppercase tracking-wider px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Farnesio
+                  </span>
+                )}
+                {lead.promocion_interes === 'arroyo' && (
+                  <span className="shrink-0 text-[8px] font-black uppercase tracking-wider px-1 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                    Arroyo
+                  </span>
+                )}
+                {lead.promocion_interes === 'ambas' && (
+                  <span className="shrink-0 text-[8px] font-black uppercase tracking-wider px-1 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                    Ambas
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-2 mt-1">
                 <p className="text-[10px] text-slate-400 font-medium">
                   {new Date(lead.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}

@@ -226,7 +226,7 @@ export async function generarReservaPdf(datos: DatosReserva, download: boolean =
 
   const contractPct = (promotionSettings?.promotion_contract_percentage ?? 10) / 100;
   const installmentPct = (promotionSettings?.promotion_installment_percentage ?? 10) / 100;
-  const installmentCount = promotionSettings?.promotion_installment_count || 24;
+  const installmentCount = promotionSettings?.promotion_installment_count || 18;
   const courtesyPct = (promotionSettings?.promotion_courtesy_percentage ?? 0) / 100;
   const deedPct = Math.max(0, 1 - (contractPct + installmentPct + courtesyPct));
 
@@ -237,10 +237,9 @@ export async function generarReservaPdf(datos: DatosReserva, download: boolean =
   const mensualidad = mensualidadTotal / installmentCount;
   const escritura = totalConIva * deedPct;
 
-  const promoterName = promotionSettings?.promotion_promoter || 'LUBENS ARROYO, S.L.';
-  const emailVal = promotionSettings?.promotion_name 
-    ? `administracion@${promotionSettings.promotion_name.toLowerCase().replace(/\s+/g, '')}.es` 
-    : 'administracion@lubensarroyo.es';
+  const promoterName = promotionSettings?.promotion_promoter || 'LUBENS PROYECTO S.L.';
+  const emailVal = promotionSettings?.promotion_email || 'info@terravallpromociones.com';
+  const promoterAddress = promotionSettings?.promotion_address || 'Paseo de Arco de Ladrillo 68 — Valladolid';
 
   // ─── CABECERA ───────────────────────────────────────────────────
   doc.setFillColor(15, 52, 96);
@@ -251,7 +250,7 @@ export async function generarReservaPdf(datos: DatosReserva, download: boolean =
   doc.text(promoterName, margin, 12);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text('Paseo de Zorrilla 98, 1º B — Valladolid', margin, 19);
+  doc.text(promoterAddress, margin, 19);
   doc.text(emailVal, margin, 24);
 
   y = 36;
@@ -337,7 +336,7 @@ export async function generarReservaPdf(datos: DatosReserva, download: boolean =
   );
 
   addSection('QUINTA. — FUERO');
-  addText('Las partes se someten expresamente a los Juzgados y Tribunales de Madrid para cuantas controversias traigan causa del presente contrato.', 9);
+  addText('Las partes se someten expresamente a los Juzgados y Tribunales de Valladolid para cuantas controversias traigan causa del presente contrato.', 9);
 
   // ─── FIRMAS ─────────────────────────────────────────────────────
   y += 10;

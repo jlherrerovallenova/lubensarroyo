@@ -10,6 +10,7 @@ import { generatePropertyPDFBlob } from '../../utils/fichasVivienda';
 import { useWhatsAppTemplates } from '../../hooks/useWhatsAppTemplates';
 import { parseTemplate, getWhatsAppUrl, getGreeting, sendWhatsAppCloudAPI, META_PRIMER_CONTACTO_TEMPLATE, META_PRIMER_CONTACTO_BODY } from '../../services/whatsappService';
 import { useAutosave } from '../../hooks/useAutosave';
+import { usePromotion } from '../../context/PromotionContext';
 
 const shortenUrl = async (url: string) => {
   // Intentamos primero con v.gd
@@ -75,6 +76,7 @@ export default function EmailComposerModal({
   const [loading, setLoading] = useState(false);
   const { showAlert } = useDialog();
   const { session, profile } = useAuth();
+  const { activePromotion } = usePromotion();
   const agentName = profile?.full_name || 'Juan Herrero';
   const [method, setMethod, clearMethod] = useAutosave<'email' | 'whatsapp'>(`draft-email-method-${leadId}`, initialMethod || 'email');
 
@@ -202,7 +204,7 @@ ${agentName} - TERRAVALL`);
     }
 
     if (template.name.includes('Primer Contacto') && method === 'email') {
-      setSubject(`Información Promoción LUBENS ARROYO - ${agentName}`);
+      setSubject(`Información Promoción ${activePromotion.name.toUpperCase()} - ${agentName}`);
     }
   };
 
@@ -311,12 +313,12 @@ ${agentName} - TERRAVALL`);
             TERRAVALL
           </div>
           <div style="font-size: 11px; font-weight: 600; color: #6b94b9; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px;">
-            Lubens Arroyo
+            ${activePromotion.name}
           </div>
           <div style="margin-top: 10px; font-size: 12px; color: #64748b; line-height: 1.6;">
             <div>📍 Plaza Mayor 8, 1ºA · Valladolid</div>
             <div>📞 983 34 21 32</div>
-            <div>🌐 <a href="https://lubensarroyo.es" style="color: #1e293b; text-decoration: none;">lubensarroyo.es</a></div>
+            <div>🌐 <a href="${activePromotion.web}" style="color: #1e293b; text-decoration: none;">${activePromotion.web.replace('https://', '')}</a></div>
           </div>
         </div>
       </div>
@@ -479,7 +481,7 @@ ${agentName} - TERRAVALL`);
               <div style="background-color: #f8fafc; padding: 25px; text-align: center; border-top: 1px solid #f1f5f9;">
                 <div style="font-size: 11px; color: #94a3b8; line-height: 1.5;">
                   Este mensaje y cualquier documento adjunto son confidenciales y están dirigidos exclusivamente a su destinatario. Si lo ha recibido por error, por favor notifíquelo y elimine el mensaje.<br>
-                  <strong style="color: #64748b; margin-top: 10px; display: block;">Lubens Arroyo</strong>
+                  <strong style="color: #64748b; margin-top: 10px; display: block;">${activePromotion.name}</strong>
                 </div>
               </div>
             </div>

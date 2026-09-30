@@ -8,6 +8,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  promotionId?: string;
 }
 
 const INVENTORY_FIELDS = [
@@ -28,7 +29,7 @@ const INVENTORY_FIELDS = [
   { key: 'estado_vivienda', label: 'Estado', required: false }
 ];
 
-export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Props) {
+export default function ImportInventoryModal({ isOpen, onClose, onSuccess, promotionId = 'arroyo' }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [loading, setLoading] = useState(false);
@@ -162,8 +163,9 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
     setErrorMsg(null);
 
     try {
+      const targetPromotion = promotionId || 'arroyo';
       const formattedData = rawData.map(row => {
-        const item: any = {};
+        const item: any = { promocion: targetPromotion };
         INVENTORY_FIELDS.forEach(field => {
           const fileHeader = mapping[field.key];
           const value = fileHeader ? row[fileHeader] : undefined;
@@ -179,7 +181,16 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
       });
 
       const { error } = await (supabase as any).from('inventory').insert(formattedData);
-      if (error) throw error;
+      if (error) {
+        if (error.message?.includes('promocion')) {
+          // Fallback sin campo promocion si la columna aun no se ha creado
+          const rawWithoutPromo = formattedData.map(({ promocion, ...rest }: any) => rest);
+          const fallback = await (supabase as any).from('inventory').insert(rawWithoutPromo);
+          if (fallback.error) throw fallback.error;
+        } else {
+          throw error;
+        }
+      }
 
       setStep(3);
       setTimeout(() => {
@@ -207,9 +218,9 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess }: Pro
           <div>
             <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
               <FileSpreadsheet className="text-altavik-600" />
-              Importar Catálogo de Viviendas
+              Importar Catálogo · <span className="text-altavik-600 font-extrabold">{promotionId === 'farnesio' ? 'Lubens Farnesio' : 'Lubens Arroyo'}</span>
             </h2>
-            <p className="text-sm text-slate-500 mt-1">Sube tu Excel y relaciona las columnas con los campos del sistema.</p>
+            <p className="text-sm text-slate-500 mt-1">Sube tu Excel de {promotionId === 'farnesio' ? 'Lubens Farnesio' : 'Lubens Arroyo'} y relaciona las columnas con los campos del sistema.</p>
           </div>
           <button type="button" onClick={handleClose} className="text-slate-400 hover:text-slate-600 transition-colors p-2 hover:bg-slate-100 rounded-lg">
             <X size={24} />

@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useDialog } from '../context/DialogContext';
 import { supabase } from '../lib/supabase';
 import { useSettings } from '../hooks/useSettings';
+import { usePromotion } from '../context/PromotionContext';
 
 // UI Components
 import FeedbackEmailModal from '../components/leads/FeedbackEmailModal';
@@ -29,6 +30,7 @@ export default function Dashboard() {
   const { showConfirm } = useDialog();
   const navigate = useNavigate();
   const { data: settings } = useSettings();
+  const { activePromotion } = usePromotion();
 
   const {
     stats,
@@ -212,10 +214,8 @@ export default function Dashboard() {
     const phone = task.leads?.phone;
     const hour = new Date().getHours();
     const greeting = hour < 14 ? 'Buenos días' : 'Buenas tardes';
-    const promotionName = settings?.promotion_name || 'Lubens Arroyo';
-    const promotionWebsite = settings?.promotion_name 
-      ? `www.${settings.promotion_name.toLowerCase().replace(/\s+/g, '')}.com` 
-      : 'www.lubensarroyo.com';
+    const promotionName = activePromotion.name;
+    const promotionWebsite = activePromotion.web;
     
     const agentName = profile?.full_name || 'Juan Herrero';
     

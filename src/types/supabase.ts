@@ -74,6 +74,7 @@ export interface Database {
           interest_floor: string[] | null
           client_quality_rating: number | null
           survey_data: Json | null
+          promocion_interes?: 'arroyo' | 'farnesio' | 'ambas' | null
         }
         Insert: {
           id?: string
@@ -107,6 +108,7 @@ export interface Database {
           interest_floor?: string[] | null
           client_quality_rating?: number | null
           survey_data?: Json | null
+          promocion_interes?: 'arroyo' | 'farnesio' | 'ambas' | null
         }
         Update: {
           id?: string
@@ -140,6 +142,7 @@ export interface Database {
           interest_floor?: string[] | null
           client_quality_rating?: number | null
           survey_data?: Json | null
+          promocion_interes?: 'arroyo' | 'farnesio' | 'ambas' | null
         }
       }
       inventory: {
@@ -161,6 +164,7 @@ export interface Database {
           trastero: string
           precio: number
           estado_vivienda: string
+          promocion?: string
         }
         Insert: {
           id?: string
@@ -180,6 +184,7 @@ export interface Database {
           trastero?: string
           precio: number
           estado_vivienda?: string
+          promocion?: string
         }
         Update: {
           id?: string
@@ -199,6 +204,7 @@ export interface Database {
           trastero?: string
           precio?: number
           estado_vivienda?: string
+          promocion?: string
         }
       }
       agenda: {

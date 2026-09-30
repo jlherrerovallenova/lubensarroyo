@@ -84,6 +84,19 @@ export function FichaTab({
               <input name="secondary_email" value={formData.secondary_email || ''} onChange={handleChange} placeholder="alternativo@ejemplo.com" className="w-full text-[14px] font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all shadow-sm" />
             </div>
             <div className="space-y-1 group sm:col-span-4">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest transition-colors group-focus-within:text-blue-500">Promoción de Interés</label>
+              <CustomSelect
+                value={formData.promocion_interes || 'arroyo'}
+                onChange={(val) => setFormData({ ...formData, promocion_interes: val as any })}
+                className="w-full font-bold"
+                options={[
+                  { id: 'arroyo', label: 'Lubens Arroyo', color: 'text-blue-600' },
+                  { id: 'farnesio', label: 'Lubens Farnesio', color: 'text-emerald-600' },
+                  { id: 'ambas', label: 'Ambas Promociones', color: 'text-purple-600' }
+                ]}
+              />
+            </div>
+            <div className="space-y-1 group sm:col-span-4">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest transition-colors group-focus-within:text-blue-500">Origen del Contacto</label>
               <CustomSelect
                 value={formData.source}
