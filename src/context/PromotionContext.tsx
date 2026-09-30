@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, type ReactNode } from 'react';
 import { PROMOTIONS, type PromotionConfig } from '../config/promotions';
-import { Building2, CheckCircle2, Sparkles, MapPin, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Building2, Check, ChevronRight, X } from 'lucide-react';
 
 interface PromotionContextType {
   activePromotion: PromotionConfig;
@@ -92,158 +92,110 @@ interface PromotionSelectionModalProps {
 }
 
 function PromotionSelectionModal({ activeId, onSelect, canClose, onClose }: PromotionSelectionModalProps) {
-  const arroyo = PROMOTIONS.arroyo;
-  const farnesio = PROMOTIONS.farnesio;
+  const promotionsList = [PROMOTIONS.arroyo, PROMOTIONS.farnesio];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden text-white p-6 sm:p-10">
-        
-        {/* Header */}
-        <div className="text-center max-w-xl mx-auto mb-8 sm:mb-12">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs font-semibold text-altavik-400 mb-4 tracking-wide uppercase">
-            <Sparkles className="w-3.5 h-3.5 text-altavik-400" />
-            LUBENS PROYECTO S.L. · CRM INMOBILIARIO
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-extrabold font-display tracking-tight text-white mb-3">
-            Selecciona la Promoción
-          </h2>
-          <p className="text-sm sm:text-base text-slate-400">
-            ¿Con qué promoción inmobiliaria deseas trabajar en esta sesión? Puedes cambiarla en cualquier momento desde la barra superior.
-          </p>
-        </div>
-
-        {/* Promotion Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          
-          {/* Card: Lubens Arroyo */}
-          <div
-            onClick={() => onSelect('arroyo')}
-            className={`group relative flex flex-col justify-between p-6 sm:p-8 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden ${
-              activeId === 'arroyo'
-                ? 'bg-slate-800/90 border-blue-500/80 shadow-xl shadow-blue-500/10 ring-1 ring-blue-500/50'
-                : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-600 hover:bg-slate-800/70'
-            }`}
-          >
-            <div className="absolute top-4 right-4">
-              {activeId === 'arroyo' ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Activa
-                </span>
-              ) : (
-                <span className="text-xs text-slate-500">Seleccionar</span>
-              )}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in duration-200"
+      onClick={(e) => {
+        if (canClose && e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-200/90 overflow-hidden text-slate-800 animate-in zoom-in-95 duration-200">
+        {/* Cabecera discreta */}
+        <div className="px-5 pt-4 pb-3 flex items-center justify-between border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
+              <Building2 className="w-4 h-4" />
             </div>
-
             <div>
-              <div className="h-16 flex items-center justify-start mb-6">
-                <img
-                  src={arroyo.logo}
-                  alt={arroyo.name}
-                  className="max-h-12 max-w-[200px] object-contain rounded filter brightness-110"
-                />
-              </div>
-
-              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
-                {arroyo.name}
+              <h3 className="text-sm font-bold text-slate-900 leading-tight">
+                Seleccionar Promoción
               </h3>
-              <p className="text-xs text-slate-400 mb-4 line-clamp-2">
-                {arroyo.tagline}
+              <p className="text-[11px] text-slate-500">
+                Elige la promoción activa de trabajo
               </p>
-
-              <div className="space-y-2 text-xs text-slate-300 mb-6 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
-                <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                  <span className="text-slate-300">{arroyo.siteAddress}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-blue-400 shrink-0" />
-                  <span className="text-slate-400">Reserva: <strong>6.000 €</strong> · 10% Contrato · 18 cuotas</span>
-                </div>
-              </div>
             </div>
-
-            <button
-              type="button"
-              className="w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20 group-hover:translate-x-0.5"
-            >
-              <span>Acceder a Lubens Arroyo</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
           </div>
-
-          {/* Card: Lubens Farnesio */}
-          <div
-            onClick={() => onSelect('farnesio')}
-            className={`group relative flex flex-col justify-between p-6 sm:p-8 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden ${
-              activeId === 'farnesio'
-                ? 'bg-slate-800/90 border-emerald-500/80 shadow-xl shadow-emerald-500/10 ring-1 ring-emerald-500/50'
-                : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-600 hover:bg-slate-800/70'
-            }`}
-          >
-            <div className="absolute top-4 right-4">
-              {activeId === 'farnesio' ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Activa
-                </span>
-              ) : (
-                <span className="text-xs text-slate-500">Seleccionar</span>
-              )}
-            </div>
-
-            <div>
-              <div className="h-16 flex items-center justify-start mb-6">
-                <img
-                  src={farnesio.logo}
-                  alt={farnesio.name}
-                  className="max-h-12 max-w-[200px] object-contain rounded"
-                />
-              </div>
-
-              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">
-                {farnesio.name}
-              </h3>
-              <p className="text-xs text-slate-400 mb-4 line-clamp-2">
-                {farnesio.tagline}
-              </p>
-
-              <div className="space-y-2 text-xs text-slate-300 mb-6 bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
-                <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                  <span className="text-slate-300">{farnesio.siteAddress}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="text-slate-400">Reserva: <strong>6.000 €</strong> · 10% Contrato · 18 cuotas</span>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className="w-full py-3 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 group-hover:translate-x-0.5"
-            >
-              <span>Acceder a Lubens Farnesio</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-
-        </div>
-
-        {/* Footer info */}
-        <div className="flex items-center justify-between text-xs text-slate-500 pt-4 border-t border-slate-800/80">
-          <span>Promotor: <strong>{arroyo.legalName}</strong> (CIF: {arroyo.cif})</span>
           {canClose && (
             <button
               type="button"
               onClick={onClose}
-              className="text-slate-400 hover:text-white underline text-xs transition-colors"
+              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+              title="Cerrar"
             >
-              Cerrar sin cambiar
+              <X className="w-4 h-4" />
             </button>
           )}
         </div>
 
+        {/* Opciones de promoción */}
+        <div className="p-3.5 space-y-2">
+          {promotionsList.map((promo) => {
+            const isActive = activeId === promo.id;
+            return (
+              <button
+                key={promo.id}
+                type="button"
+                onClick={() => onSelect(promo.id)}
+                className={`w-full group flex items-center justify-between p-3 rounded-xl border text-left transition-all duration-150 cursor-pointer ${
+                  isActive
+                    ? 'bg-slate-50/90 border-slate-300 shadow-xs ring-1 ring-slate-300'
+                    : 'bg-white border-slate-200/80 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-16 h-10 flex-shrink-0 flex items-center justify-center p-1 bg-white border border-slate-100 rounded-lg shadow-2xs">
+                    <img
+                      src={promo.logo}
+                      alt={promo.name}
+                      className="max-h-7 max-w-full object-contain"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-slate-900 group-hover:text-altavik-600 transition-colors truncate">
+                        {promo.name}
+                      </span>
+                      {isActive && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-900 text-white">
+                          Activa
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-slate-500 block truncate">
+                      {promo.id === 'arroyo' ? 'Arroyo de la Encomienda' : 'Calle General Shelly 1, Valladolid'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center pl-2">
+                  {isActive ? (
+                    <div className="w-5 h-5 rounded-full bg-slate-900 text-white flex items-center justify-center">
+                      <Check className="w-3 h-3 stroke-[2.5]" />
+                    </div>
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-all" />
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Pie sutil */}
+        <div className="px-5 py-2.5 bg-slate-50/75 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+          <span>LUBENS PROYECTO S.L.</span>
+          {canClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-slate-500 hover:text-slate-800 font-medium transition-colors cursor-pointer"
+            >
+              Cancelar
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
