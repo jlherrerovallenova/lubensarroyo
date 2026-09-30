@@ -112,9 +112,11 @@ export async function generarReservaDocx(datos: DatosReserva, promotionSettings?
 
   const totalConIva = datos.precio * 1.10;
   const pagoContrato = (totalConIva * contractPct) - datos.importeReserva;
-  const pagoMensualidades = totalConIva * installmentPct;
-  const cuotaMensual = pagoMensualidades / installmentCount;
-  const pagoEscritura = totalConIva * deedPct;
+  const rawCuota = (totalConIva * installmentPct) / installmentCount;
+  // Redondeo de cuotas mensuales a la centena superior (ej: 1305€ -> 1400€)
+  const cuotaMensual = Math.ceil(rawCuota / 100) * 100;
+  const pagoMensualidades = cuotaMensual * installmentCount;
+  const pagoEscritura = totalConIva - datos.importeReserva - pagoContrato - pagoMensualidades;
 
   const compradorLinea = datos.nombreCotitular
     ? `D/Dª. ${datos.nombre}, con DNI ${datos.dni}, y D/Dª. ${datos.nombreCotitular}, con DNI ${datos.dniCotitular || '_______'}, ambos en estado civil ${datos.estadoCivil}, nacionalidad ${datos.nacionalidad}, y con domicilio a efectos de notificaciones en ${datos.domicilio}, ${datos.codigoPostal} ${datos.localidad} (${datos.provincia})`
@@ -233,9 +235,11 @@ export async function generarReservaPdf(datos: DatosReserva, download: boolean =
   const iva = datos.precio * 0.10;
   const totalConIva = datos.precio + iva;
   const compraContrato = (totalConIva * contractPct) - datos.importeReserva;
-  const mensualidadTotal = totalConIva * installmentPct;
-  const mensualidad = mensualidadTotal / installmentCount;
-  const escritura = totalConIva * deedPct;
+  const rawMensualidad = (totalConIva * installmentPct) / installmentCount;
+  // Redondeo de cuotas mensuales a la centena superior (ej: 1305€ -> 1400€)
+  const mensualidad = Math.ceil(rawMensualidad / 100) * 100;
+  const mensualidadTotal = mensualidad * installmentCount;
+  const escritura = totalConIva - datos.importeReserva - compraContrato - mensualidadTotal;
 
   const promoterName = promotionSettings?.promotion_promoter || 'LUBENS PROYECTO S.L.';
   const emailVal = promotionSettings?.promotion_email || 'info@terravallpromociones.com';

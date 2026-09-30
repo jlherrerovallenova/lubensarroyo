@@ -94,17 +94,28 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
   const reserva = promotionSettings?.promotion_reservation_amount || 6000;
   const contractPct = (promotionSettings?.promotion_contract_percentage ?? 10) / 100;
   const installmentPct = (promotionSettings?.promotion_installment_percentage ?? 10) / 100;
-  const installmentCount = promotionSettings?.promotion_installment_count || 24;
+  const installmentCount = promotionSettings?.promotion_installment_count || 18;
   const courtesyPct = (promotionSettings?.promotion_courtesy_percentage ?? 0) / 100;
   const deedPct = Math.max(0, 1 - (contractPct + installmentPct + courtesyPct));
 
   const firmaContrato = (totalWithIVA * contractPct) - reserva;
-  const monthlyQuotaTotal = totalWithIVA * installmentPct;
-  const monthlyAmount = monthlyQuotaTotal / installmentCount;
-  const eightyPercent = totalWithIVA * deedPct;
+
+  // Redondeo de las cuotas mensuales a la centena superior (ej: 1305€ -> 1400€)
+  const rawMonthlyAmount = (totalWithIVA * installmentPct) / installmentCount;
+  const monthlyAmount = Math.ceil(rawMonthlyAmount / 100) * 100;
+  const monthlyQuotaTotal = monthlyAmount * installmentCount;
+  const eightyPercent = totalWithIVA - reserva - firmaContrato - monthlyQuotaTotal;
+
+  const isFarnesio =
+    property.portal?.toUpperCase().startsWith('1A') ||
+    property.portal?.toUpperCase().startsWith('1B') ||
+    property.n_orden?.startsWith('1A-') ||
+    property.n_orden?.startsWith('1B-') ||
+    (property as any).promocion === 'farnesio';
+  const logoPromoPath = isFarnesio ? '/logo-lubens-farnesio.png' : '/logo-lubens-arroyo.png';
 
   const [logoAltavik, logoHabitarum, logoTerravall] = await Promise.all([
-    getBase64Image('/logo-lubens-arroyo.png'),
+    getBase64Image(logoPromoPath),
     getBase64Image('/logo_habitarum.png'),
     getBase64Image('/logo-terravall.png')
   ]);
@@ -135,7 +146,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
   const drawFooter = () => {
     doc.setFontSize(7);
     doc.setTextColor(softGray[0], softGray[1], softGray[2]);
-    doc.text('Este documento tiene carácter meramente informativo y podrá ser modificado según condiciones comerciales. Lubens Arroyo.', 15, 290);
+    doc.text(`Este documento tiene carácter meramente informativo y podrá ser modificado según condiciones comerciales. ${isFarnesio ? 'Lubens Farnesio' : 'Lubens Arroyo'}.`, 15, 290);
     doc.text(`Generado el ${new Date().toLocaleDateString('es-ES')}`, 195, 290, { align: 'right' });
   };
 
@@ -247,8 +258,8 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
     doc.text('TOTAL A PAGAR', 185, currentY, { align: 'right' });
     currentY += 4; 
     drawStep(2, 'Firma de Contrato', `Firma de la Compraventa (${Math.round(contractPct * 100)}% - reserva)`, '', firmaContrato);
-    drawStep(3, `Aplazamiento ${Math.round(installmentPct * 100)}%`, `${installmentCount} cuotas mensuales de ${formatCurrency(monthlyAmount)}`, `${installmentCount} MESES`, monthlyQuotaTotal);
-    drawStep(4, 'Entrega de Llaves', `Desembolso final y escrituración (${Math.round(deedPct * 100)}%)`, 'ENTREGA', eightyPercent);
+    drawStep(3, `Aplazamiento ${Math.round((monthlyQuotaTotal / totalWithIVA) * 100)}%`, `${installmentCount} cuotas mensuales de ${formatCurrency(monthlyAmount)}`, `${installmentCount} MESES`, monthlyQuotaTotal);
+    drawStep(4, 'Entrega de Llaves', `Desembolso final y escrituración (${Math.round((eightyPercent / totalWithIVA) * 100)}%)`, 'ENTREGA', eightyPercent);
     currentY += 4; 
     doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
     doc.line(15, currentY, 195, currentY);

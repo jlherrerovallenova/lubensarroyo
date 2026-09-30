@@ -18,6 +18,8 @@ import MortgageSimulatorModal from './MortgageSimulatorModal';
 import { generatePropertyPDFBlob } from '../../utils/fichasVivienda';
 import type { MortgageParams } from '../../utils/fichasVivienda';
 import { useSettings } from '../../hooks/useSettings';
+import { usePromotion } from '../../context/PromotionContext';
+import { PROMOTIONS } from '../../config/promotions';
 
 interface Property {
   id: string;
@@ -60,8 +62,19 @@ export default function PaymentFormModal({ isOpen, onClose, property }: PaymentF
   const [showSimulator, setShowSimulator] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const { data: settings } = useSettings();
+  const { activePromotion } = usePromotion();
 
   if (!isOpen) return null;
+
+  const isFarnesio =
+    property.portal?.toUpperCase().startsWith('1A') ||
+    property.portal?.toUpperCase().startsWith('1B') ||
+    property.n_orden?.startsWith('1A-') ||
+    property.n_orden?.startsWith('1B-') ||
+    (property as any).promocion === 'farnesio' ||
+    activePromotion?.id === 'farnesio';
+
+  const currentPromotion = isFarnesio ? PROMOTIONS.farnesio : (activePromotion || PROMOTIONS.arroyo);
 
   const basePrice = property.precio;
   const iva = basePrice * 0.1;
@@ -69,17 +82,22 @@ export default function PaymentFormModal({ isOpen, onClose, property }: PaymentF
   const totalWithIVA = basePrice + iva;
 
   // Dynamic promotion settings
-  const reserva = settings?.promotion_reservation_amount || 6000;
-  const contractPct = (settings?.promotion_contract_percentage ?? 10) / 100;
-  const installmentPct = (settings?.promotion_installment_percentage ?? 10) / 100;
-  const installmentCount = settings?.promotion_installment_count || 24;
+  const reserva = settings?.promotion_reservation_amount || currentPromotion.reservationAmount || 6000;
+  const contractPct = (settings?.promotion_contract_percentage ?? currentPromotion.contractPercentage ?? 10) / 100;
+  const installmentPct = (settings?.promotion_installment_percentage ?? currentPromotion.installmentPercentage ?? 10) / 100;
+  const installmentCount = settings?.promotion_installment_count || currentPromotion.installmentCount || 18;
   const courtesyPct = (settings?.promotion_courtesy_percentage ?? 0) / 100;
   const deedPct = Math.max(0, 1 - (contractPct + installmentPct + courtesyPct));
 
   const firmaContrato = (totalWithIVA * contractPct) - reserva;
-  const monthlyQuotaTotal = totalWithIVA * installmentPct;
-  const monthlyAmount = monthlyQuotaTotal / installmentCount;
-  const eightyPercent = totalWithIVA * deedPct;
+
+  // Redondeo de las cuotas mensuales a la centena superior (ej: 1.305 € -> 1.400 €)
+  const rawMonthlyAmount = (totalWithIVA * installmentPct) / installmentCount;
+  const monthlyAmount = Math.ceil(rawMonthlyAmount / 100) * 100;
+  const monthlyQuotaTotal = monthlyAmount * installmentCount;
+
+  // La escrituración absorbe la diferencia exacta para que la suma totalice el 100% con IVA
+  const eightyPercent = totalWithIVA - reserva - firmaContrato - monthlyQuotaTotal;
 
   const handleGenerateWithParams = async (params: MortgageParams) => {
     setIsGenerating(true);
@@ -103,7 +121,7 @@ export default function PaymentFormModal({ isOpen, onClose, property }: PaymentF
         {/* Header - Premium Apple Style */}
         <div className="px-8 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-4">
-            <img src="/logo-lubens-arroyo.png" alt="Lubens Arroyo Logo" className="h-10 w-auto" />
+            <img src={currentPromotion.logo} alt={currentPromotion.name} className="h-10 w-auto object-contain" />
             <div className="h-8 w-[1px] bg-slate-200 mx-2"></div>
             <div>
               <h2 className="text-xl font-bold text-slate-900 leading-tight">FORMA DE PAGO</h2>
@@ -111,7 +129,7 @@ export default function PaymentFormModal({ isOpen, onClose, property }: PaymentF
           </div>
           <button type="button" 
             onClick={onClose}
-            className="p-3 text-slate-400 hover:text-slate-900 hover:bg-white rounded-2xl transition-all shadow-sm hover:shadow-md"
+            className="p-3 text-slate-400 hover:text-slate-900 hover:bg-white rounded-2xl transition-all shadow-sm hover:shadow-md cursor-pointer"
           >
             <X size={24} />
           </button>
@@ -130,10 +148,12 @@ export default function PaymentFormModal({ isOpen, onClose, property }: PaymentF
                 <h3 className="text-altavik-600 font-bold uppercase tracking-widest text-[10px] mb-4">Activo Seleccionado</h3>
                 <div className="flex items-start justify-between mb-6">
                   <div>
-                    <div className="text-3xl font-bold mb-1 text-slate-900">P{property.portal} · {property.planta} - {property.letra}</div>
+                    <div className="text-3xl font-bold mb-1 text-slate-900">
+                      {property.portal.startsWith('P') ? property.portal : `Portal ${property.portal}`} · {property.planta} - {property.letra}
+                    </div>
                     <div className="text-slate-500 font-medium text-lg flex items-center gap-2">
                       <Building2 size={18} className="text-altavik-500" />
-                      {settings?.promotion_name || 'Lubens Arroyo'}
+                      {currentPromotion.name}
                     </div>
                   </div>
                 </div>
