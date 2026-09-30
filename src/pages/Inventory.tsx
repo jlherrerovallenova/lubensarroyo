@@ -35,6 +35,7 @@ import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { useSettings } from '../hooks/useSettings';
 import { usePromotion } from '../context/PromotionContext';
+import { isPropertyOfPromotion } from '../config/promotions';
 
 interface Property {
   id: string;
@@ -132,13 +133,15 @@ export default function Inventory() {
         if (error.message?.includes('promocion') || (error as any).code === '42703') {
           const fallback = await supabase.from('inventory').select('*');
           if (fallback.error) throw fallback.error;
-          setProperties(sortItems((fallback.data as Property[]) || []));
+          const filtered = ((fallback.data as Property[]) || []).filter(p => isPropertyOfPromotion(p, activePromotionId));
+          setProperties(sortItems(filtered));
           return;
         }
         throw error;
       }
 
-      setProperties(sortItems((data as Property[]) || []));
+      const filtered = ((data as Property[]) || []).filter(p => isPropertyOfPromotion(p, activePromotionId));
+      setProperties(sortItems(filtered));
     } catch (error) {
       console.error('Error fetching inventory:', error);
     } finally {

@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
 import type { Database } from '../types/supabase';
+import { isPropertyOfPromotion } from '../config/promotions';
 
 type PropertyInfo = Database['public']['Tables']['inventory']['Row'];
 
@@ -16,7 +17,7 @@ export function useInventory(promotionId?: string) {
                 .from('inventory')
                 .select('*');
 
-            if (promotionId) {
+            if (promotionId && promotionId !== 'all') {
                 if (promotionId === 'arroyo') {
                     query = query.or('promocion.eq.arroyo,promocion.is.null');
                 } else {
@@ -28,16 +29,18 @@ export function useInventory(promotionId?: string) {
 
             if (error) {
                 // Si la columna promocion todavía no existe en Supabase (antes de ejecutar la migración SQL)
-                // hacemos un fallback a select('*') general para no romper la app
+                // hacemos un fallback a select('*') y filtramos heurísticamente por código/portal
                 if (error.message?.includes('promocion') || error.code === '42703') {
                     const fallback = await supabase.from('inventory').select('*');
                     if (fallback.error) throw new Error(fallback.error.message);
-                    return sortProperties((fallback.data as PropertyInfo[]) || []);
+                    const filtered = ((fallback.data as PropertyInfo[]) || []).filter(p => isPropertyOfPromotion(p, promotionId));
+                    return sortProperties(filtered);
                 }
                 throw new Error(error.message);
             }
             
-            return sortProperties((data as PropertyInfo[]) || []);
+            const filtered = ((data as PropertyInfo[]) || []).filter(p => isPropertyOfPromotion(p, promotionId));
+            return sortProperties(filtered);
         },
     });
 }

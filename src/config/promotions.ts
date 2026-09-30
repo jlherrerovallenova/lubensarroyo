@@ -69,3 +69,34 @@ export const PROMOTIONS: Record<'arroyo' | 'farnesio', PromotionConfig> = {
 };
 
 export const PROMOTION_LIST = Object.values(PROMOTIONS);
+
+/**
+ * Determina si una vivienda pertenece a una promoción dada ('arroyo' o 'farnesio').
+ * Soporta tanto el campo 'promocion' de base de datos como una detección heurística
+ * basada en la nomenclatura de portales / códigos de vivienda:
+ * - Lubens Farnesio: portales 1A, 1B o códigos que comienzan por 1A- / 1B-
+ * - Lubens Arroyo: portales 9, 10, 11, 12 o códigos P09-, P10-, P11-, P12-
+ */
+export function isPropertyOfPromotion(
+  property: { promocion?: string | null; portal?: string | null; n_orden?: string | null },
+  promotionId?: string
+): boolean {
+  if (!promotionId || promotionId === 'all') return true;
+
+  if (property.promocion) {
+    return property.promocion === promotionId;
+  }
+
+  const pPortal = (property.portal || '').trim().toUpperCase();
+  const pOrden = (property.n_orden || '').trim().toUpperCase();
+
+  const isFarnesio =
+    pPortal === '1A' ||
+    pPortal === '1B' ||
+    pOrden.startsWith('1A-') ||
+    pOrden.startsWith('1B-');
+
+  if (promotionId === 'farnesio') return isFarnesio;
+  if (promotionId === 'arroyo') return !isFarnesio;
+  return true;
+}

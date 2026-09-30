@@ -3,6 +3,7 @@ import { X, Loader2, AlertCircle, Upload, FileSpreadsheet, CheckCircle, Settings
 import { supabase } from '../../lib/supabase';
 import * as XLSX from 'xlsx';
 import { ALTAVIK_VIVIENDAS_70 } from '../../data/altavikViviendas';
+import { FARNESIO_VIVIENDAS_19 } from '../../data/farnesioViviendas';
 
 interface Props {
   isOpen: boolean;
@@ -55,18 +56,26 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess, promo
     onClose();
   };
 
-  const handleDirectSeedAltavik = async () => {
+  const isFarnesioPromo = promotionId === 'farnesio';
+
+  const handleDirectSeed = async () => {
     setLoading(true);
     setErrorMsg(null);
     try {
+      const sourceList = isFarnesioPromo ? FARNESIO_VIVIENDAS_19 : ALTAVIK_VIVIENDAS_70;
       const chunkSize = 50;
-      const chunks: (typeof ALTAVIK_VIVIENDAS_70)[] = [];
-      for (let i = 0; i < ALTAVIK_VIVIENDAS_70.length; i += chunkSize) {
-        chunks.push(ALTAVIK_VIVIENDAS_70.slice(i, i + chunkSize));
+      const chunks: any[][] = [];
+      for (let i = 0; i < sourceList.length; i += chunkSize) {
+        chunks.push(sourceList.slice(i, i + chunkSize));
       }
       await Promise.all(chunks.map(async (chunk) => {
-        const { error } = await (supabase as any).from('inventory').insert(chunk);
-        if (error) throw error;
+        let insertData: any = chunk;
+        let res = await (supabase as any).from('inventory').insert(insertData);
+        if (res.error && res.error.message?.includes('promocion')) {
+          const rawWithoutPromo = chunk.map(({ promocion, ...rest }: any) => rest);
+          res = await (supabase as any).from('inventory').insert(rawWithoutPromo);
+        }
+        if (res.error) throw res.error;
       }));
       setStep(3);
       setTimeout(() => {
@@ -260,17 +269,25 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess, promo
 
               <div className="p-4 bg-gradient-to-r from-altavik-50 to-indigo-50 border border-altavik-200/60 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">Carga Rápida: Promoción Altavik (70 Viviendas)</h4>
-                  <p className="text-xs text-slate-500 mt-0.5">Importa directamente las 70 viviendas estándar (Portales 9 al 12, Plantas 1ª a 5ª) sin subir archivos.</p>
+                  <h4 className="font-bold text-slate-900 text-sm">
+                    {isFarnesioPromo
+                      ? 'Carga Rápida: Promoción Lubens Farnesio (19 Viviendas)'
+                      : 'Carga Rápida: Promoción Lubens Arroyo (70 Viviendas)'}
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {isFarnesioPromo
+                      ? 'Importa directamente las 19 viviendas oficiales (Portales 1A y 1B, Plantas 1ª a Ático) sin subir archivos.'
+                      : 'Importa directamente las 70 viviendas estándar (Portales 9 al 12, Plantas 1ª a 5ª) sin subir archivos.'}
+                  </p>
                 </div>
                 <button
                   type="button"
                   disabled={loading}
-                  onClick={handleDirectSeedAltavik}
+                  onClick={handleDirectSeed}
                   className="px-4 py-2.5 bg-altavik-600 text-white text-xs font-bold rounded-xl shadow-md hover:bg-altavik-700 transition-all whitespace-nowrap flex items-center gap-2 active:scale-95 disabled:opacity-50 cursor-pointer"
                 >
                   {loading ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle size={16} />}
-                  Importar 70 Viviendas
+                  {isFarnesioPromo ? 'Importar 19 Viviendas' : 'Importar 70 Viviendas'}
                 </button>
               </div>
             </div>
