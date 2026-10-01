@@ -53,7 +53,7 @@ export const PROMOTIONS: Record<'arroyo' | 'farnesio', PromotionConfig> = {
     taxAddress: 'Paseo de Arco de Ladrillo 68, Valladolid',
     siteAddress: 'Calle General Shelly 1, Valladolid',
     logo: '/logo-lubens-farnesio.png',
-    logoWhite: '/logo-lubens-farnesio.png',
+    logoWhite: '/logo-lubens-farnesio-white.png',
     bankName: 'CAJA RURAL DE ZAMORA',
     bankAccount: 'ES02/3085/0102/0126/0444/9021',
     web: 'https://www.lubensresidencial.com',
