@@ -310,7 +310,7 @@ export async function generarReservaPdf(datos: DatosReserva, download: boolean =
   addLine('1. Reserva (hoy)', formatEur(datos.importeReserva));
   addLine('2. Contrato de compraventa', formatEur(compraContrato));
   addLine('3. Mensualidades (' + installmentCount + ' × ...)', `${formatEur(mensualidadTotal)} total — ${formatEur(mensualidad)}/mes`);
-  addLine('4. Escrituración (' + Math.round(deedPct * 100) + '% + IVA)', formatEur(escritura));
+  addLine('4. Escrituración (' + (totalConIva > 0 ? Math.round((escritura / totalConIva) * 100) : Math.round(deedPct * 100)) + '% + IVA)', formatEur(escritura));
 
   // ─── TEXTO DEL CONTRATO ─────────────────────────────────────────
   addSection('PRIMERA. — OBJETO');

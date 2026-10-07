@@ -374,12 +374,19 @@ export default function SaleTab({ lead, onLeadUpdate }: Props) {
     || (lead.property_id ? null : null);
   const precio = selectedProperty?.precio || sale?.sale_price || 0;
   const iva = 0.10;
-  const reservation = 6000;
+  const reservation = settings?.promotion_reservation_amount || 6000;
+  const contractPct = (settings?.promotion_contract_percentage ?? 10) / 100;
+  const installmentPct = (settings?.promotion_installment_percentage ?? 10) / 100;
+  const installmentCount = settings?.promotion_installment_count || 18;
+  const courtesyPct = (settings?.promotion_courtesy_percentage ?? 0) / 100;
   const totalWithIva = precio * (1 + iva);
-  const contractPayment = precio * iva + precio * iva * iva - reservation; // 10% + IVA - 6000€
-  const monthlyTotal = precio * iva * (1 + iva); // 10% precio + 10% IVA sobre ese 10%
-  const monthlyAmount = monthlyTotal / 24;
-  const escrituraPayment = precio * 0.80 * (1 + iva);
+  const contractTotal = totalWithIva * contractPct;
+  const contractPayment = contractTotal - reservation;
+  const rawMonthlyAmount = installmentCount > 0 ? (totalWithIva * installmentPct) / installmentCount : 0;
+  const monthlyAmount = Math.ceil(rawMonthlyAmount / 100) * 100;
+  const monthlyTotal = monthlyAmount * installmentCount;
+  const courtesyAmount = totalWithIva * courtesyPct;
+  const escrituraPayment = Math.max(0, totalWithIva - contractTotal - monthlyTotal - courtesyAmount);
 
   async function savePersonalData() {
     setSavingPersonal(true);
@@ -426,11 +433,12 @@ export default function SaleTab({ lead, onLeadUpdate }: Props) {
 
     try {
       if (newStatus === 'mensualidades' && installments.length === 0) {
-        // Generar 24 recibos
+        // Generar recibos
+        const count = installmentCount || 18;
         const startDate = new Date();
         startDate.setDate(1);
         startDate.setMonth(startDate.getMonth() + 1);
-        const rows = Array.from({ length: 24 }, (_, i) => {
+        const rows = Array.from({ length: count }, (_, i) => {
           const d = new Date(startDate);
           d.setMonth(d.getMonth() + i);
           return {
@@ -736,21 +744,21 @@ export default function SaleTab({ lead, onLeadUpdate }: Props) {
               <div className="flex justify-between items-center bg-slate-50 rounded-lg px-4 py-2.5 border border-slate-100">
                 <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
                   <span className="w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-700">2</span>
-                  Contrato (10% + 10% IVA − 6.000€)
+                  Contrato ({Math.round(contractPct * 100)}% + IVA − {fmt(reservation)})
                 </div>
                 <span className="text-sm font-bold text-slate-800">{fmt(contractPayment)}</span>
               </div>
               <div className="flex justify-between items-center bg-slate-50 rounded-lg px-4 py-2.5 border border-slate-100">
                 <div className="flex items-center gap-2 text-xs text-slate-600 font-medium">
                   <span className="w-5 h-5 bg-slate-200 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-700">3</span>
-                  24 mensualidades × {fmt(monthlyAmount)}
+                  {installmentCount} mensualidades × {fmt(monthlyAmount)}
                 </div>
                 <span className="text-sm font-bold text-slate-800">{fmt(monthlyTotal)}</span>
               </div>
               <div className="flex justify-between items-center bg-amber-50 rounded-lg px-4 py-2.5 border border-amber-100">
                 <div className="flex items-center gap-2 text-xs text-amber-700 font-medium">
                   <span className="w-5 h-5 bg-amber-200 rounded-full flex items-center justify-center text-[10px] font-bold text-amber-800">4</span>
-                  Escrituración (80% + 10% IVA)
+                  Escrituración ({totalWithIva > 0 ? Math.round((escrituraPayment / totalWithIva) * 100) : 80}% + IVA)
                 </div>
                 <span className="text-sm font-bold text-amber-700">{fmt(escrituraPayment)}</span>
               </div>
