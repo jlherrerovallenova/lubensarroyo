@@ -114,9 +114,9 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
     (property as any).promocion === 'farnesio';
   const logoPromoPath = isFarnesio ? '/logo-lubens-farnesio.png' : '/logo-lubens-arroyo.png';
 
-  const [logoAltavik, logoHabitarum, logoTerravall] = await Promise.all([
+  const [logoAltavik, logoLubensProyecto, logoTerravall] = await Promise.all([
     getBase64Image(logoPromoPath),
-    getBase64Image('/logo_habitarum.png'),
+    getBase64Image('/logo-lubens-proyecto.png'),
     getBase64Image('/logo-terravall.png')
   ]);
 
@@ -146,7 +146,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
   const drawFooter = () => {
     doc.setFontSize(7);
     doc.setTextColor(softGray[0], softGray[1], softGray[2]);
-    doc.text(`Este documento tiene carácter meramente informativo y podrá ser modificado según condiciones comerciales. ${isFarnesio ? 'Lubens Farnesio' : 'Lubens Arroyo'}.`, 15, 290);
+    doc.text('Este documento tiene carácter meramente informativo y podrá ser modificado según condiciones comerciales.', 15, 290);
     doc.text(`Generado el ${new Date().toLocaleDateString('es-ES')}`, 195, 290, { align: 'right' });
   };
 
@@ -166,11 +166,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(deepBlue[0], deepBlue[1], deepBlue[2]);
-    doc.text(`P${property.portal || ''} · ${property.planta || ''} - ${property.letra || ''}`, 25, 68);
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(darkGray[0], darkGray[1], darkGray[2]);
-    doc.text('LUBENS ARROYO', 25, 76);
+    doc.text(`P${property.portal || ''} · ${property.planta || ''} - ${property.letra || ''}`, 25, 71);
     doc.setFontSize(9);
     doc.setTextColor(softGray[0], softGray[1], softGray[2]);
     doc.text('SUPERFICIES Y DISTRIBUCIÓN', 115, 55);
@@ -258,7 +254,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
     doc.text('TOTAL A PAGAR', 185, currentY, { align: 'right' });
     currentY += 4; 
     drawStep(2, 'Firma de Contrato', `Firma de la Compraventa (${Math.round(contractPct * 100)}% - reserva)`, '', firmaContrato);
-    drawStep(3, `Aplazamiento ${Math.round((monthlyQuotaTotal / totalWithIVA) * 100)}%`, `${installmentCount} cuotas mensuales de ${formatCurrency(monthlyAmount)}`, `${installmentCount} MESES`, monthlyQuotaTotal);
+    drawStep(3, 'Aplazamiento', `${installmentCount} cuotas mensuales de ${formatCurrency(monthlyAmount)}`, `${installmentCount} MESES`, monthlyQuotaTotal);
     drawStep(4, 'Entrega de Llaves', `Desembolso final y escrituración (${Math.round((eightyPercent / totalWithIVA) * 100)}%)`, 'ENTREGA', eightyPercent);
     currentY += 4; 
     doc.setDrawColor(borderGray[0], borderGray[1], borderGray[2]);
@@ -282,8 +278,8 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
     doc.text(formatCurrency(ajd), 195, currentY, { align: 'right' });
     currentY += 10;
     
-    // Logos Habitarum y Terravall
-    if (logoHabitarum) doc.addImage(logoHabitarum.data, 'PNG', 69, currentY, 25, 8);
+    // Logos Lubens Proyecto y Terravall
+    if (logoLubensProyecto) doc.addImage(logoLubensProyecto.data, 'PNG', 69, currentY, 25, 8.35);
     if (logoTerravall) doc.addImage(logoTerravall.data, 'PNG', 109, currentY, 32, 8);
     
     drawFooter();
@@ -354,9 +350,9 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
     doc.setFont('helvetica', 'bold'); doc.setFontSize(18);
     doc.text(fmtEur2(monthly), 185, y + 22, { align: 'right' });
 
-    // ── Logos Habitarum + Terravall (igual que Forma de Pago) ─────────────────
+    // ── Logos Lubens Proyecto + Terravall (igual que Forma de Pago) ───────────
     y += 50;
-    if (logoHabitarum) doc.addImage(logoHabitarum.data, 'PNG', 69, y, 25, 8);
+    if (logoLubensProyecto) doc.addImage(logoLubensProyecto.data, 'PNG', 69, y, 25, 8.35);
     if (logoTerravall) doc.addImage(logoTerravall.data, 'PNG', 109, y, 32, 8);
 
     drawFooter();
@@ -437,7 +433,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
 
     // ── Logos ──────────────────────────────────────────────────────────────────
     y += 50;
-    if (logoHabitarum) doc.addImage(logoHabitarum.data, 'PNG', 69, y, 25, 8);
+    if (logoLubensProyecto) doc.addImage(logoLubensProyecto.data, 'PNG', 69, y, 25, 8.35);
     if (logoTerravall) doc.addImage(logoTerravall.data, 'PNG', 109, y, 32, 8);
 
     drawFooter();
