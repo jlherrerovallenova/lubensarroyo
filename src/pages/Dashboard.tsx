@@ -30,7 +30,7 @@ export default function Dashboard() {
   const { showConfirm } = useDialog();
   const navigate = useNavigate();
   const { data: settings } = useSettings();
-  const { activePromotion } = usePromotion();
+  const { activePromotion, activePromotionId } = usePromotion();
 
   const {
     stats,
@@ -41,7 +41,7 @@ export default function Dashboard() {
     autoImportedLeads,
     refresh,
     setAgenda
-  } = useDashboardData(session?.user?.id);
+  } = useDashboardData(session?.user?.id, activePromotionId);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'hoy' | 'caducadas' | 'semana' | 'feedback' | 'emails'>('hoy');
@@ -277,7 +277,7 @@ ${promotionWebsite}`;
         title="Panel de Control"
         icon={<LayoutDashboard size={24} strokeWidth={3} />}
         subtitle={
-          <>Resumen comercial de <span className="text-altavik-600 font-bold ml-1">Terravall</span></>
+          <>Resumen comercial de <span className="text-altavik-600 font-bold ml-1">{activePromotion.name}</span></>
         }
       />
 
@@ -286,10 +286,10 @@ ${promotionWebsite}`;
           <StatCard
             title="TOTAL CLIENTES"
             value={stats.totalLeads.toString()}
-            subtitle="Base histórica completa"
+            subtitle={activePromotion.name}
             icon={<Users />}
             color="slate"
-            onClick={() => navigate('/leads')}
+            onClick={() => navigate(`/leads?promo=${activePromotionId}`)}
           />
         </div>
         {stats.topSources.map((source, idx) => {
@@ -300,10 +300,10 @@ ${promotionWebsite}`;
               <StatCard
                 title={`ORIGEN: ${source.name.toUpperCase()}`}
                 value={source.count.toString()}
-                subtitle={`${source.percentage}% del total de registros`}
+                subtitle={`${source.percentage}% de ${activePromotion.name}`}
                 icon={getSourceIcon(source.name)}
                 color={colors[idx % colors.length]}
-                onClick={() => navigate(`/leads?source=${encodeURIComponent(source.name)}`)}
+                onClick={() => navigate(`/leads?source=${encodeURIComponent(source.name)}&promo=${activePromotionId}`)}
               />
             </div>
           );

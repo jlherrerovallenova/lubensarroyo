@@ -21,7 +21,18 @@ export interface RecentLead {
   created_at: string;
 }
 
-export function useDashboardData(userId: string | undefined) {
+function applyPromotionFilter(query: any, promotionId?: string) {
+  if (!promotionId || promotionId === 'all') return query;
+  if (promotionId === 'arroyo') {
+    return query.or('promocion_interes.eq.arroyo,promocion_interes.eq.ambas,promocion_interes.is.null');
+  } else if (promotionId === 'farnesio') {
+    return query.or('promocion_interes.eq.farnesio,promocion_interes.eq.ambas');
+  } else {
+    return query.eq('promocion_interes', promotionId);
+  }
+}
+
+export function useDashboardData(userId: string | undefined, promotionId?: string) {
   const queryClient = useQueryClient();
 
   // Escuchar cambios en tiempo real en la agenda y los clientes
@@ -29,13 +40,21 @@ export function useDashboardData(userId: string | undefined) {
   useRealtimeSync('leads', ['dashboard_stats']);
   useRealtimeSync('leads', ['dashboard_recent']);
   useRealtimeSync('leads', ['dashboard_critical']);
+  useRealtimeSync('leads', ['dashboard_feedback']);
+  useRealtimeSync('leads', ['dashboard_auto_imported']);
 
   const { data: statsData, isLoading: loadingStats, refetch: refetchStats } = useQuery({
-    queryKey: ['dashboard_stats', userId],
+    queryKey: ['dashboard_stats', userId, promotionId],
     queryFn: async () => {
+      let countQuery = supabase.from('leads').select('*', { count: 'exact', head: true });
+      let sourceQuery = supabase.from('leads').select('source');
+
+      countQuery = applyPromotionFilter(countQuery, promotionId);
+      sourceQuery = applyPromotionFilter(sourceQuery, promotionId);
+
       const [countRes, sourceRes] = await Promise.all([
-        supabase.from('leads').select('*', { count: 'exact', head: true }),
-        supabase.from('leads').select('source')
+        countQuery,
+        sourceQuery
       ]);
       const count = countRes.count;
       const sourceData = sourceRes.data;
@@ -63,13 +82,15 @@ export function useDashboardData(userId: string | undefined) {
   });
 
   const { data: recentLeads = [], isLoading: loadingRecent, refetch: refetchRecent } = useQuery({
-    queryKey: ['dashboard_recent', userId],
+    queryKey: ['dashboard_recent', userId, promotionId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('leads')
         .select('id, name, source, created_at')
         .order('created_at', { ascending: false })
         .limit(6);
+      query = applyPromotionFilter(query, promotionId);
+      const { data, error } = await query;
       if (error) throw error;
       return data as RecentLead[];
     },
@@ -77,31 +98,48 @@ export function useDashboardData(userId: string | undefined) {
   });
 
   const { data: agenda = [], isLoading: loadingAgenda, refetch: refetchAgenda } = useQuery({
-    queryKey: ['dashboard_agenda', userId],
+    queryKey: ['dashboard_agenda', userId, promotionId],
     queryFn: async () => {
       const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const { data, error } = await supabase
         .from('agenda')
-        .select('*, leads(name, phone), email_tracking(*)')
+        .select('*, leads(name, phone, promocion_interes), email_tracking(*)')
         .or(`completed.eq.false,and(completed.eq.true,due_date.gte.${lastWeek})`)
         .order('due_date', { ascending: true });
       if (error) throw error;
-      return (data || []).map((item: any) => ({
+      let list = (data || []).map((item: any) => ({
         ...item,
         leads: Array.isArray(item.leads) ? item.leads[0] : item.leads,
         email_tracking: Array.isArray(item.email_tracking) ? item.email_tracking[0] : item.email_tracking
       })) as AgendaItem[];
+
+      if (promotionId && promotionId !== 'all') {
+        list = list.filter((item: any) => {
+          if (!item.leads) return true;
+          const leadPromo = item.leads.promocion_interes;
+          if (promotionId === 'arroyo') {
+            return !leadPromo || leadPromo === 'arroyo' || leadPromo === 'ambas';
+          }
+          if (promotionId === 'farnesio') {
+            return leadPromo === 'farnesio' || leadPromo === 'ambas';
+          }
+          return leadPromo === promotionId;
+        });
+      }
+      return list;
     },
     enabled: !!userId,
   });
 
   const { data: criticalLeads = [], isLoading: loadingCritical, refetch: refetchCritical } = useQuery({
-    queryKey: ['dashboard_critical', userId],
+    queryKey: ['dashboard_critical', userId, promotionId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('leads')
         .select('id, name, source, created_at, status, agenda(due_date, completed)')
         .not('status', 'in', '("closed","lost")');
+      query = applyPromotionFilter(query, promotionId);
+      const { data, error } = await query;
       if (error) throw error;
       const now = new Date();
       return (data || [])
@@ -133,22 +171,26 @@ export function useDashboardData(userId: string | undefined) {
   });
 
   const { data: feedbackLeads = [], isLoading: loadingFeedback, refetch: refetchFeedback } = useQuery({
-    queryKey: ['dashboard_feedback', userId],
+    queryKey: ['dashboard_feedback', userId, promotionId],
     queryFn: async () => {
       let feedbackData: any[] = [];
-      const { data, error } = await supabase
+      let query = supabase
         .from('leads')
         .select('id, name, email, source, created_at, status, feedback_sent, feedback_rating, feedback_responded_at')
         .or(`status.in.(visiting,closed),feedback_rating.not.is.null,feedback_sent.eq.true`);
+      query = applyPromotionFilter(query, promotionId);
+      const { data, error } = await query;
       
       if (!error && data) {
         feedbackData = data;
       } else {
-        const { data: fallbackData } = await supabase
+        let fallbackQuery = supabase
           .from('leads')
           .select('id, name, email, source, created_at, status, feedback_sent')
           .in('status', ['visiting', 'closed'])
           .eq('feedback_sent', false);
+        fallbackQuery = applyPromotionFilter(fallbackQuery, promotionId);
+        const { data: fallbackData } = await fallbackQuery;
         feedbackData = fallbackData || [];
       }
       const now = new Date();
@@ -170,14 +212,16 @@ export function useDashboardData(userId: string | undefined) {
   });
 
   const { data: autoImportedLeads = [], isLoading: loadingAuto, refetch: refetchAuto } = useQuery({
-    queryKey: ['dashboard_auto_imported', userId],
+    queryKey: ['dashboard_auto_imported', userId, promotionId],
     queryFn: async () => {
-      const { data, error } = await (supabase as any)
+      let query = (supabase as any)
         .from('leads')
         .select('id, name, source, email, phone, status, created_at')
         .like('source', '%(Auto IA)%')
         .order('created_at', { ascending: false })
         .limit(20);
+      query = applyPromotionFilter(query, promotionId);
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
@@ -196,7 +240,7 @@ export function useDashboardData(userId: string | undefined) {
   };
 
   const setAgenda = (updater: any) => {
-    queryClient.setQueryData(['dashboard_agenda', userId], updater);
+    queryClient.setQueryData(['dashboard_agenda', userId, promotionId], updater);
   };
 
   return {
