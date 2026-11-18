@@ -26,8 +26,7 @@ interface Task {
   completed: boolean;
   priority: string;
   leads?: {
-    first_name: string;
-    last_name: string;
+    name: string;
   };
 }
 
@@ -52,8 +51,7 @@ export const DailyTasksModal: React.FC<DailyTasksModalProps> = ({ isOpen, onClos
           .select(`
             *,
             leads (
-              first_name,
-              last_name
+              name
             )
           `)
           .eq('completed', false)
@@ -146,7 +144,7 @@ export const DailyTasksModal: React.FC<DailyTasksModalProps> = ({ isOpen, onClos
                     <div className="flex items-center gap-2 mt-0.5">
                       {task.leads && (
                         <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">
-                          {task.leads.first_name} {task.leads.last_name}
+                          {task.leads.name}
                         </span>
                       )}
                       <span className="text-[10px] text-slate-400 font-medium">
