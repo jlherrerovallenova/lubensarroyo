@@ -172,9 +172,9 @@ export default function Leads() {
             />
           </div>
 
-          <div className="flex flex-wrap w-full lg:w-auto gap-3">
+          <div className="flex flex-wrap items-center w-full lg:w-auto gap-2.5">
             <CustomSelect
-              className="flex-1 lg:w-48"
+              className="flex-1 sm:flex-none sm:w-auto min-w-[170px]"
               value={promocionFilter}
               onChange={(val) => { setPage(1); updateURLParams('promo', val); }}
               placeholder="Promoción"
@@ -187,7 +187,7 @@ export default function Leads() {
             />
 
             <CustomSelect
-              className="flex-1 lg:w-44"
+              className="flex-1 sm:flex-none sm:w-auto min-w-[155px]"
               value={statusFilter}
               onChange={(val) => { setPage(1); updateURLParams('status', val); }}
               placeholder="Todos los Estados"
@@ -198,25 +198,25 @@ export default function Leads() {
             />
 
             <CustomSelect
-              className="flex-1 lg:w-44"
+              className="flex-1 sm:flex-none sm:w-auto min-w-[150px]"
               value={sourceFilter}
               onChange={(val) => { setPage(1); updateURLParams('source', val); }}
               placeholder="Cualquier Origen"
               options={[
-                   { id: '', label: 'Cualquier Origen' },
-                   { id: 'Importado', label: 'Importado', icon: FileSpreadsheet, color: 'text-amber-500' },
-                   { id: 'Idealista', label: 'Idealista', icon: IdealistaIcon, color: 'text-[#deff30]' },
-                   { id: 'Web', label: 'Web', icon: Globe, color: 'text-blue-500' },
-                   { id: 'Google SEM', label: 'Google SEM', icon: Search, color: 'text-blue-600' },
-                   { id: 'Redes Sociales', label: 'Redes Sociales', icon: Smartphone, color: 'text-purple-500' },
-                   { id: 'Referido', label: 'Referido', icon: Users, color: 'text-emerald-500' },
-                   { id: 'Llamada', label: 'Llamada', icon: Phone, color: 'text-green-500' },
-                   { id: 'Valla', label: 'Valla', icon: MapPin, color: 'text-orange-500' }
+                { id: '', label: 'Cualquier Origen' },
+                { id: 'Importado', label: 'Importado', icon: FileSpreadsheet, color: 'text-amber-500' },
+                { id: 'Idealista', label: 'Idealista', icon: IdealistaIcon, color: 'text-[#deff30]' },
+                { id: 'Web', label: 'Web', icon: Globe, color: 'text-blue-500' },
+                { id: 'Google SEM', label: 'Google SEM', icon: Search, color: 'text-blue-600' },
+                { id: 'Redes Sociales', label: 'Redes Sociales', icon: Smartphone, color: 'text-purple-500' },
+                { id: 'Referido', label: 'Referido', icon: Users, color: 'text-emerald-500' },
+                { id: 'Llamada', label: 'Llamada', icon: Phone, color: 'text-green-500' },
+                { id: 'Valla', label: 'Valla', icon: MapPin, color: 'text-orange-500' }
               ]}
             />
 
             <CustomSelect
-              className="flex-1 lg:w-44"
+              className="flex-1 sm:flex-none sm:w-auto min-w-[175px]"
               value={assignedFilter}
               onChange={(val) => { setPage(1); updateURLParams('comercial', val); }}
               placeholder="Todos los Comerciales"

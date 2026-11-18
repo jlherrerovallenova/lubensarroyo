@@ -598,7 +598,7 @@ export default function Inventory() {
                   
                   <div className={`flex items-start justify-between ${property.estado_vivienda && property.estado_vivienda !== 'DISPONIBLE' ? 'mt-4' : ''}`}>
                     <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-xl shadow-inner shrink-0 ${
+                      <div className={`min-w-[3.5rem] px-2.5 h-12 rounded-xl flex items-center justify-center font-black text-base whitespace-nowrap shadow-inner shrink-0 ${
                           property.estado_vivienda === 'RESERVADA' 
                             ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' 
                             : 'bg-altavik-50 text-altavik-600 border border-altavik-200'
@@ -709,7 +709,7 @@ export default function Inventory() {
                   >
                     <td className="px-4 py-5">
                       <div className="flex flex-col items-center justify-center gap-1">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-base shadow-sm shrink-0 ${
+                        <div className={`min-w-[3.25rem] px-2 h-9 rounded-lg flex items-center justify-center font-bold text-xs whitespace-nowrap shadow-sm shrink-0 ${
                           property.estado_vivienda === 'RESERVADA' 
                             ? 'bg-indigo-600 text-white shadow-indigo-200' 
                             : 'bg-altavik-50 text-altavik-600'

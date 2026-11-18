@@ -141,7 +141,7 @@ export default function Pipeline() {
         actions={
           <div className="flex items-center gap-2">
             <CustomSelect
-              className="w-48 text-xs font-bold"
+              className="w-52 text-xs font-bold"
               value={comercialFilter}
               onChange={(val) => setComercialFilter(val)}
               placeholder="Todos los Comerciales"

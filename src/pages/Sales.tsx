@@ -173,7 +173,7 @@ export default function Sales() {
                       </td>
                       <td className="px-6 py-4">
                         <div 
-                          className="flex items-center gap-2 cursor-pointer text-slate-700 hover:text-altavik-600"
+                          className="flex items-center gap-2 cursor-pointer text-slate-700 hover:text-altavik-600 whitespace-nowrap"
                           onClick={() => navigate(`/inventory?search=${encodeURIComponent(sale.property.n_orden)}`)}
                         >
                           <Home size={16} className="text-slate-400" />

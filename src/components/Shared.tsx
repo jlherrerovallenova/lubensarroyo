@@ -146,21 +146,21 @@ export function CustomSelect({ value, onChange, options, placeholder = 'Seleccio
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 outline-none transition-all text-[14px] font-bold text-slate-700 flex items-center justify-between cursor-pointer shadow-sm"
+        className="w-full h-11 px-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-altavik-500/20 focus:border-altavik-500 outline-none transition-all text-xs font-bold text-slate-700 flex items-center justify-between cursor-pointer shadow-sm whitespace-nowrap gap-2"
       >
-        <div className="flex items-center gap-3">
-          {selected?.icon && <selected.icon strokeWidth={2.5} size={16} className={selected.color || 'text-slate-400'} />}
-          {selected?.dotColor && <span className={`w-2 h-2 rounded-full ${selected.dotColor}`} />}
-          <span>{selected?.label || placeholder}</span>
+        <div className="flex items-center gap-2 min-w-0">
+          {selected?.icon && <selected.icon strokeWidth={2.5} size={15} className={`${selected.color || 'text-slate-400'} shrink-0`} />}
+          {selected?.dotColor && <span className={`w-2 h-2 rounded-full shrink-0 ${selected.dotColor}`} />}
+          <span className="whitespace-nowrap">{selected?.label || placeholder}</span>
         </div>
-        <ChevronDown strokeWidth={2.5} size={16} className={`text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown strokeWidth={2.5} size={15} className={`text-slate-400 transition-transform shrink-0 ml-1.5 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
         <>
           <div className="fixed inset-0 z-[60]" onClick={() => setIsOpen(false)} />
           <div 
-            className="absolute top-full left-0 w-full mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl z-[70] max-h-64 overflow-y-auto py-1 animate-in fade-in slide-in-from-top-2 duration-200"
+            className="absolute top-full left-0 min-w-full w-max max-w-xs mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl z-[70] max-h-64 overflow-y-auto py-1 animate-in fade-in slide-in-from-top-2 duration-200"
           >
             {options.map((option) => (
               <button
@@ -170,14 +170,14 @@ export function CustomSelect({ value, onChange, options, placeholder = 'Seleccio
                   onChange(option.id);
                   setIsOpen(false);
                 }}
-                className={`w-full px-5 py-3 flex items-center justify-between text-sm hover:bg-slate-50 transition-colors ${value === option.id ? 'bg-altavik-50/50 text-altavik-700 font-bold' : 'text-slate-600'}`}
+                className={`w-full px-4 py-2.5 flex items-center justify-between text-xs whitespace-nowrap hover:bg-slate-50 transition-colors ${value === option.id ? 'bg-altavik-50/50 text-altavik-700 font-bold' : 'text-slate-600 font-medium'}`}
               >
-                <div className="flex items-center gap-3">
-                  {option.icon && <option.icon size={16} className={option.color || 'text-slate-400'} />}
-                  {option.dotColor && <span className={`w-2 h-2 rounded-full ${option.dotColor}`} />}
-                  {option.label}
+                <div className="flex items-center gap-2.5">
+                  {option.icon && <option.icon size={15} className={`${option.color || 'text-slate-400'} shrink-0`} />}
+                  {option.dotColor && <span className={`w-2 h-2 rounded-full shrink-0 ${option.dotColor}`} />}
+                  <span>{option.label}</span>
                 </div>
-                {value === option.id && <Check size={16} className="text-altavik-600" />}
+                {value === option.id && <Check size={15} className="text-altavik-600 ml-3 shrink-0" />}
               </button>
             ))}
           </div>

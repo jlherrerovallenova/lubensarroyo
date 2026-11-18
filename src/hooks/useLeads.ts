@@ -10,6 +10,61 @@ type LeadInsert = Database['public']['Tables']['leads']['Insert'];
 
 export const LEADS_QUERY_KEY = ['leads'];
 
+/**
+ * Construye las condiciones de búsqueda en Supabase para leads,
+ * permitiendo buscar por nombre, email y teléfono en múltiples formatos
+ * (sin espacios, con espacios XXX XXX XXX, con formato XXX XX XX XX, prefijo +34, etc.)
+ */
+export function buildLeadSearchQuery(searchTerm: string): string {
+  const cleanTerm = searchTerm.trim();
+  if (!cleanTerm) return '';
+
+  const conditions = [
+    `name.ilike.%${cleanTerm}%`,
+    `email.ilike.%${cleanTerm}%`,
+    `phone.ilike.%${cleanTerm}%`
+  ];
+
+  // 1. Sin espacios, guiones ni puntos
+  const noSpaces = cleanTerm.replace(/[\s.-]/g, '');
+  if (noSpaces && noSpaces !== cleanTerm) {
+    conditions.push(`phone.ilike.%${noSpaces}%`);
+  }
+
+  // 2. Variantes de formato telefónico
+  const digitsOnly = cleanTerm.replace(/\D/g, '');
+  if (digitsOnly && digitsOnly.length >= 3) {
+    if (digitsOnly !== noSpaces && digitsOnly !== cleanTerm) {
+      conditions.push(`phone.ilike.%${digitsOnly}%`);
+    }
+
+    // Prefijo de España 34 (+34)
+    if (digitsOnly.startsWith('34') && digitsOnly.length > 9) {
+      const without34 = digitsOnly.slice(2);
+      conditions.push(`phone.ilike.%${without34}%`);
+    }
+
+    // Bloques de 3 dígitos (XXX XXX ...)
+    const chunks3 = digitsOnly.match(/.{1,3}/g)?.join(' ');
+    if (chunks3 && chunks3 !== cleanTerm && chunks3 !== noSpaces) {
+      conditions.push(`phone.ilike.%${chunks3}%`);
+    }
+
+    // Bloques 3-2-2 (XXX XX XX ...)
+    if (digitsOnly.length >= 5) {
+      const head3 = digitsOnly.slice(0, 3);
+      const rest = digitsOnly.slice(3);
+      const chunks2 = rest.match(/.{1,2}/g)?.join(' ');
+      const variant322 = `${head3} ${chunks2}`;
+      if (variant322 !== cleanTerm && variant322 !== noSpaces && variant322 !== chunks3) {
+        conditions.push(`phone.ilike.%${variant322}%`);
+      }
+    }
+  }
+
+  return Array.from(new Set(conditions)).join(',');
+}
+
 interface FetchLeadsParams {
   page: number;
   pageSize: number;
@@ -43,7 +98,10 @@ export function useLeads(params: FetchLeadsParams) {
 
       // Apply search
       if (searchTerm) {
-        query = query.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`);
+        const searchConditions = buildLeadSearchQuery(searchTerm);
+        if (searchConditions) {
+          query = query.or(searchConditions);
+        }
       }
 
       // Apply filters
@@ -82,7 +140,10 @@ export function useLeads(params: FetchLeadsParams) {
             .select('*', { count: 'exact' })
             .order(sortField as keyof Lead, { ascending: sortDirection === 'asc' });
           if (searchTerm) {
-            fallbackQuery = fallbackQuery.or(`name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,phone.ilike.%${searchTerm}%`);
+            const searchConditions = buildLeadSearchQuery(searchTerm);
+            if (searchConditions) {
+              fallbackQuery = fallbackQuery.or(searchConditions);
+            }
           }
           if (statusFilter) fallbackQuery = fallbackQuery.eq('status', statusFilter);
           if (sourceFilter) fallbackQuery = fallbackQuery.ilike('source', `%${sourceFilter}%`);
