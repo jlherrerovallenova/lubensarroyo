@@ -353,11 +353,6 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
     doc.setFont('helvetica', 'bold'); doc.setFontSize(18);
     doc.text(fmtEur2(monthly), 185, y + 22, { align: 'right' });
 
-    // ── Logos Lubens Proyecto + Terravall (igual que Forma de Pago) ───────────
-    y += 50;
-    if (logoLubensProyecto) doc.addImage(logoLubensProyecto.data, 'PNG', 69, y, 25, 8.35);
-    if (logoTerravall) doc.addImage(logoTerravall.data, 'PNG', 109, y, 32, 8);
-
     drawFooter();
   };
 
@@ -433,11 +428,6 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
     doc.text('TOTAL GASTOS COMPRAVENTA (ESTIMADOS)', 25, y + 11);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(18);
     doc.text(fmtEur2(total), 185, y + 22, { align: 'right' });
-
-    // ── Logos ──────────────────────────────────────────────────────────────────
-    y += 50;
-    if (logoLubensProyecto) doc.addImage(logoLubensProyecto.data, 'PNG', 69, y, 25, 8.35);
-    if (logoTerravall) doc.addImage(logoTerravall.data, 'PNG', 109, y, 32, 8);
 
     drawFooter();
   };
