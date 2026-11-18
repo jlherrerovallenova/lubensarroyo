@@ -231,7 +231,7 @@ export default function PaymentFormModal({ isOpen, onClose, property }: PaymentF
 
               <div className="space-y-4">
                 {[
-                  { icon: Home, title: "1. Reserva", date: "Inmediato", amount: reserva, desc: "Bloqueo de la unidad" },
+                  { icon: Home, title: "1. Reserva", date: "", amount: reserva, desc: "" },
                   { icon: FileText, title: `2. Firma Contrato (${settings?.promotion_contract_percentage ?? 10}%)`, date: "-", amount: firmaContrato, desc: "A la firma de la compraventa" },
                   { icon: Calendar, title: "3. Aplazamiento", date: `${installmentCount} mensualidades`, amount: monthlyQuotaTotal, desc: `${installmentCount} cuotas de ${formatCurrency(monthlyAmount)}` },
                   { icon: BadgeCheck, title: `4. Escrituración (${totalWithIVA > 0 ? Math.round((eightyPercent / totalWithIVA) * 100) : Math.round(deedPct * 100)}%)`, date: "Entrega de llaves", amount: eightyPercent, desc: "Mediante préstamo hipotecario" }

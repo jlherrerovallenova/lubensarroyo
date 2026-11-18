@@ -221,11 +221,14 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
       doc.text(idx.toString(), 26, currentY + 14, { align: 'center' });
       doc.setTextColor(deepBlue[0], deepBlue[1], deepBlue[2]);
       doc.setFontSize(10);
-      doc.text(title, 35, currentY + 8);
-      doc.setFontSize(7.5);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(softGray[0], softGray[1], softGray[2]);
-      doc.text(subtitle, 35, currentY + 13);
+      const titleY = (subtitle || date) ? currentY + 8 : currentY + 12.5;
+      doc.text(title, 35, titleY);
+      if (subtitle) {
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(softGray[0], softGray[1], softGray[2]);
+        doc.text(subtitle, 35, currentY + 13);
+      }
       if (date) {
         doc.setFont('helvetica', 'bold');
         doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
@@ -244,7 +247,7 @@ export async function generatePropertyPDFBlob(property: Property, mortgageParams
       currentY += 24; 
     };
 
-    drawStep(1, 'Reserva de Vivienda', 'Bloqueo inmediato de la unidad', 'INMEDIATO', reserva, false);
+    drawStep(1, 'Reserva de Vivienda', '', '', reserva, false);
     currentY += 4; 
     doc.setFontSize(7);
     doc.setFont('helvetica', 'bold');
