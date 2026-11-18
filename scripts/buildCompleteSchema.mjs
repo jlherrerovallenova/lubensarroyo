@@ -429,9 +429,9 @@ ON CONFLICT (n_orden) DO NOTHING;\n`;
   // 9. INSERT VIVIENDAS FARNESIO (19)
   sql += `\n-- 9. CARGA DE 19 VIVIENDAS DE LUBENS FARNESIO\n`;
   for (const v of FARNESIO_VIVIENDAS_19) {
-    sql += `INSERT INTO public.inventory (n_orden, portal, planta, letra, dormitorios, banos, sup_util, sup_terrazas, sup_construida, sup_porche, orientacion, precio, garaje, trastero, estado_vivienda, promocion)
-VALUES (${escapeSql(v.n_orden)}, ${escapeSql(v.portal)}, ${escapeSql(v.planta)}, ${escapeSql(v.letra)}, ${v.dormitorios}, ${v.banos}, ${v.sup_util}, ${v.sup_terrazas}, ${v.sup_construida}, ${v.sup_porche}, ${escapeSql(v.orientacion)}, ${v.precio}, ${escapeSql(v.garaje)}, ${escapeSql(v.trastero)}, ${escapeSql(v.estado_vivienda)}, 'farnesio')
-ON CONFLICT (n_orden) DO NOTHING;\n`;
+    sql += `INSERT INTO public.inventory (n_orden, portal, planta, letra, dormitorios, banos, sup_util, sup_terrazas, sup_construida, sup_porche, orientacion, precio, garaje, trastero, estado_vivienda, promocion, ficha_url)
+VALUES (${escapeSql(v.n_orden)}, ${escapeSql(v.portal)}, ${escapeSql(v.planta)}, ${escapeSql(v.letra)}, ${v.dormitorios}, ${v.banos}, ${v.sup_util}, ${v.sup_terrazas}, ${v.sup_construida}, ${v.sup_porche}, ${escapeSql(v.orientacion)}, ${v.precio}, ${escapeSql(v.garaje)}, ${escapeSql(v.trastero)}, ${escapeSql(v.estado_vivienda)}, 'farnesio', ${escapeSql(v.ficha_url)})
+ON CONFLICT (n_orden) DO UPDATE SET ficha_url = EXCLUDED.ficha_url, estado_vivienda = EXCLUDED.estado_vivienda;\n`;
   }
 
   // 10. INSERT LEADS DESDE leads_to_import.json

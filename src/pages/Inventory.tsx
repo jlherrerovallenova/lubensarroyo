@@ -19,7 +19,9 @@ import {
   Plus,
   Download,
   FileDown,
-  Upload
+  Upload,
+  MessageSquare,
+  Mail
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -392,6 +394,41 @@ export default function Inventory() {
     }
   };
 
+  const handleSendWhatsApp = (prop: Property) => {
+    const planUrl = prop.ficha_url?.startsWith('http')
+      ? prop.ficha_url
+      : `${window.location.origin}${prop.ficha_url}`;
+    const promoTitle = prop.promocion === 'farnesio' ? 'Lubens Farnesio' : 'Lubens Arroyo';
+    const text = `¡Hola! Te facilito la información y el plano de la vivienda en *${promoTitle}*:\n\n` +
+      `🏡 *Vivienda*: Portal ${prop.portal}, Planta ${prop.planta}, Letra ${prop.letra}\n` +
+      `📐 *Superficie útil*: ${prop.sup_util?.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²\n` +
+      `🛏️ *Dormitorios*: ${prop.dormitorios} | 🛁 *Baños*: ${prop.banos}\n` +
+      (prop.sup_terrazas ? `☀️ *Terrazas*: ${prop.sup_terrazas.toLocaleString('es-ES')} m²\n` : '') +
+      `💰 *Precio*: ${currencyFormatter.format(prop.precio)}\n\n` +
+      `📄 *Ver y descargar plano*: ${planUrl}\n\n` +
+      `¿Te gustaría concertar una visita o recibir más información?`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  };
+
+  const handleSendEmail = (prop: Property) => {
+    const planUrl = prop.ficha_url?.startsWith('http')
+      ? prop.ficha_url
+      : `${window.location.origin}${prop.ficha_url}`;
+    const promoTitle = prop.promocion === 'farnesio' ? 'Lubens Farnesio' : 'Lubens Arroyo';
+    const subject = `Información y Plano de Vivienda - ${promoTitle} (Portal ${prop.portal} ${prop.planta} ${prop.letra})`;
+    const body = `Hola,\n\nTe facilito la información y el enlace al plano de la vivienda en ${promoTitle}:\n\n` +
+      `• Portal: ${prop.portal}\n` +
+      `• Planta / Letra: ${prop.planta} ${prop.letra}\n` +
+      `• Dormitorios: ${prop.dormitorios}\n` +
+      `• Baños: ${prop.banos}\n` +
+      `• Superficie útil: ${prop.sup_util?.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²\n` +
+      (prop.sup_terrazas ? `• Terrazas: ${prop.sup_terrazas.toLocaleString('es-ES')} m²\n` : '') +
+      `• Precio: ${currencyFormatter.format(prop.precio)}\n\n` +
+      `Puedes consultar y descargar el plano oficial en el siguiente enlace:\n${planUrl}\n\n` +
+      `Quedamos a tu entera disposición para concertar una visita o resolver cualquier consulta.\n\nAtentamente,\nEquipo Comercial ${promoTitle}`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
   return (
     <div className="max-w-[1600px] mx-auto space-y-6">
       <PageHeader 
@@ -603,11 +640,19 @@ export default function Inventory() {
 
                   <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 mt-1">
                     {property.ficha_url && (
-                      <a href={property.ficha_url} target="_blank" rel="noopener noreferrer" className="p-2 text-altavik-600 hover:bg-altavik-50 rounded-lg transition-all bg-white border border-slate-200">
-                        <PencilRuler size={18} />
-                      </a>
+                      <>
+                        <a href={property.ficha_url} target="_blank" rel="noopener noreferrer" className="p-2 text-altavik-600 hover:bg-altavik-50 rounded-lg transition-all bg-white border border-slate-200" title="Ver Plano PDF">
+                          <PencilRuler size={18} />
+                        </a>
+                        <button type="button" onClick={() => handleSendWhatsApp(property)} className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all bg-white border border-slate-200" title="Enviar Plano por WhatsApp">
+                          <MessageSquare size={18} />
+                        </button>
+                        <button type="button" onClick={() => handleSendEmail(property)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all bg-white border border-slate-200" title="Enviar Plano por Email">
+                          <Mail size={18} />
+                        </button>
+                      </>
                     )}
-                    <button type="button" onClick={() => { setSelectedPropertyForPayment(property); setIsPaymentModalOpen(true); }} className="p-2 text-altavik-600 hover:bg-altavik-50 rounded-lg transition-all bg-white border border-slate-200">
+                    <button type="button" onClick={() => { setSelectedPropertyForPayment(property); setIsPaymentModalOpen(true); }} className="p-2 text-altavik-600 hover:bg-altavik-50 rounded-lg transition-all bg-white border border-slate-200" title="Forma de pago">
                       <Euro size={18} />
                     </button>
                     <button type="button" onClick={() => { setEditingProperty(property); setIsModalOpen(true); }} className="px-4 py-2 bg-slate-900 text-white rounded-lg font-bold text-sm hover:bg-slate-800 transition-colors flex items-center gap-2">
@@ -733,15 +778,33 @@ export default function Inventory() {
                     <td className="px-4 py-5">
                       <div className="flex justify-center items-center gap-1">
                         {property.ficha_url && (
-                          <a
-                            href={property.ficha_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 text-altavik-600 hover:bg-altavik-50 rounded-lg transition-all"
-                            title="Ver Ficha PDF"
-                          >
-                            <PencilRuler size={18} />
-                          </a>
+                          <>
+                            <a
+                              href={property.ficha_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 text-altavik-600 hover:bg-altavik-50 rounded-lg transition-all"
+                              title="Ver Plano PDF"
+                            >
+                              <PencilRuler size={18} />
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => handleSendWhatsApp(property)}
+                              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                              title="Enviar Plano por WhatsApp"
+                            >
+                              <MessageSquare size={18} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSendEmail(property)}
+                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                              title="Enviar Plano por Email"
+                            >
+                              <Mail size={18} />
+                            </button>
+                          </>
                         )}
                         <button type="button"
                           onClick={() => {
