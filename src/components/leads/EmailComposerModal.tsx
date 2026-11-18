@@ -110,7 +110,10 @@ export default function EmailComposerModal({
   };
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const [subject, setSubject, clearSubject] = useAutosave(`draft-email-subj-${leadId}`, `Documentación LUBENS ARROYO - TERRAVALL`);
+  const promoKey = activePromotion?.id || 'arroyo';
+  const promoNameUpper = (activePromotion?.name || 'Lubens Arroyo').toUpperCase();
+
+  const [subject, setSubject, clearSubject] = useAutosave(`draft-email-subj-${leadId}-${promoKey}`, `Documentación ${promoNameUpper} - TERRAVALL`);
   const { templates, loading: loadingTemplates } = useWhatsAppTemplates();
   const selectedTemplateIdRef = useRef<string>('');
   const selectedTemplateId = selectedTemplateIdRef.current;
@@ -118,7 +121,18 @@ export default function EmailComposerModal({
     selectedTemplateIdRef.current = id;
   };
 
-  const [message, setMessage, clearMessage] = useAutosave(`draft-email-msg-${leadId}`, '');
+  const [message, setMessage, clearMessage] = useAutosave(`draft-email-msg-${leadId}-${promoKey}`, '');
+
+  // Sincronizar asunto y mensaje con la promoción activa si existían borradores con el nombre de la otra promoción
+  useEffect(() => {
+    if (activePromotion.id === 'farnesio') {
+      setMessage(prev => (prev ? prev.replace(/LUBENS ARROYO/g, 'LUBENS FARNESIO').replace(/Lubens Arroyo/g, 'Lubens Farnesio') : prev));
+      setSubject(prev => (prev ? prev.replace(/LUBENS ARROYO/g, 'LUBENS FARNESIO').replace(/Lubens Arroyo/g, 'Lubens Farnesio') : prev));
+    } else if (activePromotion.id === 'arroyo') {
+      setMessage(prev => (prev ? prev.replace(/LUBENS FARNESIO/g, 'LUBENS ARROYO').replace(/Lubens Farnesio/g, 'Lubens Arroyo') : prev));
+      setSubject(prev => (prev ? prev.replace(/LUBENS FARNESIO/g, 'LUBENS ARROYO').replace(/Lubens Farnesio/g, 'Lubens Arroyo') : prev));
+    }
+  }, [activePromotion.id, setMessage, setSubject]);
 
   // Efecto para inicializar asunto, mensaje y adjuntos si se solicita reenviar un correo existente
   // react-doctor-disable-next-line exhaustive-deps
@@ -149,14 +163,14 @@ export default function EmailComposerModal({
         setSelectedTemplateId(firstContact.id || firstContact.name);
         setMessage(parseTemplate(firstContact.body, { name: leadName }, { agente: agentName }));
         if (method === 'email') {
-          setSubject(`Información Promoción LUBENS ARROYO - ${agentName}`);
+          setSubject(`Información Promoción ${promoNameUpper} - ${agentName}`);
         }
       }
     } else if (!message && templates.length > 0) {
       // Mensaje genérico por defecto
       setMessage(`¡${getGreeting()}, ${leadName.split(' ')[0]}!
 
-Tal y como acabamos de hablar, le envío adjunta toda la información sobre LUBENS ARROYO.
+Tal y como acabamos de hablar, le envío adjunta toda la información sobre ${promoNameUpper}.
 
 Échele un vistazo tranquilamente y, si tiene cualquier duda o quiere que comentemos algún detalle, estoy a su disposición.
 
@@ -164,7 +178,7 @@ Tal y como acabamos de hablar, le envío adjunta toda la información sobre LUBE
 
 ${agentName} - TERRAVALL`);
     }
-  }, [initialTemplate, templates, leadName, method, message, initialSubject, initialMessage, agentName]);
+  }, [initialTemplate, templates, leadName, method, message, initialSubject, initialMessage, agentName, promoNameUpper]);
 
   const applyTemplate = async (templateId: string) => {
     const template = templates.find(t => (t.id || t.name) === templateId);
@@ -307,6 +321,8 @@ ${agentName} - TERRAVALL`);
   // Función para convertir la firma a Base64 para que sea visible en el email
   // Eliminada para no saturar EmailJS (Error 422 por payload demasiado grande)
     const getSignatureHtml = (): string => {
+    const isFarnesio = activePromotion.id === 'farnesio';
+    const address = isFarnesio ? 'Calle General Shelly 1 · Valladolid' : 'Plaza Mayor 8, 1ºA · Valladolid';
     return `
       <div style="margin-top: 24px; display: inline-block;">
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
@@ -317,8 +333,8 @@ ${agentName} - TERRAVALL`);
             ${activePromotion.name}
           </div>
           <div style="margin-top: 10px; font-size: 12px; color: #64748b; line-height: 1.6;">
-            <div>📍 Plaza Mayor 8, 1ºA · Valladolid</div>
-            <div>📞 983 34 21 32</div>
+            <div>📍 ${address}</div>
+            <div>📞 ${activePromotion.phone || '983 34 21 32'}</div>
             <div>🌐 <a href="${activePromotion.web}" style="color: #1e293b; text-decoration: none;">${activePromotion.web.replace('https://', '')}</a></div>
           </div>
         </div>
@@ -449,6 +465,12 @@ ${agentName} - TERRAVALL`);
             </div>`
           : '';
 
+        const promoLogoUrl = activePromotion.publicLogoUrl || (
+          activePromotion.id === 'farnesio'
+            ? 'https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/logos/logo-lubens-farnesio.png'
+            : 'https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/logos/logo-lubens-arroyo.png'
+        );
+
         // Construimos el cuerpo HTML con un diseño premium
         const htmlFullMessage = `
           <!DOCTYPE html>
@@ -463,7 +485,7 @@ ${agentName} - TERRAVALL`);
             <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
               <!-- Header Corporativo -->
               <div style="background-color: #ffffff; padding: 25px 20px; text-align: center; border-bottom: 2px solid #6b94b9;">
-                <img src="https://oenaworwtrblkmjvwjfs.supabase.co/storage/v1/object/public/documents/logo-altavik.png" alt="Lubens Arroyo" style="height: 65px; max-height: 65px; width: auto; display: inline-block; border: none; outline: none; text-decoration: none;" />
+                <img src="${promoLogoUrl}" alt="${activePromotion.name}" style="height: 65px; max-height: 65px; width: auto; display: inline-block; border: none; outline: none; text-decoration: none;" />
               </div>
 
               <div style="padding: 40px;">
@@ -492,6 +514,7 @@ ${agentName} - TERRAVALL`);
         `;
 
         await sendEmail({
+          from: `${activePromotion.name} <info@terravallpromociones.com>`,
           to: recipients.length === 1 ? recipients[0] : recipients,
           subject,
           html: htmlFullMessage,

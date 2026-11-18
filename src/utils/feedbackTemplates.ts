@@ -9,6 +9,10 @@ export const getFeedbackEmailTemplate = (clientName: string, promotionName: stri
   };
 
   const firstName = clientName.split(' ')[0] || 'Cliente';
+  const isFarnesio = promotionName.toLowerCase().includes('farnesio');
+  const logoUrl = isFarnesio
+    ? 'https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/logos/logo-lubens-farnesio.png'
+    : 'https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/logos/logo-lubens-arroyo.png';
 
   return `
     <!DOCTYPE html>
@@ -25,7 +29,7 @@ export const getFeedbackEmailTemplate = (clientName: string, promotionName: stri
         
         <!-- Header Corporativo -->
         <div style="background-color: #ffffff; padding: 28px 20px; text-align: center; border-bottom: 2px solid #6b94b9;">
-          <img src="https://oenaworwtrblkmjvwjfs.supabase.co/storage/v1/object/public/documents/logo-altavik.png" alt={promotionName} style="height: 60px; max-height: 60px; width: auto; display: inline-block; border: none; outline: none;" />
+          <img src="${logoUrl}" alt="${promotionName}" style="height: 60px; max-height: 60px; width: auto; display: inline-block; border: none; outline: none;" />
         </div>
 
         <!-- Contenido principal -->

@@ -8,6 +8,7 @@ export interface PromotionConfig {
   siteAddress: string;
   logo: string;
   logoWhite: string;
+  publicLogoUrl: string;
   bankName: string;
   bankAccount: string;
   web: string;
@@ -32,6 +33,7 @@ export const PROMOTIONS: Record<'arroyo' | 'farnesio', PromotionConfig> = {
     siteAddress: 'Calle Isaac Peral 20, Arroyo de la Encomienda (Valladolid)',
     logo: '/logo-lubens-arroyo.png',
     logoWhite: '/logo-lubens-arroyo-white.png',
+    publicLogoUrl: 'https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/logos/logo-lubens-arroyo.png',
     bankName: 'CAJA RURAL DE ZAMORA',
     bankAccount: 'ES02/3085/0102/0126/0444/9021',
     web: 'https://www.lubensresidencial.com',
@@ -54,6 +56,7 @@ export const PROMOTIONS: Record<'arroyo' | 'farnesio', PromotionConfig> = {
     siteAddress: 'Calle General Shelly 1, Valladolid',
     logo: '/logo-lubens-farnesio.png',
     logoWhite: '/logo-lubens-farnesio-white.png',
+    publicLogoUrl: 'https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/logos/logo-lubens-farnesio.png',
     bankName: 'CAJA RURAL DE ZAMORA',
     bankAccount: 'ES02/3085/0102/0126/0444/9021',
     web: 'https://www.lubensresidencial.com',

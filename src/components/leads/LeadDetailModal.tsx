@@ -5,6 +5,7 @@ import FeedbackEmailModal from './FeedbackEmailModal';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { useDialog } from '../../context/DialogContext';
+import { usePromotion } from '../../context/PromotionContext';
 import EmailComposerModal from './EmailComposerModal';
 import { useDocuments } from '../../hooks/useDocuments';
 import SaleTab from './SaleTab';
@@ -52,6 +53,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
   const queryClient = useQueryClient();
   const { session, profile } = useAuth();
   const { showAlert, showConfirm } = useDialog();
+  const { activePromotion } = usePromotion();
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [emailModalMethod, setEmailModalMethod] = useState<'email' | 'whatsapp'>('email');
@@ -541,9 +543,11 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
   const agentName = profile?.full_name || 'Juan Herrero';
   const currentHour = new Date().getHours();
   const greeting = currentHour < 14 ? 'Buenos días' : 'Buenas tardes';
+  const promoUpper = (activePromotion?.name || 'Lubens Arroyo').toUpperCase();
+  const promoLocation = activePromotion?.siteAddress || 'C/ Isaac Peral 20, Arroyo de la Encomienda';
   const waMessage = `${greeting} ${formData.name || ''}:
 
-Mi nombre es ${agentName}, de inmobiliaria TERRAVALL. Le escribo porque hemos recibido su solicitud de información sobre la promoción LUBENS ARROYO (C/ Isaac Peral 20, Arroyo de la Encomienda).
+Mi nombre es ${agentName}, de inmobiliaria TERRAVALL. Le escribo porque hemos recibido su solicitud de información sobre la promoción ${promoUpper} (${promoLocation}).
 
 Para enviarle las opciones que mejor se ajusten a lo que busca, coménteme brevemente:
 
@@ -554,7 +558,7 @@ Para enviarle las opciones que mejor se ajusten a lo que busca, coménteme breve
 Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
 
   const whatsappUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMessage)}` : '#';
-  const mailtoUrl = formData.email ? `mailto:${formData.email}?subject=Información%20Finca%20Lubens%20Arroyo` : '#';
+  const mailtoUrl = formData.email ? `mailto:${formData.email}?subject=Información%20Promoción%20${encodeURIComponent(activePromotion?.name || 'Lubens')}` : '#';
 
   const statusCfg = STATUS_CONFIG[formData.status || 'new'] || STATUS_CONFIG['new'];
 
