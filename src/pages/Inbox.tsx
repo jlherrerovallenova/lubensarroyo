@@ -5,6 +5,7 @@ import { useCreateLead } from '../hooks/useLeads';
 import { useEmails, useUpdateEmail, type IncomingEmail } from '../hooks/useEmails';
 import { AppNotification } from '../components/AppNotification';
 import { supabase } from '../lib/supabase';
+import { sendEmail } from '../services/emailService';
 import { useDialog } from '../context/DialogContext';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
@@ -150,19 +151,15 @@ export default function Inbox() {
     isSendingReplyRef.current = true;
     setIsSendingReply(true);
     try {
-      const { error } = await supabase.functions.invoke('send-email', {
-        body: {
-          to: selectedMail.sender_email,
-          subject: `Re: ${selectedMail.subject}`,
-          html: `<div style="font-family: sans-serif; color: #1e293b;">
-            <p>${replyText.replace(/\n/g, '<br>')}</p>
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e2e8f0;" />
-            <p style="font-size: 12px; color: #64748b;">De: Lubens Arroyo</p>
-          </div>`
-        }
+      await sendEmail({
+        to: selectedMail.sender_email,
+        subject: `Re: ${selectedMail.subject}`,
+        html: `<div style="font-family: sans-serif; color: #1e293b;">
+          <p>${replyText.replace(/\n/g, '<br>')}</p>
+          <hr style="margin: 20px 0; border: 0; border-top: 1px solid #e2e8f0;" />
+          <p style="font-size: 12px; color: #64748b;">De: Lubens Arroyo</p>
+        </div>`
       });
-
-      if (error) throw error;
 
       setNotification({
         show: true,

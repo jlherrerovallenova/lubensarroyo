@@ -28,6 +28,7 @@ import autoTable from 'jspdf-autotable';
 import { supabase } from '../lib/supabase';
 import CreatePropertyModal from '../components/inventory/CreatePropertyModal';
 import ImportInventoryModal from '../components/inventory/ImportInventoryModal';
+import { sanitizeText } from '../utils/textUtils';
 import UploadFichasModal from '../components/inventory/UploadFichasModal';
 import { AppNotification } from '../components/AppNotification';
 import { useDialog } from '../context/DialogContext';
@@ -606,7 +607,7 @@ export default function Inventory() {
                       </div>
                       <div>
                         <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Portal {property.portal}</p>
-                        <p className="text-lg font-black text-slate-800 leading-tight">Planta {property.planta} - {property.letra}</p>
+                        <p className="text-lg font-black text-slate-800 leading-tight">Planta {sanitizeText(property.planta)} - {property.letra}</p>
                       </div>
                     </div>
                     <div className="text-right shrink-0 ml-2">
@@ -735,7 +736,7 @@ export default function Inventory() {
                     </td>
                     <td className="px-4 py-5">
                       <div className="text-center font-bold text-slate-700 text-base whitespace-nowrap">
-                        {property.planta} - {property.letra}
+                        {sanitizeText(property.planta)} - {property.letra}
                       </div>
                     </td>
                     <td className="px-4 py-5">

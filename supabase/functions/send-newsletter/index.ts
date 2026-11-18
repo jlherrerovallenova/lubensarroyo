@@ -12,11 +12,6 @@ serve(async (req) => {
     }
 
     try {
-        const resendApiKey = Deno.env.get('RESEND_API_KEY')
-        if (!resendApiKey) {
-            throw new Error("Missing RESEND_API_KEY")
-        }
-
         const authHeader = req.headers.get('Authorization')
         if (!authHeader) {
             return new Response(JSON.stringify({ error: 'No se ha proporcionado cabecera de autorización' }), {
@@ -37,6 +32,22 @@ serve(async (req) => {
                 status: 401,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             })
+        }
+
+        let resendApiKey = Deno.env.get('RESEND_API_KEY')
+        if (!resendApiKey) {
+            const { data: settingData } = await supabaseClient
+                .from('settings')
+                .select('value')
+                .eq('key', 'resend_api_key')
+                .maybeSingle()
+            if (settingData?.value) {
+                resendApiKey = settingData.value
+            }
+        }
+
+        if (!resendApiKey) {
+            throw new Error("Missing RESEND_API_KEY: Configúrala en Configuración > Integraciones > Resend API Key o como secreto de Supabase.")
         }
 
         const { newsletterId, audience, phase, leadIds } = await req.json()

@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { X, Send, Loader as Loader2, MessageSquare } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { getFeedbackEmailTemplate } from '../../utils/feedbackTemplates';
+import { sendEmail } from '../../services/emailService';
 import { useDialog } from '../../context/DialogContext';
 import { useAuth } from '../../context/AuthContext';
 import { useSettings } from '../../hooks/useSettings';
@@ -82,19 +83,13 @@ export default function FeedbackEmailModal({ isOpen, onClose, lead, onSuccess }:
         emailHtml = emailHtml.replace('</body>', `${trackingPixelHtml}</body>`);
       }
 
-      // 3. Enviar vía Supabase Edge Function
+      // 3. Enviar correo via servicio centralizado de Resend
       const recipients = [lead.email, lead.secondary_email].filter(Boolean) as string[];
-      const { data, error: sendError } = await supabase.functions.invoke('send-email', {
-        body: {
-          to: recipients.length === 1 ? recipients[0] : recipients,
-          subject: `Una breve opinión sobre ${promotionName}`,
-          html: emailHtml,
-        },
+      await sendEmail({
+        to: recipients.length === 1 ? recipients[0] : recipients,
+        subject: `Una breve opinión sobre ${promotionName}`,
+        html: emailHtml,
       });
-
-      if (sendError || data?.error) {
-        throw new Error(data?.error || sendError?.message || 'Error al enviar el email');
-      }
 
       // 4. Actualizar base de datos del lead
       const { error: dbError } = await (supabase as any)

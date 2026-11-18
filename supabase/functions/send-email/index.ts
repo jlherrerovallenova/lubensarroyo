@@ -43,12 +43,26 @@ serve(async (req) => {
       })
     }
 
-    const resendApiKey = Deno.env.get('RESEND_API_KEY')
+    const body = await req.json()
+    const { to, subject, html, resendApiKey: bodyKey, from, bcc } = body
+
+    let resendApiKey = Deno.env.get('RESEND_API_KEY') || bodyKey
+
     if (!resendApiKey) {
-      throw new Error("RESEND_API_KEY no configurada en el servidor. Ejecútalo con: supabase secrets set RESEND_API_KEY=re_xxxx")
+      const { data: settingData } = await supabaseClient
+        .from('settings')
+        .select('value')
+        .eq('key', 'resend_api_key')
+        .maybeSingle()
+
+      if (settingData?.value) {
+        resendApiKey = settingData.value
+      }
     }
 
-    const { to, subject, html } = await req.json()
+    if (!resendApiKey) {
+      throw new Error("RESEND_API_KEY no configurada. Configúrala en el CRM (Configuración > Integraciones) o mediante: supabase secrets set RESEND_API_KEY=re_xxxx")
+    }
 
     if (!to || !subject || !html) {
       throw new Error("Faltan campos obligatorios: to, subject, html")
@@ -61,9 +75,9 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Lubens Arroyo <info@terravallpromociones.com>',
+        from: from || 'Lubens Arroyo <info@terravallpromociones.com>',
         to: Array.isArray(to) ? to : [to],
-        bcc: ['terravall@lubensarroyo.es'],
+        bcc: bcc || ['terravall@lubensarroyo.es'],
         subject,
         html,
       }),

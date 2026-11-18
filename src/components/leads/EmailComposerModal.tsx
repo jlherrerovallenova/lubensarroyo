@@ -9,6 +9,7 @@ import PropertySelector from './PropertySelector';
 import { generatePropertyPDFBlob } from '../../utils/fichasVivienda';
 import { useWhatsAppTemplates } from '../../hooks/useWhatsAppTemplates';
 import { parseTemplate, getWhatsAppUrl, getGreeting, sendWhatsAppCloudAPI, META_PRIMER_CONTACTO_TEMPLATE, META_PRIMER_CONTACTO_BODY } from '../../services/whatsappService';
+import { sendEmail } from '../../services/emailService';
 import { useAutosave } from '../../hooks/useAutosave';
 import { usePromotion } from '../../context/PromotionContext';
 
@@ -490,24 +491,11 @@ ${agentName} - TERRAVALL`);
           </html>
         `;
 
-        const { data, error } = await supabase.functions.invoke('send-email', {
-          body: {
-            to: recipients.length === 1 ? recipients[0] : recipients,
-            subject,
-            html: htmlFullMessage,
-          },
+        await sendEmail({
+          to: recipients.length === 1 ? recipients[0] : recipients,
+          subject,
+          html: htmlFullMessage,
         });
-
-        if (error || data?.error) {
-          let msg = data?.error || error?.message || 'Error desconocido';
-          try {
-             if (error && (error as any).context && typeof (error as any).context.json === 'function') {
-                const errData = await (error as any).context.json();
-                msg = errData.error || msg;
-             }
-          } catch(e) {}
-          throw new Error(msg);
-        }
 
         await saveHistory('email', trackingId);
         await createTaskRecord('email', trackingId);
