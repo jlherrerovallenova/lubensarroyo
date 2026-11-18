@@ -20,6 +20,7 @@ const Stats = lazy(() => import('./pages/Stats'));
 const Inbox = lazy(() => import('./pages/Inbox'));
 const Discovery = lazy(() => import('./pages/Discovery'));
 const FeedbackResponse = lazy(() => import('./pages/FeedbackResponse'));
+const DocumentViewer = lazy(() => import('./pages/DocumentViewer'));
 const WhatsAppInbox = lazy(() => import('./pages/WhatsAppInbox'));
 const Sales = lazy(() => import('./pages/Sales'));
 const SurveyResults = lazy(() => import('./pages/SurveyResults'));
@@ -52,6 +53,7 @@ function App() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/feedback" element={<Suspense fallback={<PageLoader />}><FeedbackResponse /></Suspense>} />
+      <Route path="/view-document" element={<Suspense fallback={<PageLoader />}><DocumentViewer /></Suspense>} />
       
       {/* Client Portal Routes */}
       <Route path="/client/login" element={<Suspense fallback={<PageLoader />}><ClientLogin /></Suspense>} />

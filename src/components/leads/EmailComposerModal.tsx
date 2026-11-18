@@ -389,7 +389,7 @@ ${agentName} - TERRAVALL`);
     );
   };
 
-  const saveHistory = async (sentMethod: 'email' | 'whatsapp', trackingId?: string) => {
+  const saveHistory = async (sentMethod: 'email' | 'whatsapp', trackingId?: string, resendId?: string) => {
     try {
       if (selectedDocs.length > 0) {
         const record = {
@@ -420,7 +420,8 @@ ${agentName} - TERRAVALL`);
           docs: selectedDocs.map(d => d.name),
           body: message,
           ...(sentMethod === 'email' ? { subject: subject } : {}),
-          ...(trackingId ? { tracking_id: trackingId, opened: false } : {})
+          ...(trackingId ? { tracking_id: trackingId, opened: false } : {}),
+          ...(resendId ? { resend_id: resendId } : {})
         }
       }]);
 
@@ -476,6 +477,8 @@ ${agentName} - TERRAVALL`);
         // Obtenemos la firma en HTML ligero en lugar de Base64
         const signatureHtml = getSignatureHtml();
 
+        const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://lubensarroyo.es';
+
         const htmlDocs = selectedDocs.length > 0
           ? `
             <div style="margin-top: 32px;">
@@ -485,8 +488,11 @@ ${agentName} - TERRAVALL`);
                 </span>
               </div>
               <div style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff;">
-                ${selectedDocs.map((d, i) => `
-                  <a href="${d.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 14px 18px; background-color: ${i % 2 === 0 ? '#ffffff' : '#f8fafc'}; text-decoration: none; border-bottom: ${i === selectedDocs.length - 1 ? 'none' : '1px solid #e2e8f0'};">
+                ${selectedDocs.map((d, i) => {
+                  const targetUrl = d.url?.startsWith('http') ? d.url : `${baseUrl}${d.url?.startsWith('/') ? '' : '/'}${d.url}`;
+                  const viewerLink = `${baseUrl}/view-document?t=${trackingId || ''}&lead=${leadId}&doc=${encodeURIComponent(d.name)}&url=${encodeURIComponent(targetUrl)}&promo=${activePromotion.id}`;
+                  return `
+                  <a href="${viewerLink}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 14px 18px; background-color: ${i % 2 === 0 ? '#ffffff' : '#f8fafc'}; text-decoration: none; border-bottom: ${i === selectedDocs.length - 1 ? 'none' : '1px solid #e2e8f0'};">
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
                       <tr>
                         <td width="30" style="vertical-align: middle;">
@@ -505,7 +511,8 @@ ${agentName} - TERRAVALL`);
                       </tr>
                     </table>
                   </a>
-                `).join('')}
+                `;
+                }).join('')}
               </div>
             </div>`
           : '';
@@ -558,14 +565,14 @@ ${agentName} - TERRAVALL`);
           </html>
         `;
 
-        await sendEmail({
+        const emailRes = await sendEmail({
           from: `${activePromotion.name} <info@terravallpromociones.com>`,
           to: recipients.length === 1 ? recipients[0] : recipients,
           subject,
           html: htmlFullMessage,
         });
 
-        await saveHistory('email', trackingId);
+        await saveHistory('email', trackingId, emailRes.id);
         await createTaskRecord('email', trackingId);
         setStatus('success');
         setTimeout(onClose, 2000);

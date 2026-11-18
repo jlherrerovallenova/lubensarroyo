@@ -11,7 +11,8 @@ import {
   Clock,
   Check,
   CheckCheck,
-  RotateCcw
+  RotateCcw,
+  Eye
 } from 'lucide-react';
 
 interface TimelineEvent {
@@ -36,6 +37,7 @@ const EVENT_CONFIG: Record<string, { icon: any; color: string; label: string }> 
   document: { icon: FileText, color: 'bg-red-100 text-red-600', label: 'Documentación' },
   note: { icon: StickyNote, color: 'bg-slate-100 text-slate-600', label: 'Nota Interna' },
   feedback: { icon: MessageSquare, color: 'bg-pink-100 text-pink-600', label: 'Encuesta' },
+  document_view: { icon: Eye, color: 'bg-purple-100 text-purple-600', label: 'Lectura de Plano / Documento' },
 };
 
 export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProps) {
@@ -195,6 +197,19 @@ export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProp
               <p className="text-sm text-slate-700 font-medium leading-relaxed break-words">
                 {event.description.split('||').join(', ')}
               </p>
+              {event.event_type === 'document_view' && event.metadata && (
+                <div className="mt-2.5 flex items-center gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 bg-purple-50 border border-purple-200 rounded-lg px-2.5 py-1 shadow-2xs">
+                    <Clock size={13} className="text-purple-600" />
+                    Tiempo de lectura: {event.metadata.duration_formatted || `${event.metadata.duration_seconds || 0}s`}
+                  </span>
+                  {event.metadata.doc_name && (
+                    <span className="text-xs text-slate-500 font-semibold truncate max-w-xs">
+                      📄 {event.metadata.doc_name}
+                    </span>
+                  )}
+                </div>
+              )}
               {event.metadata?.source && (
                 <span className="mt-2 inline-block px-2 py-0.5 bg-slate-50 rounded-md text-[9px] font-bold text-slate-400 border border-slate-100">
                   Vía: {event.metadata.source}
@@ -246,7 +261,7 @@ export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProp
                       </button>
                     )}
 
-                    {(onResendEmail || true) && (
+                    {(
                       event.event_type === 'email' || 
                       event.event_type === 'document' || 
                       event.description.toLowerCase().includes('email') || 

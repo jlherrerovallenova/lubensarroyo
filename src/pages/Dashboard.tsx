@@ -1,5 +1,5 @@
 // src/pages/Dashboard.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Globe, Smartphone, Clock, Calendar, CircleCheck as CheckCircle2, Search, Plus, LayoutDashboard, Target, TrendingUp, Wand as Wand2, User, Mail, Sun, Sunset, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -24,6 +24,7 @@ import { AgendaListItem } from '../components/dashboard/AgendaListItem';
 
 // Hooks
 import { useDashboardData, type AgendaItem } from '../hooks/useDashboardData';
+import { syncResendEmailOpens } from '../services/emailTrackingSync';
 
 export default function Dashboard() {
   const { session, profile } = useAuth();
@@ -47,6 +48,12 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<'hoy' | 'caducadas' | 'semana' | 'feedback' | 'emails'>('hoy');
   const [selectedLeadForFeedback, setSelectedLeadForFeedback] = useState<any | null>(null);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === 'emails') {
+      syncResendEmailOpens();
+    }
+  }, [activeTab]);
 
   const dateBoundaries = useMemo(() => {
     const now = new Date();

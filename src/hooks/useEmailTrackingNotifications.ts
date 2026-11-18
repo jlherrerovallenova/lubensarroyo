@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { syncResendEmailOpens } from '../services/emailTrackingSync';
 
 interface NotificationData {
   title: string;
@@ -10,6 +11,15 @@ interface NotificationData {
 export function useEmailTrackingNotifications(
   showNotification: (data: NotificationData) => void
 ) {
+  // Sincronización periódica con Resend para detectar aperturas
+  useEffect(() => {
+    syncResendEmailOpens();
+    const interval = setInterval(() => {
+      syncResendEmailOpens();
+    }, 60000); // Cada 60 segundos
+    return () => clearInterval(interval);
+  }, []);
+
   // react-doctor-disable-next-line effect-needs-cleanup
   useEffect(() => {
     // Suscribirse a actualizaciones en la tabla email_tracking
