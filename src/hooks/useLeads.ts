@@ -17,12 +17,13 @@ interface FetchLeadsParams {
   statusFilter?: string;
   sourceFilter?: string;
   promocionFilter?: string;
+  assignedFilter?: string;
   sortField?: string;
   sortDirection?: 'asc' | 'desc';
 }
 
 export function useLeads(params: FetchLeadsParams) {
-  const { page, pageSize, searchTerm, statusFilter, sourceFilter, promocionFilter, sortField = 'created_at', sortDirection = 'desc' } = params;
+  const { page, pageSize, searchTerm, statusFilter, sourceFilter, promocionFilter, assignedFilter, sortField = 'created_at', sortDirection = 'desc' } = params;
   
   // Sincronización en tiempo real
   useRealtimeSync('leads', LEADS_QUERY_KEY);
@@ -51,6 +52,13 @@ export function useLeads(params: FetchLeadsParams) {
       }
       if (sourceFilter) {
         query = query.ilike('source', `%${sourceFilter}%`);
+      }
+      if (assignedFilter) {
+        if (assignedFilter === 'unassigned') {
+          query = query.or('assigned_to.is.null,assigned_to.eq.""');
+        } else {
+          query = query.eq('assigned_to', assignedFilter);
+        }
       }
 
       // Apply promotion filter

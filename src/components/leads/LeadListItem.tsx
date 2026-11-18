@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, Phone, Mail, Zap, MessageCircle, ChevronRight, Star, Heart } from 'lucide-react';
 import { SourceIcon, StatusBadge, STATUS_CONFIG } from './LeadStatus';
+import { ComercialBadge } from './ComercialBadge';
 import type { Database } from '../../types/supabase';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
@@ -22,7 +23,7 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
       className={`cursor-pointer group border-b border-slate-100 border-l-4 ${cfg.border} ${isSelected ? 'bg-blue-50/80 ring-1 ring-blue-100/50 z-10 sticky' : 'hover:bg-slate-50/80'} transition-all duration-150 relative`}
     >
       {/* ================= DESKTOP VIEW ================= */}
-      <div className="hidden md:grid grid-cols-[22fr_12fr_18fr_10fr_12fr_10fr_8fr_8fr] gap-4 px-6 py-4 items-center">
+      <div className="hidden md:grid grid-cols-[20fr_14fr_12fr_16fr_10fr_12fr_10fr_8fr] gap-3 px-6 py-4 items-center">
         <div className="flex items-center justify-start gap-3.5 min-w-0">
           <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-100 shrink-0">
             <User size={18} strokeWidth={2.5} />
@@ -45,6 +46,10 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
               </span>
             )}
           </div>
+        </div>
+
+        <div className="flex justify-center items-center">
+          <ComercialBadge name={lead.assigned_to} />
         </div>
 
         <div className="flex justify-center items-center">
@@ -77,17 +82,6 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
           <p className="text-[11px] text-slate-500 font-medium whitespace-nowrap">
             {new Date(lead.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
           </p>
-        </div>
-
-        <div className="flex justify-center items-center">
-          {lead.client_quality_rating ? (
-            <div className="flex items-center gap-0.5 text-amber-400">
-              <Star size={12} fill="currentColor" />
-              <span className="text-[10px] font-bold ml-1 text-slate-600">{lead.client_quality_rating}/5</span>
-            </div>
-          ) : (
-            <span className="text-[10px] text-slate-300 italic">N/A</span>
-          )}
         </div>
 
         <div className="flex items-center justify-center gap-1 transition-opacity">
@@ -124,16 +118,11 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                <ComercialBadge name={lead.assigned_to} />
                 <p className="text-[10px] text-slate-400 font-medium">
                   {new Date(lead.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </p>
-                {lead.client_quality_rating && (
-                  <div className="flex items-center gap-0.5 text-amber-400">
-                    <Star size={10} fill="currentColor" />
-                    <span className="text-[10px] font-bold text-slate-600">{lead.client_quality_rating}</span>
-                  </div>
-                )}
               </div>
             </div>
           </div>

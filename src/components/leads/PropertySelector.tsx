@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react';
 import { X, Search, Building2, Check, Plus, Home, Loader2, Filter } from 'lucide-react';
 import { useInventory } from '../../hooks/useInventory';
+import { usePromotion } from '../../context/PromotionContext';
+import { sanitizeText } from '../../utils/textUtils';
 
 interface Property {
   id: string;
@@ -22,6 +24,7 @@ interface Props {
   onClose: () => void;
   onSelect: (properties: Property[]) => void;
   alreadySelected?: string[]; // IDs of properties already selected
+  promotionId?: 'arroyo' | 'farnesio';
 }
 
 const propertyCurrencyFormatter = new Intl.NumberFormat('es-ES', {
@@ -32,8 +35,10 @@ const propertyCurrencyFormatter = new Intl.NumberFormat('es-ES', {
 
 const DEFAULT_ALREADY_SELECTED: string[] = [];
 
-export default function PropertySelector({ isOpen, onClose, onSelect, alreadySelected = DEFAULT_ALREADY_SELECTED }: Props) {
-  const { data: properties = [], isLoading } = useInventory();
+export default function PropertySelector({ isOpen, onClose, onSelect, alreadySelected = DEFAULT_ALREADY_SELECTED, promotionId }: Props) {
+  const { activePromotion } = usePromotion();
+  const currentPromo = promotionId || activePromotion?.id || 'arroyo';
+  const { data: properties = [], isLoading } = useInventory(currentPromo);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   
   // Filters
@@ -44,7 +49,7 @@ export default function PropertySelector({ isOpen, onClose, onSelect, alreadySel
   const [dormitorios, setDormitorios] = useState('');
 
   const uniquePortals = useMemo(() => Array.from(new Set(properties.map(p => p.portal).filter(Boolean))).sort(), [properties]);
-  const uniquePlantas = useMemo(() => Array.from(new Set(properties.map(p => p.planta).filter(Boolean))).sort(), [properties]);
+  const uniquePlantas = useMemo(() => Array.from(new Set(properties.map(p => sanitizeText(p.planta)).filter(Boolean))).sort(), [properties]);
   const uniqueLetras = useMemo(() => Array.from(new Set(properties.map(p => p.letra).filter(Boolean))).sort(), [properties]);
   const uniqueOrientaciones = useMemo(() => Array.from(new Set(properties.map(p => p.orientacion).filter(Boolean))).sort(), [properties]);
   const uniqueDormitorios = useMemo(() => Array.from(new Set(properties.map(p => p.dormitorios.toString()).filter(Boolean))).sort((a,b) => parseInt(a)-parseInt(b)), [properties]);
@@ -91,7 +96,9 @@ export default function PropertySelector({ isOpen, onClose, onSelect, alreadySel
               <Plus size={20} />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Seleccionar Viviendas</h2>
+              <h2 className="text-xl font-bold text-slate-900">
+                Seleccionar Viviendas · <span className="text-altavik-600">{currentPromo === 'farnesio' ? 'Lubens Farnesio' : 'Lubens Arroyo'}</span>
+              </h2>
               <p className="text-xs text-slate-500 font-medium">Filtra por portal, altura, letra, orientación y dormitorios</p>
             </div>
           </div>

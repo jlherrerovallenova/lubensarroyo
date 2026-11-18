@@ -1,6 +1,7 @@
 import React from 'react';
-import { MessageCircle, Globe, Smartphone, Users, MapPin, FileText, Bell, Heart, Star, Send, Mail, Zap, Calendar as CalendarIcon, Plus, Pencil, Save, X, Clock, Check, CircleCheck as CheckCircle2, ChevronUp, ChevronDown, Trash2, Loader as Loader2, StickyNote, Hop as Home, Phone } from 'lucide-react';
+import { MessageCircle, Globe, Smartphone, Users, MapPin, FileText, Bell, Heart, Star, Send, Mail, Zap, Calendar as CalendarIcon, Plus, Pencil, Save, X, Clock, Check, CircleCheck as CheckCircle2, ChevronUp, ChevronDown, Trash2, Loader as Loader2, StickyNote, Hop as Home, Phone, UserCheck } from 'lucide-react';
 import { CustomSelect } from '../Shared';
+import { COMERCIALES, COMERCIALES_CONFIG } from '../../constants/commercials';
 
 interface FichaTabProps {
   formData: any;
@@ -118,6 +119,22 @@ export function FichaTab({
                 />
                 <CalendarIcon size={16} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               </div>
+            </div>
+            <div className="space-y-1 group sm:col-span-4">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest transition-colors group-focus-within:text-blue-500">Comercial Asignado</label>
+              <CustomSelect
+                value={formData.assigned_to || ''}
+                onChange={(val) => setFormData({ ...formData, assigned_to: val || null })}
+                className="w-full font-bold"
+                options={[
+                  { id: '', label: 'Sin asignar' },
+                  ...COMERCIALES.map(c => ({
+                    id: c,
+                    label: c,
+                    dotColor: COMERCIALES_CONFIG[c]?.dotColor
+                  }))
+                ]}
+              />
             </div>
             <div className="space-y-1 group sm:col-span-4">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest transition-colors group-focus-within:text-blue-500">Estado Actual</label>

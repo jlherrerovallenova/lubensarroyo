@@ -1,12 +1,10 @@
 // src/pages/Leads.tsx
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Search,
-  Mail,
   ChevronRight,
   Loader2,
-  Download,
   ChevronLeft,
   ChevronsLeft,
   ChevronsRight,
@@ -22,7 +20,6 @@ import {
   MapPin,
   FileSpreadsheet
 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 import { useDocuments } from '../hooks/useDocuments';
 import { useLeads } from '../hooks/useLeads';
 import { CustomSelect, IdealistaIcon } from '../components/Shared';
@@ -39,6 +36,7 @@ import FeedbackEmailModal from '../components/leads/FeedbackEmailModal';
 import { AppNotification } from '../components/AppNotification';
 import { LeadListItem } from '../components/leads/LeadListItem';
 import { STATUS_LABELS, STATUS_CONFIG } from '../components/leads/LeadStatus';
+import { COMERCIALES, COMERCIALES_CONFIG } from '../constants/commercials';
 
 import { usePromotion } from '../context/PromotionContext';
 
@@ -54,9 +52,10 @@ export default function Leads() {
     .map(doc => ({ name: doc.name, url: doc.url!, category: doc.category }));
 
   const [searchTerm, setSearchTerm] = useState(() => searchParams.get('search') || '');
-  const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get('status') || '');
-  const [sourceFilter, setSourceFilter] = useState<string>(() => searchParams.get('source') || '');
-  const [promocionFilter, setPromocionFilter] = useState<string>(() => searchParams.get('promo') || activePromotionId);
+  const statusFilter = searchParams.get('status') || '';
+  const sourceFilter = searchParams.get('source') || '';
+  const promocionFilter = searchParams.get('promo') || activePromotionId;
+  const assignedFilter = searchParams.get('comercial') || '';
   const [page, setPage] = useState(1);
   const [sortField, setSortField] = useState<'name' | 'created_at' | 'client_quality_rating'>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -76,13 +75,6 @@ export default function Leads() {
     type: 'success' | 'error' | 'info';
   }>({ show: false, title: '', message: '', type: 'success' });
 
-  // Sincronizar filtro cuando cambia la promoción activa en la cabecera si no viene fijado en URL
-  useEffect(() => {
-    if (!searchParams.get('promo')) {
-      setPromocionFilter(activePromotionId);
-    }
-  }, [activePromotionId, searchParams]);
-
   const { data, isLoading: loading, refetch } = useLeads({
     page,
     pageSize: ITEMS_PER_PAGE,
@@ -90,21 +82,13 @@ export default function Leads() {
     statusFilter,
     sourceFilter,
     promocionFilter,
+    assignedFilter,
     sortField,
     sortDirection
   });
 
   const leads = data?.leads || [];
   const totalLeads = data?.totalCount || 0;
-
-  useEffect(() => {
-    setSearchTerm(searchParams.get('search') || '');
-    setStatusFilter(searchParams.get('status') || '');
-    setSourceFilter(searchParams.get('source') || '');
-    if (searchParams.get('promo')) {
-      setPromocionFilter(searchParams.get('promo')!);
-    }
-  }, [searchParams]);
 
   const handleSort = (field: 'name' | 'created_at' | 'client_quality_rating') => {
     if (sortField === field) {
@@ -145,14 +129,11 @@ export default function Leads() {
 
   const clearFilters = () => {
     setSearchTerm('');
-    setStatusFilter('');
-    setSourceFilter('');
-    setPromocionFilter(activePromotionId);
     setPage(1);
     setSearchParams({}, { replace: true });
   };
 
-  const hasActiveFilters = searchTerm !== '' || statusFilter !== '' || sourceFilter !== '' || promocionFilter !== activePromotionId;
+  const hasActiveFilters = searchTerm !== '' || statusFilter !== '' || sourceFilter !== '' || assignedFilter !== '' || promocionFilter !== activePromotionId;
   const totalPages = Math.ceil(totalLeads / ITEMS_PER_PAGE);
 
   return (
@@ -195,8 +176,7 @@ export default function Leads() {
             <CustomSelect
               className="flex-1 lg:w-48"
               value={promocionFilter}
-              // react-doctor-disable-next-line no-impure-state-updater
-              onChange={(val) => { setPromocionFilter(val); setPage(1); updateURLParams('promo', val); }}
+              onChange={(val) => { setPage(1); updateURLParams('promo', val); }}
               placeholder="Promoción"
               options={[
                 { id: activePromotionId, label: `Interés: ${activePromotion.name}` },
@@ -209,8 +189,7 @@ export default function Leads() {
             <CustomSelect
               className="flex-1 lg:w-44"
               value={statusFilter}
-              // react-doctor-disable-next-line no-impure-state-updater
-              onChange={(val) => { setStatusFilter(val); setPage(1); updateURLParams('status', val); }}
+              onChange={(val) => { setPage(1); updateURLParams('status', val); }}
               placeholder="Todos los Estados"
               options={[
                 { id: '', label: 'Todos los Estados' },
@@ -221,8 +200,7 @@ export default function Leads() {
             <CustomSelect
               className="flex-1 lg:w-44"
               value={sourceFilter}
-              // react-doctor-disable-next-line no-impure-state-updater
-              onChange={(val) => { setSourceFilter(val); setPage(1); updateURLParams('source', val); }}
+              onChange={(val) => { setPage(1); updateURLParams('source', val); }}
               placeholder="Cualquier Origen"
               options={[
                    { id: '', label: 'Cualquier Origen' },
@@ -234,6 +212,22 @@ export default function Leads() {
                    { id: 'Referido', label: 'Referido', icon: Users, color: 'text-emerald-500' },
                    { id: 'Llamada', label: 'Llamada', icon: Phone, color: 'text-green-500' },
                    { id: 'Valla', label: 'Valla', icon: MapPin, color: 'text-orange-500' }
+              ]}
+            />
+
+            <CustomSelect
+              className="flex-1 lg:w-44"
+              value={assignedFilter}
+              onChange={(val) => { setPage(1); updateURLParams('comercial', val); }}
+              placeholder="Todos los Comerciales"
+              options={[
+                { id: '', label: 'Todos los Comerciales' },
+                ...COMERCIALES.map(c => ({
+                  id: c,
+                  label: c,
+                  dotColor: COMERCIALES_CONFIG[c]?.dotColor
+                })),
+                { id: 'unassigned', label: 'Sin Asignar' }
               ]}
             />
 
@@ -260,11 +254,12 @@ export default function Leads() {
           </div>
         ) : (
           <div className="flex-1">
-            <div className="grid md:grid-cols-[22fr_12fr_18fr_10fr_12fr_10fr_8fr_8fr] gap-4 px-6 py-3.5 bg-altavik-600 text-white text-[10px] font-black uppercase tracking-widest border-b border-altavik-700 hidden md:grid rounded-t-2xl shadow-sm">
+            <div className="grid md:grid-cols-[20fr_14fr_12fr_16fr_10fr_12fr_10fr_8fr] gap-3 px-6 py-3.5 bg-altavik-600 text-white text-[10px] font-black uppercase tracking-widest border-b border-altavik-700 hidden md:grid rounded-t-2xl shadow-sm">
               <div className={`flex items-center justify-center gap-1 cursor-pointer select-none transition-colors ${sortField === 'name' ? 'text-white font-bold' : 'hover:text-white/80 text-white/90'}`} onClick={() => handleSort('name')}>
                 Cliente
                 {sortField === 'name' ? (sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />) : <ArrowUpDown size={12} className="opacity-50" />}
               </div>
+              <div className="flex items-center justify-center">Comercial</div>
               <div className="flex items-center justify-center">Teléfono</div>
               <div className="flex items-center justify-center">Email</div>
               <div className="flex items-center justify-center">Origen</div>
@@ -272,10 +267,6 @@ export default function Leads() {
               <div className={`flex items-center justify-center gap-1 cursor-pointer select-none transition-colors ${sortField === 'created_at' ? 'text-white font-bold' : 'hover:text-white/80 text-white/90'}`} onClick={() => handleSort('created_at')}>
                 Alta
                 {sortField === 'created_at' ? (sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />) : <ArrowUpDown size={12} className="opacity-50" />}
-              </div>
-              <div className={`flex items-center justify-center gap-1 cursor-pointer select-none transition-colors ${sortField === 'client_quality_rating' ? 'text-white font-bold' : 'hover:text-white/80 text-white/90'}`} onClick={() => handleSort('client_quality_rating')}>
-                Valoración
-                {sortField === 'client_quality_rating' ? (sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />) : <ArrowUpDown size={12} className="opacity-50" />}
               </div>
               <div className="flex items-center justify-center">Acciones</div>
             </div>

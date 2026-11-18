@@ -109,6 +109,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
     status: lead.status || 'new',
     source: lead.source || 'Web',
     promocion_interes: lead.promocion_interes || 'arroyo',
+    assigned_to: lead.assigned_to || '',
     notes: lead.notes || '',
     is_subscribed: lead.is_subscribed ?? true,
     created_at_date: lead.created_at ? new Date(lead.created_at).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10),
@@ -475,6 +476,11 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
       const oldLabel = STATUS_CONFIG[statusOriginal]?.label || statusOriginal;
       const newLabel = STATUS_CONFIG[formData.status]?.label || formData.status;
       await logEvent('status_change', `Estado actualizado: de "${oldLabel}" a "${newLabel}"`);
+    }
+
+    // Si el comercial asignado ha cambiado, lo registramos en el historial
+    if ((formData.assigned_to || '') !== (lead.assigned_to || '')) {
+      await logEvent('assigned_change', `Comercial asignado: ${formData.assigned_to || 'Sin asignar'}`);
     }
 
     try {

@@ -24,7 +24,7 @@ export function useDocuments() {
             let allDocs: SystemDocument[] = [];
 
             // Listar TODO en el bucket 'documents' de forma recursiva (si es posible)
-            const foldersToList = ['', 'General', ...DOCUMENT_CATEGORIES];
+            const foldersToList = ['', 'General', 'planos/farnesio', ...DOCUMENT_CATEGORIES];
             
             const results = await Promise.all(foldersToList.map(async folder => {
                 const { data, error } = await supabase.storage.from('documents').list(folder);
@@ -49,8 +49,7 @@ export function useDocuments() {
                 return [];
             }));
 
-            // @ts-ignore
-            allDocs = results.flat();
+            allDocs = results.flat() as unknown as SystemDocument[];
 
             // Eliminar duplicados si los hay (por si un archivo sale en raíz y carpeta, aunque raro)
             const uniqueDocs = Array.from(new Map(allDocs.map(item => [item.fullPath, item])).values());

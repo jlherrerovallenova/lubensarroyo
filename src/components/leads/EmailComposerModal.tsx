@@ -1,5 +1,5 @@
 // src/components/leads/EmailComposerModal.tsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Mail, MessageCircle, Paperclip, Loader as Loader2, CircleCheck as CheckCircle2, CircleAlert as AlertCircle, Building2, Zap, LayoutGrid as Layout } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
@@ -21,7 +21,9 @@ const shortenUrl = async (url: string) => {
       const short = await resp.text();
       if (short && short.startsWith('http')) return short;
     }
-  } catch (e) {}
+  } catch (_e) {
+    // ignore
+  }
 
   // Fallback a TinyURL
   try {
@@ -30,7 +32,9 @@ const shortenUrl = async (url: string) => {
       const short = await resp.text();
       if (short && short.startsWith('http')) return short;
     }
-  } catch (e) {}
+  } catch (_e) {
+    // ignore
+  }
 
   return url;
 };
@@ -231,6 +235,20 @@ ${agentName} - TERRAVALL`);
   const [isPropertySelectorOpen, setIsPropertySelectorOpen] = useState(false);
   const [isGeneratingFichas, setIsGeneratingFichas] = useState(false);
   const [selectedPropertyIds, setSelectedPropertyIds] = useState<string[]>([]);
+
+  // Filtrar documentos del repositorio según la promoción activa
+  const filteredAvailableDocs = useMemo(() => {
+    const isFarnesio = activePromotion?.id === 'farnesio';
+    return availableDocs.filter(d => {
+      const lower = (d.name + ' ' + (d.category || '')).toLowerCase();
+      if (isFarnesio) {
+        const isArroyoSpecific = lower.includes('arroyo') || lower.includes('olivo') || lower.includes('arce') || lower.includes('altavik') || lower.includes('parcelas');
+        return !isArroyoSpecific || lower.includes('farnesio');
+      } else {
+        return !lower.includes('farnesio');
+      }
+    });
+  }, [availableDocs, activePromotion?.id]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
@@ -763,7 +781,7 @@ ${agentName} - TERRAVALL`);
                   <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Repositorio de Archivos</h4>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-slate-100">
-                  {availableDocs.map((doc) => {
+                  {filteredAvailableDocs.map((doc) => {
                     const isSelected = selectedDocs.find(d => d.url === doc.url);
                     return (
                       <button
@@ -783,7 +801,7 @@ ${agentName} - TERRAVALL`);
                   })}
                 </div>
               </div>
-              {availableDocs.length === 0 && (
+              {filteredAvailableDocs.length === 0 && (
                 <p className="text-center py-4 text-xs text-slate-400 italic">No hay documentos disponibles en el servidor.</p>
               )}
             </div>
@@ -833,6 +851,7 @@ ${agentName} - TERRAVALL`);
           onClose={() => setIsPropertySelectorOpen(false)}
           onSelect={handlePropertySelect}
           alreadySelected={selectedPropertyIds}
+          promotionId={activePromotion?.id}
         />
       )}
     </div>

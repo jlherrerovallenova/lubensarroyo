@@ -4,6 +4,7 @@ import { X, Loader2, AlertCircle, ClipboardPaste, Sparkles, Globe, Users, Plus, 
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { CustomSelect, IdealistaIcon } from '../Shared';
+import { COMERCIALES, COMERCIALES_CONFIG } from '../../constants/commercials';
 
 interface Props {
   isOpen: boolean;
@@ -30,6 +31,10 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
   const createMutation = useCreateLead();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  const defaultCommercial = (profile?.full_name && (COMERCIALES as readonly string[]).includes(profile.full_name))
+    ? profile.full_name
+    : 'Juan Herrero';
+
   const [formData, setFormData, clearFormData] = useAutosave('draft-create-lead', {
     name: '',
     email: '',
@@ -37,6 +42,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
     phone: '',
     source: 'Idealista',
     promocion_interes: defaultPromotionId || 'arroyo',
+    assigned_to: defaultCommercial,
     notes: ''
   });
   const [pasteText, setPasteText] = useState('');
@@ -204,7 +210,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
         source: formData.source,
         promocion_interes: formData.promocion_interes || defaultPromotionId || 'arroyo',
         status: 'new',
-        assigned_to: (profile?.id || user?.id) || null,
+        assigned_to: formData.assigned_to || null,
         is_subscribed: true
       };
 
@@ -320,31 +326,31 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Teléfono</label>
-              <div className="relative w-full group/phone">
-                <input
-                  type="tel"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm font-semibold text-slate-700 shadow-sm pr-12"
-                  placeholder="600 000 000"
-                  value={formData.phone}
-                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                />
-                {formData.phone && (
-                  <a 
-                    href={`https://wa.me/${formData.phone.replace(/\D/g, '')}`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all shadow-sm active:scale-95"
-                    title="Abrir WhatsApp"
-                  >
-                    <Smartphone size={16} />
-                  </a>
-                )}
-              </div>
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Teléfono</label>
+            <div className="relative w-full group/phone">
+              <input
+                type="tel"
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm font-semibold text-slate-700 shadow-sm pr-12"
+                placeholder="600 000 000"
+                value={formData.phone}
+                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+              />
+              {formData.phone && (
+                <a 
+                  href={`https://wa.me/${formData.phone.replace(/\D/g, '')}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all shadow-sm active:scale-95"
+                  title="Abrir WhatsApp"
+                >
+                  <Smartphone size={16} />
+                </a>
+              )}
             </div>
+          </div>
 
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Origen</label>
               <CustomSelect
@@ -356,6 +362,22 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
                   icon: s.icon,
                   color: s.color
                 }))}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Comercial Asignado</label>
+              <CustomSelect
+                value={formData.assigned_to || ''}
+                onChange={(val) => setFormData({ ...formData, assigned_to: val })}
+                options={[
+                  { id: '', label: 'Sin asignar' },
+                  ...COMERCIALES.map(c => ({
+                    id: c,
+                    label: c,
+                    dotColor: COMERCIALES_CONFIG[c]?.dotColor
+                  }))
+                ]}
               />
             </div>
           </div>

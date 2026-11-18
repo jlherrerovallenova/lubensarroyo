@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { X, Loader2, AlertCircle, Upload, FileSpreadsheet, CheckCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
+import { COMERCIALES } from '../../constants/commercials';
 import * as XLSX from 'xlsx';
 
 interface Props {
@@ -21,7 +22,7 @@ interface ParsedRow {
 }
 
 export default function ImportLeadsModal({ isOpen, onClose, onSuccess }: Props) {
-    const { user } = useAuth();
+    const { user, profile } = useAuth();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [step, setStep] = useState<1 | 2>(1);
@@ -29,6 +30,12 @@ export default function ImportLeadsModal({ isOpen, onClose, onSuccess }: Props) 
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [parsedData, setParsedData] = useState<ParsedRow[]>([]);
     const [fileName, setFileName] = useState<string>('');
+    const [assignedTo, setAssignedTo] = useState<string>(() => {
+        if (profile?.full_name && (COMERCIALES as readonly string[]).includes(profile.full_name)) {
+            return profile.full_name;
+        }
+        return 'Juan Herrero';
+    });
 
     if (!isOpen) return null;
 
@@ -196,7 +203,7 @@ export default function ImportLeadsModal({ isOpen, onClose, onSuccess }: Props) 
                 notes: row['NOTAS INTERNAS'] || null,
                 source: row['ORIGEN'] ? (row['ORIGEN'] === 'Excel' || row['ORIGEN'] === 'EXCEL' ? 'Importado' : row['ORIGEN']) : 'Importado',
                 status: 'new',
-                assigned_to: user.id,
+                assigned_to: assignedTo || null,
                 created_at: parseDate(row['ALTA']) || undefined,
             }));
 
@@ -289,6 +296,23 @@ export default function ImportLeadsModal({ isOpen, onClose, onSuccess }: Props) 
                                 >
                                     Cambiar archivo
                                 </button>
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-slate-200 rounded-xl gap-3 shadow-xs">
+                                <div>
+                                    <p className="text-xs font-bold text-slate-700 uppercase tracking-wider">Asignar contactos a comercial:</p>
+                                    <p className="text-xs text-slate-400">Selecciona el comercial responsable de gestionar estos clientes</p>
+                                </div>
+                                <select
+                                    value={assignedTo}
+                                    onChange={(e) => setAssignedTo(e.target.value)}
+                                    className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-altavik-400"
+                                >
+                                    {COMERCIALES.map(c => (
+                                        <option key={c} value={c}>{c}</option>
+                                    ))}
+                                    <option value="">Sin asignar</option>
+                                </select>
                             </div>
 
                             <div>

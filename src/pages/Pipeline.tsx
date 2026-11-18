@@ -13,7 +13,9 @@ import {
 } from 'lucide-react';
 import { useLeads, useUpdateLead } from '../hooks/useLeads';
 import { PageHeader } from '../components/ui/PageHeader';
-import { Button } from '../components/ui/Button';
+import { CustomSelect } from '../components/Shared';
+import { ComercialBadge } from '../components/leads/ComercialBadge';
+import { COMERCIALES, COMERCIALES_CONFIG } from '../constants/commercials';
 import type { Database } from '../types/supabase';
 import LeadDetailModal from '../components/leads/LeadDetailModal';
 import { usePromotion } from '../context/PromotionContext';
@@ -32,6 +34,7 @@ export default function Pipeline() {
   const navigate = useNavigate();
   const { activePromotion, activePromotionId } = usePromotion();
   const [promoFilter, setPromoFilter] = useState<'current' | 'all'>('current');
+  const [comercialFilter, setComercialFilter] = useState<string>('');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const draggedLeadIdRef = useRef<string | null>(null);
 
@@ -41,6 +44,7 @@ export default function Pipeline() {
     pageSize: 1000, // En el pipeline queremos ver todos los activos a la vez
     statusFilter: undefined, // No filtramos por status aquí porque los separamos por columnas
     promocionFilter: promoFilter === 'current' ? activePromotionId : 'all',
+    assignedFilter: comercialFilter || undefined,
     sortField: 'created_at',
     sortDirection: 'desc'
   });
@@ -135,29 +139,46 @@ export default function Pipeline() {
           </p>
         }
         actions={
-          <div className="flex items-center gap-1 bg-white/80 border border-slate-200 p-1 rounded-xl shadow-xs">
-            <button
-              type="button"
-              onClick={() => setPromoFilter('current')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                promoFilter === 'current'
-                  ? 'bg-altavik-600 text-white shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              {activePromotion.name}
-            </button>
-            <button
-              type="button"
-              onClick={() => setPromoFilter('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                promoFilter === 'all'
-                  ? 'bg-altavik-600 text-white shadow-xs'
-                  : 'text-slate-500 hover:text-slate-800'
-              }`}
-            >
-              Todas
-            </button>
+          <div className="flex items-center gap-2">
+            <CustomSelect
+              className="w-48 text-xs font-bold"
+              value={comercialFilter}
+              onChange={(val) => setComercialFilter(val)}
+              placeholder="Todos los Comerciales"
+              options={[
+                { id: '', label: 'Todos los Comerciales' },
+                ...COMERCIALES.map(c => ({
+                  id: c,
+                  label: c,
+                  dotColor: COMERCIALES_CONFIG[c]?.dotColor
+                })),
+                { id: 'unassigned', label: 'Sin Asignar' }
+              ]}
+            />
+            <div className="flex items-center gap-1 bg-white/80 border border-slate-200 p-1 rounded-xl shadow-xs">
+              <button
+                type="button"
+                onClick={() => setPromoFilter('current')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  promoFilter === 'current'
+                    ? 'bg-altavik-600 text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                {activePromotion.name}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPromoFilter('all')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  promoFilter === 'all'
+                    ? 'bg-altavik-600 text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                Todas
+              </button>
+            </div>
           </div>
         }
       />
@@ -208,21 +229,26 @@ export default function Pipeline() {
                         <h4 className="font-bold text-slate-900 text-[10px] sm:text-[11px] leading-tight break-words group-hover:text-altavik-700 transition-colors">
                           {lead.name}
                         </h4>
-                        {lead.promocion_interes === 'farnesio' && (
-                          <span className="shrink-0 text-[7px] font-black uppercase px-1 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            F
-                          </span>
-                        )}
-                        {lead.promocion_interes === 'arroyo' && (
-                          <span className="shrink-0 text-[7px] font-black uppercase px-1 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                            A
-                          </span>
-                        )}
-                        {lead.promocion_interes === 'ambas' && (
-                          <span className="shrink-0 text-[7px] font-black uppercase px-1 py-0.2 rounded bg-purple-50 text-purple-700 border border-purple-200">
-                            A+F
-                          </span>
-                        )}
+                        <div className="flex items-center gap-1 shrink-0">
+                          {lead.assigned_to && (
+                            <ComercialBadge name={lead.assigned_to} compact />
+                          )}
+                          {lead.promocion_interes === 'farnesio' && (
+                            <span className="shrink-0 text-[7px] font-black uppercase px-1 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              F
+                            </span>
+                          )}
+                          {lead.promocion_interes === 'arroyo' && (
+                            <span className="shrink-0 text-[7px] font-black uppercase px-1 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                              A
+                            </span>
+                          )}
+                          {lead.promocion_interes === 'ambas' && (
+                            <span className="shrink-0 text-[7px] font-black uppercase px-1 py-0.2 rounded bg-purple-50 text-purple-700 border border-purple-200">
+                              A+F
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       {/* Footer: Ultra compact */}
