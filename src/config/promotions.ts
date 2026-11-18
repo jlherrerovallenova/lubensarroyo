@@ -6,6 +6,7 @@ export interface PromotionConfig {
   cif: string;
   taxAddress: string;
   siteAddress: string;
+  officeAddress: string;
   logo: string;
   logoWhite: string;
   publicLogoUrl: string;
@@ -31,6 +32,7 @@ export const PROMOTIONS: Record<'arroyo' | 'farnesio', PromotionConfig> = {
     cif: 'B47622279',
     taxAddress: 'Paseo de Arco de Ladrillo 68, Valladolid',
     siteAddress: 'Calle Isaac Peral 20, Arroyo de la Encomienda (Valladolid)',
+    officeAddress: 'Plaza Mayor 8, 1ºA, 47001 Valladolid',
     logo: '/logo-lubens-arroyo.png',
     logoWhite: '/logo-lubens-arroyo-white.png',
     publicLogoUrl: 'https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/logos/logo-lubens-arroyo.png',
@@ -54,6 +56,7 @@ export const PROMOTIONS: Record<'arroyo' | 'farnesio', PromotionConfig> = {
     cif: 'B47622279',
     taxAddress: 'Paseo de Arco de Ladrillo 68, Valladolid',
     siteAddress: 'Calle General Shelly 1, Valladolid',
+    officeAddress: 'Plaza Mayor 8, 1ºA, 47001 Valladolid',
     logo: '/logo-lubens-farnesio.png',
     logoWhite: '/logo-lubens-farnesio-white.png',
     publicLogoUrl: 'https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/logos/logo-lubens-farnesio.png',

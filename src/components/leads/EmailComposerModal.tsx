@@ -320,25 +320,46 @@ ${agentName} - TERRAVALL`);
 
   // Función para convertir la firma a Base64 para que sea visible en el email
   // Eliminada para no saturar EmailJS (Error 422 por payload demasiado grande)
-    const getSignatureHtml = (): string => {
-    const isFarnesio = activePromotion.id === 'farnesio';
-    const address = isFarnesio ? 'Calle General Shelly 1 · Valladolid' : 'Plaza Mayor 8, 1ºA · Valladolid';
+  const getSignatureHtml = (): string => {
     return `
-      <div style="margin-top: 24px; display: inline-block;">
-        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-          <div style="font-size: 15px; font-weight: 900; color: #1e293b; letter-spacing: 0.08em; text-transform: uppercase;">
-            TERRAVALL
-          </div>
-          <div style="font-size: 11px; font-weight: 600; color: #6b94b9; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 2px;">
-            ${activePromotion.name}
-          </div>
-          <div style="margin-top: 10px; font-size: 12px; color: #64748b; line-height: 1.6;">
-            <div>📍 ${address}</div>
-            <div>📞 ${activePromotion.phone || '983 34 21 32'}</div>
-            <div>🌐 <a href="${activePromotion.web}" style="color: #1e293b; text-decoration: none;">${activePromotion.web.replace('https://', '')}</a></div>
-          </div>
-        </div>
-      </div>
+      <table border="0" cellpadding="0" cellspacing="0" style="margin-top: 28px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; border-collapse: collapse;">
+        <tr>
+          <td style="border-left: 3px solid #2563eb; padding-left: 14px;">
+            <div style="font-size: 15px; font-weight: 800; color: #0f172a; letter-spacing: 0.1em; text-transform: uppercase;">
+              TERRAVALL
+            </div>
+            <div style="font-size: 11px; font-weight: 700; color: #2563eb; letter-spacing: 0.14em; text-transform: uppercase; margin-top: 2px; margin-bottom: 12px;">
+              ${activePromotion.name}
+            </div>
+            <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; font-size: 12px; color: #475569; line-height: 22px;">
+              <tr>
+                <td style="width: 20px; vertical-align: middle; padding: 3px 0;">
+                  <img src="https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/icons/icon-pin.png" width="13" height="13" alt="Dirección" style="display: block; opacity: 0.85;" />
+                </td>
+                <td style="padding: 3px 0 3px 8px; vertical-align: middle; color: #475569; font-weight: 500;">
+                  Plaza Mayor 8, 1ºA · Valladolid
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 20px; vertical-align: middle; padding: 3px 0;">
+                  <img src="https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/icons/icon-phone.png" width="13" height="13" alt="Teléfono" style="display: block; opacity: 0.85;" />
+                </td>
+                <td style="padding: 3px 0 3px 8px; vertical-align: middle;">
+                  <a href="tel:983342132" style="color: #475569; text-decoration: none; font-weight: 500;">983 342 132</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="width: 20px; vertical-align: middle; padding: 3px 0;">
+                  <img src="https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/icons/icon-globe.png" width="13" height="13" alt="Web" style="display: block; opacity: 0.85;" />
+                </td>
+                <td style="padding: 3px 0 3px 8px; vertical-align: middle;">
+                  <a href="${activePromotion.web}" style="color: #2563eb; text-decoration: none; font-weight: 600;">${activePromotion.web.replace('https://', '').replace('http://', '')}</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
     `;
   };
 
@@ -447,15 +468,21 @@ ${agentName} - TERRAVALL`);
               </div>
               <div style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff;">
                 ${selectedDocs.map((d, i) => `
-                  <a href="${d.url}" style="display: block; padding: 14px 20px; background-color: ${i % 2 === 0 ? '#ffffff' : '#f8fafc'}; color: #1d4ed8; text-decoration: none; border-bottom: ${i === selectedDocs.length - 1 ? 'none' : '1px solid #e2e8f0'};">
+                  <a href="${d.url}" target="_blank" rel="noopener noreferrer" style="display: block; padding: 14px 18px; background-color: ${i % 2 === 0 ? '#ffffff' : '#f8fafc'}; text-decoration: none; border-bottom: ${i === selectedDocs.length - 1 ? 'none' : '1px solid #e2e8f0'};">
                     <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-collapse: collapse;">
                       <tr>
-                        <td width="32" style="font-size: 20px; vertical-align: middle;">📄</td>
-                        <td style="font-size: 14px; font-weight: 600; color: #334155; vertical-align: middle; padding-left: 8px;">
+                        <td width="30" style="vertical-align: middle;">
+                          <div style="width: 28px; height: 28px; background-color: #eff6ff; border-radius: 6px; text-align: center; vertical-align: middle; line-height: 28px;">
+                            <img src="https://xnidngrcgudepwxsuila.supabase.co/storage/v1/object/public/documents/icons/icon-doc.png" width="14" height="14" alt="PDF" style="display: inline-block; vertical-align: middle;" />
+                          </div>
+                        </td>
+                        <td style="font-size: 13px; font-weight: 600; color: #1e293b; vertical-align: middle; padding-left: 10px;">
                           ${d.name}
                         </td>
-                        <td align="right" style="font-size: 12px; font-weight: 700; color: #1d4ed8; text-transform: uppercase; vertical-align: middle;">
-                          Ver documento
+                        <td align="right" style="vertical-align: middle;">
+                          <span style="display: inline-block; padding: 5px 12px; background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 11px; font-weight: 700; color: #2563eb; text-transform: uppercase; letter-spacing: 0.04em;">
+                            Ver documento &rarr;
+                          </span>
                         </td>
                       </tr>
                     </table>
