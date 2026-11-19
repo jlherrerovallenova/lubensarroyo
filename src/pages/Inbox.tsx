@@ -190,7 +190,7 @@ export default function Inbox() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] gap-6 max-w-[1600px] mx-auto w-full">
+    <div className="flex flex-col h-[calc(100vh-100px)] gap-6 w-full">
       <PageHeader 
         title="Bandeja de Entrada"
         icon={<Mail className="text-white" strokeWidth={3} size={24} />}

@@ -279,7 +279,7 @@ ${promotionWebsite}`;
   };
 
   return (
-    <div className="space-y-6 max-w-[1600px] mx-auto animate-in fade-in duration-500 relative">
+    <div className="space-y-6 w-full animate-in fade-in duration-500 relative">
       <PageHeader 
         title="Panel de Control"
         icon={<LayoutDashboard size={24} strokeWidth={3} />}

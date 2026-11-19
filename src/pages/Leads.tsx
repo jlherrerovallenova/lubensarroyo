@@ -137,7 +137,7 @@ export default function Leads() {
   const totalPages = Math.ceil(totalLeads / ITEMS_PER_PAGE);
 
   return (
-    <div className="space-y-6 max-w-[1600px] mx-auto animate-in fade-in duration-500">
+    <div className="space-y-6 w-full animate-in fade-in duration-500">
       <PageHeader 
         title="Mis Clientes"
         icon={<Users strokeWidth={3} size={24} />}

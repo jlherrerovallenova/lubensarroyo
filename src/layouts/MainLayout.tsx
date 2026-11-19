@@ -343,7 +343,7 @@ export default function MainLayout() {
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
 
-        <header className="h-20 glass-card bg-white/60 backdrop-blur-md border-b border-white/40 flex items-center justify-between px-4 md:px-8 z-40 relative flex-shrink-0">
+        <header className="h-20 glass-card bg-white/60 backdrop-blur-md border-b border-white/40 flex items-center justify-between px-4 md:px-6 z-40 relative flex-shrink-0">
           {/* IZQUIERDA: Menú móvil */}
           <div className="flex items-center w-1/3">
             <button type="button"
@@ -508,7 +508,7 @@ export default function MainLayout() {
         </header>
 
         <div className="flex-1 overflow-auto bg-transparent relative">
-          <div className="p-10 pb-20">
+          <div className="p-4 md:px-6 md:py-6 pb-20">
             <Outlet context={{ searchTerm }} />
           </div>
         </div>

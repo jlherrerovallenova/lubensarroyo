@@ -431,7 +431,7 @@ export default function Inventory() {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-6">
+    <div className="w-full space-y-6">
       <PageHeader 
         title="Inventario de Viviendas"
         icon={<Home size={24} strokeWidth={3} />}

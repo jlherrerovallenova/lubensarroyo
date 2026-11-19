@@ -133,7 +133,7 @@ export default function Newsletters() {
     }
 
     return (
-        <div className="space-y-6 animate-in fade-in duration-500 max-w-[1600px] mx-auto">
+        <div className="space-y-6 animate-in fade-in duration-500 w-full">
             <PageHeader 
                 title="Campañas de Email"
                 icon={<Mail className="text-white" strokeWidth={3} size={24} />}

@@ -126,7 +126,7 @@ export default function Pipeline() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] animate-in fade-in duration-500 max-w-[1600px] mx-auto w-full gap-6">
+    <div className="flex flex-col h-[calc(100vh-100px)] animate-in fade-in duration-500 w-full gap-6">
       <PageHeader 
         title="Pipeline de Ventas"
         icon={<TrendingUp className="text-white" strokeWidth={3} size={24} />}
