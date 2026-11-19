@@ -79,12 +79,14 @@ export function DailyBriefingModal({ waReplies, onClose, onMarkRepliesSeen }: Da
     onClose();
   };
 
+  const [mountTime] = useState(() => Date.now());
+
   const formatHour = (iso: string) => {
     return new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
   };
 
   const formatRelative = (iso: string) => {
-    const diff = Date.now() - new Date(iso).getTime();
+    const diff = mountTime - new Date(iso).getTime();
     const h = Math.floor(diff / 3600000);
     const m = Math.floor(diff / 60000);
     if (h > 24) return `hace ${Math.floor(h / 24)}d`;

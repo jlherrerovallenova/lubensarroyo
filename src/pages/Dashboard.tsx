@@ -263,22 +263,22 @@ ${promotionWebsite}`;
         }
       />
 
-      <div className="grid grid-cols-12 gap-5 flex-1">
+      <div className="grid grid-cols-12 gap-5 flex-1 items-start">
         <Card variant="glass" noPadding className="col-span-12 lg:col-span-8 flex flex-col group">
-          <div className="p-8 bg-altavik-100 border-b border-altavik-200/50 flex justify-between items-center">
+          <div className="px-6 sm:px-8 py-5 min-h-[96px] bg-altavik-100/70 border-b border-altavik-200/50 flex justify-between items-center">
             <div>
-              <h3 className="font-black text-slate-950 flex items-center gap-2.5 text-xl tracking-tight">
-                <div className="p-2 bg-white rounded-xl shadow-sm border border-altavik-100/30">
-                  <Clock size={22} className="text-altavik-600" />
+              <h3 className="font-black text-slate-950 flex items-center gap-2.5 text-base sm:text-lg tracking-tight">
+                <div className="w-9 h-9 bg-white rounded-xl shadow-xs border border-altavik-100/50 flex items-center justify-center shrink-0">
+                  <Clock size={19} className="text-altavik-600" />
                 </div>
                 Agenda Comercial
               </h3>
-              <p className="text-xs text-slate-500 font-bold mt-1.5 ml-1">Seguimiento de acciones prioritarias</p>
+              <p className="text-xs text-slate-500 font-semibold mt-1">Seguimiento de acciones prioritarias</p>
             </div>
 
             <button type="button"
               onClick={() => navigate('/agenda')}
-              className="text-[10px] font-black uppercase tracking-wider text-altavik-600 hover:text-altavik-700 transition-all bg-white px-4 py-2 rounded-xl border border-altavik-200/50 shadow-sm hover:bg-altavik-50"
+              className="text-[10px] font-black uppercase tracking-wider text-altavik-600 hover:text-altavik-700 transition-all bg-white px-3.5 py-2 rounded-xl border border-altavik-200/60 shadow-xs hover:bg-altavik-50 shrink-0"
             >
               Calendario Completo
             </button>
@@ -553,17 +553,21 @@ ${promotionWebsite}`;
 
         <div className="col-span-12 lg:col-span-4 space-y-6 flex flex-col">
           <Card variant="white" noPadding className="flex-1 flex flex-col group">
-            <div className="p-6 bg-green-50 border-b border-green-100/50 flex justify-between items-center">
+            <div className="px-6 sm:px-8 py-5 min-h-[96px] bg-green-50/80 border-b border-green-100/60 flex justify-between items-center">
               <div>
-                <h3 className="font-black text-slate-800 text-sm tracking-tight flex items-center gap-2">
-                  <div className="p-1.5 bg-white rounded-lg shadow-sm border border-green-100/50">
-                    <TrendingUp size={16} className="text-green-500" />
+                <h3 className="font-black text-slate-900 flex items-center gap-2.5 text-base sm:text-lg tracking-tight">
+                  <div className="w-9 h-9 bg-white rounded-xl shadow-xs border border-green-100/60 flex items-center justify-center shrink-0">
+                    <TrendingUp size={19} className="text-green-600" />
                   </div>
                   Nuevos Contactos
                 </h3>
-                <p className="text-[10px] text-slate-500 font-medium mt-1">Últimas entradas al sistema</p>
+                <p className="text-xs text-slate-500 font-semibold mt-1">Últimas entradas al sistema</p>
               </div>
-              <button type="button" onClick={() => navigate('/leads')} className="text-[10px] font-bold text-green-700 hover:text-green-800 bg-white hover:bg-green-50 px-3 py-1.5 rounded-lg border border-green-200/60 shadow-sm transition-all">
+              <button 
+                type="button" 
+                onClick={() => navigate('/leads')} 
+                className="text-[10px] font-black uppercase tracking-wider text-green-700 hover:text-green-800 transition-all bg-white px-3.5 py-2 rounded-xl border border-green-200/60 shadow-xs hover:bg-green-50 shrink-0"
+              >
                 Ver todos
               </button>
             </div>

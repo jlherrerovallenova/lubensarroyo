@@ -151,7 +151,7 @@ export default function Discovery() {
       const emailToCheck = extracted.email === 'No proporcionado' ? null : extracted.email;
       const phoneToCheck = extracted.phone === 'No proporcionado' ? null : extracted.phone;
 
-      let duplicateQuery = [];
+      const duplicateQuery = [];
       if (emailToCheck) duplicateQuery.push(`email.eq.${emailToCheck}`);
       if (phoneToCheck) duplicateQuery.push(`phone.eq.${phoneToCheck}`);
 

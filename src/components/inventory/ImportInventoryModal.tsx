@@ -69,10 +69,10 @@ export default function ImportInventoryModal({ isOpen, onClose, onSuccess, promo
         chunks.push(sourceList.slice(i, i + chunkSize));
       }
       await Promise.all(chunks.map(async (chunk) => {
-        let insertData: any = chunk;
+        const insertData: any = chunk;
         let res = await (supabase as any).from('inventory').insert(insertData);
         if (res.error && res.error.message?.includes('promocion')) {
-          const rawWithoutPromo = chunk.map(({ promocion, ...rest }: any) => rest);
+          const rawWithoutPromo = chunk.map(({ promocion: _p, ...rest }: any) => rest);
           res = await (supabase as any).from('inventory').insert(rawWithoutPromo);
         }
         if (res.error) throw res.error;

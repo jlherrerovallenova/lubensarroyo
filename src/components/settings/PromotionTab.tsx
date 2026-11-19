@@ -118,7 +118,8 @@ export function PromotionTab() {
         propertiesQuery = propertiesQuery.eq('promocion', activePromotionId);
       }
 
-      let { data: propertiesData, error: propErr } = await propertiesQuery;
+      const { data: initialPropData, error: propErr } = await propertiesQuery;
+      let propertiesData = initialPropData;
       if (propErr && propErr.message && propErr.message.includes('promocion')) {
         const fallback = await supabase.from('inventory').select('precio, estado_vivienda');
         propertiesData = fallback.data;
