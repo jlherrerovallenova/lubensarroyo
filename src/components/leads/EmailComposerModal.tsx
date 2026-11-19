@@ -83,7 +83,31 @@ export default function EmailComposerModal({
   const { session, profile } = useAuth();
   const { activePromotion } = usePromotion();
   const agentName = profile?.full_name || 'Juan Herrero';
-  const [method, setMethod, clearMethod] = useAutosave<'email' | 'whatsapp'>(`draft-email-method-${leadId}`, initialMethod || 'email');
+  const [method, setMethod] = useState<'email' | 'whatsapp'>(initialMethod || 'email');
+
+  // Sincronizar el método siempre con la acción solicitada por el usuario
+  useEffect(() => {
+    if (initialMethod) {
+      setMethod(initialMethod);
+    }
+  }, [initialMethod]);
+
+  // Limpiar cualquier residuo previo en localStorage para que no fuerce WhatsApp al pulsar Email
+  useEffect(() => {
+    try {
+      window.localStorage.removeItem(`draft-email-method-${leadId}`);
+    } catch {
+      // ignore
+    }
+  }, [leadId]);
+
+  const clearMethod = () => {
+    try {
+      window.localStorage.removeItem(`draft-email-method-${leadId}`);
+    } catch {
+      // ignore
+    }
+  };
 
   const createTaskRecord = async (sentMethod: 'email' | 'whatsapp', trackingId?: string) => {
     try {
@@ -659,20 +683,32 @@ ${agentName} - TERRAVALL`);
             <p className="text-[10px] font-bold text-emerald-200 uppercase tracking-widest">Enviar a</p>
             <h2 className="text-white font-bold text-base leading-tight">{leadName}</h2>
           </div>
-          {/* TABS como píldoras en el header */}
-          {/* TABS eliminadas - ahora solo muestra el método activo */}
-          <div className="flex items-center gap-2 px-4 py-2 bg-altavik-700/60 rounded-lg text-white font-bold text-xs">
-            {method === 'email' ? (
-              <>
-                <Mail size={14} className="text-blue-300" />
-                <span>ENVÍO POR EMAIL</span>
-              </>
-            ) : (
-              <>
-                <MessageCircle size={14} className="text-emerald-300" />
-                <span>ENVÍO 1er CONTACTO</span>
-              </>
-            )}
+          {/* Selector interactivo de canal: Email o WhatsApp */}
+          <div className="flex items-center gap-1 bg-altavik-800/80 p-1 rounded-xl border border-altavik-500/30">
+            <button
+              type="button"
+              onClick={() => setMethod('email')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                method === 'email'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <Mail size={14} className={method === 'email' ? 'text-white' : 'text-blue-200'} />
+              <span>Email</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMethod('whatsapp')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                method === 'whatsapp'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-white/70 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              <MessageCircle size={14} className={method === 'whatsapp' ? 'text-white' : 'text-emerald-200'} />
+              <span>WhatsApp</span>
+            </button>
           </div>
         </div>
 
