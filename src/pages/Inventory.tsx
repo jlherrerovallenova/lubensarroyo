@@ -9,17 +9,13 @@ import {
   Bath,
   Filter,
   RotateCcw,
-  FileText,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
   ChevronUp,
   Euro,
   PencilRuler,
-  Plus,
   Download,
-  FileDown,
-  Upload,
   MessageSquare,
   Mail,
   Box
@@ -454,41 +450,6 @@ export default function Inventory() {
               title="Abrir maqueta 3D interactiva"
             >
               <Box size={18} className="text-indigo-600" /> Edificio 3D
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setIsImportModalOpen(true)}
-              className="bg-white/80 shadow-sm"
-            >
-              <Upload size={18} /> Importar Catálogo
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => setIsFichasModalOpen(true)}
-              className="bg-white/80 shadow-sm"
-            >
-              <FileDown size={18} /> Subir Fichas
-            </Button>
-            <Button
-              type="button"
-              onClick={() => {
-                setEditingProperty(null);
-                setIsModalOpen(true);
-              }}
-            >
-              <Plus size={18} /> Nueva Vivienda
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleExportPDF}
-              disabled={loading || isExporting || filteredProperties.length === 0}
-              isLoading={isExporting}
-              className="bg-white/80 shadow-sm"
-            >
-              <FileText size={18} /> Exportar PDF
             </Button>
           </div>
         }
