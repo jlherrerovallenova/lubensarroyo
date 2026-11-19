@@ -14,7 +14,6 @@ import {
   Calendar, 
   Map, 
   Settings, 
-  Search, 
   Bell, 
   LogOut, 
   Menu, 
@@ -50,8 +49,7 @@ export default function MainLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { activePromotion, activePromotionId, openSelectorModal } = usePromotion();
 
-  // Estados para el buscador y notificaciones
-  const [searchTerm, setSearchTerm] = useState('');
+  // Estados para notificaciones
   const [showNotification, setShowNotification] = useState(false);
   const [notificationData, setNotificationData] = useState({
     title: '',
@@ -229,28 +227,6 @@ export default function MainLayout() {
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setIsSidebarOpen(false);
 
-  // Manejador del buscador: Redirige a la sección correspondiente con el parámetro de búsqueda
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const query = searchTerm.trim();
-
-    if (!query) return;
-
-    // Lógica de redirección inteligente según lo que el usuario busque
-    if (location.pathname.includes('leads') || location.pathname === '/') {
-      navigate(`/leads?search=${encodeURIComponent(query)}`);
-    } else if (location.pathname.includes('inventory')) {
-      navigate(`/inventory?search=${encodeURIComponent(query)}`);
-    } else {
-      setNotificationData({
-        title: "Búsqueda",
-        message: `Buscando "${query}" en todo el sistema...`,
-        type: 'info'
-      });
-      setShowNotification(true);
-    }
-  };
-
   return (
     <div className="flex h-screen bg-transparent font-sans text-slate-900 overflow-hidden">
       <ConnectionStatus />
@@ -380,21 +356,8 @@ export default function MainLayout() {
             </button>
           </div>
 
-          {/* DERECHA: Buscador y campana */}
-          <div className="flex items-center justify-end gap-2 md:gap-4 w-1/3">
-            <form onSubmit={handleSearch} className="relative hidden md:block">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Buscar clientes o propiedades..."
-                className="pl-9 pr-4 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-altavik-500 focus:bg-white transition-all w-48 lg:w-64 placeholder:text-slate-400 font-medium"
-              />
-            </form>
-
-            <div className="h-8 w-px bg-slate-200 mx-1 hidden md:block"></div>
-
+          {/* DERECHA: Campana y acciones */}
+          <div className="flex items-center justify-end gap-2 md:gap-4">
             {/* Campana con badge y popover */}
             <div className="relative" ref={bellRef}>
               <button type="button"
@@ -498,7 +461,7 @@ export default function MainLayout() {
 
         <div className="flex-1 overflow-auto bg-transparent relative">
           <div className="p-4 md:px-6 md:py-6 pb-20">
-            <Outlet context={{ searchTerm }} />
+            <Outlet />
           </div>
         </div>
       </main>
