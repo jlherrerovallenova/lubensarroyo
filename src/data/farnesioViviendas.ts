@@ -20,6 +20,25 @@ export interface ViviendaSeed {
 
 export const FARNESIO_VIVIENDAS_19: ViviendaSeed[] = [
   {
+    "n_orden": "1A-1E",
+    "portal": "1A",
+    "planta": "1ª",
+    "letra": "E",
+    "dormitorios": 3,
+    "banos": 3,
+    "sup_util": 109.57,
+    "sup_construida": 129.16,
+    "sup_terrazas": 17.31,
+    "sup_porche": 0,
+    "orientacion": "SUR",
+    "precio": 405000,
+    "garaje": "SÍ",
+    "trastero": "SÍ",
+    "estado_vivienda": "DISPONIBLE",
+    "promocion": "farnesio",
+    "ficha_url": "/planos/farnesio/plano_farnesio_1A_E.pdf"
+  },
+  {
     "n_orden": "1A-2E",
     "portal": "1A",
     "planta": "2ª",
@@ -53,7 +72,7 @@ export const FARNESIO_VIVIENDAS_19: ViviendaSeed[] = [
     "precio": 415000,
     "garaje": "SÍ",
     "trastero": "SÍ",
-    "estado_vivienda": "DISPONIBLE",
+    "estado_vivienda": "RESERVADA",
     "promocion": "farnesio",
     "ficha_url": "/planos/farnesio/plano_farnesio_1A_E.pdf"
   },
