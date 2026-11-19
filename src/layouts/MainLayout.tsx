@@ -25,7 +25,6 @@ import {
   Clock,
   BarChart3,
   Sparkles,
-  Command,
   BadgeDollarSign,
   MessageSquareQuote,
   ChevronDown,
@@ -393,18 +392,6 @@ export default function MainLayout() {
                 className="pl-9 pr-4 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-altavik-500 focus:bg-white transition-all w-48 lg:w-64 placeholder:text-slate-400 font-medium"
               />
             </form>
-
-            <button type="button"
-              onClick={() => setIsCommandPaletteOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 bg-slate-100 hover:bg-altavik-50 text-slate-400 hover:text-altavik-600 rounded-lg border border-slate-200 transition-all group"
-              title="Magic Bar (Ctrl+K)"
-            >
-              <Command size={16} className="group-hover:scale-110 transition-transform" />
-              <span className="text-[10px] font-black uppercase tracking-widest hidden lg:block">Magic Bar</span>
-              <div className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[9px] font-bold">
-                <span>K</span>
-              </div>
-            </button>
 
             <div className="h-8 w-px bg-slate-200 mx-1 hidden md:block"></div>
 
