@@ -28,7 +28,8 @@ import {
   Command,
   BadgeDollarSign,
   MessageSquareQuote,
-  ChevronDown
+  ChevronDown,
+  Box
 } from 'lucide-react';
 import CommandPalette from '../components/ui/CommandPalette';
 import { useAgendaAlerts } from '../hooks/useAgendaAlerts';
@@ -308,6 +309,7 @@ export default function MainLayout() {
           <SidebarItem to="/" icon={<LayoutDashboard size={18} />} label="Panel de Control" active={location.pathname === '/'} onClick={closeSidebar} />
           <SidebarItem to="/leads" icon={<Users size={18} />} label="Clientes" active={location.pathname.startsWith('/leads')} onClick={closeSidebar} />
           <SidebarItem to="/inventory" icon={<Map size={18} />} label="Viviendas" active={location.pathname === '/inventory'} onClick={closeSidebar} />
+          <SidebarItem to="/edificio-3d" icon={<Box size={18} className="text-indigo-400" />} label="Edificio 3D" active={location.pathname === '/edificio-3d'} onClick={closeSidebar} />
           <SidebarItem to="/pipeline" icon={<Calendar size={18} />} label="Fase de Venta" active={location.pathname === '/pipeline'} onClick={closeSidebar} />
           <SidebarItem to="/sales" icon={<BadgeDollarSign size={18} />} label="Ventas" active={location.pathname === '/sales'} onClick={closeSidebar} />
 

@@ -24,6 +24,7 @@ const DocumentViewer = lazy(() => import('./pages/DocumentViewer'));
 const WhatsAppInbox = lazy(() => import('./pages/WhatsAppInbox'));
 const Sales = lazy(() => import('./pages/Sales'));
 const SurveyResults = lazy(() => import('./pages/SurveyResults'));
+const Edificio3D = lazy(() => import('./pages/Edificio3D'));
 
 // Client routes
 const ClientLayout = lazy(() => import('./layouts/ClientLayout'));
@@ -71,6 +72,7 @@ function App() {
           <Route path="/sales" element={<Suspense fallback={<PageLoader />}><Sales /></Suspense>} />
           <Route path="/surveys" element={<Suspense fallback={<PageLoader />}><SurveyResults /></Suspense>} />
           <Route path="/inventory" element={<Suspense fallback={<PageLoader />}><Inventory /></Suspense>} />
+          <Route path="/edificio-3d" element={<Suspense fallback={<PageLoader />}><Edificio3D /></Suspense>} />
           <Route path="/agenda" element={<Suspense fallback={<PageLoader />}><Agenda /></Suspense>} />
           <Route path="/settings" element={<Suspense fallback={<PageLoader />}><Settings /></Suspense>} />
           <Route path="/newsletters" element={<Suspense fallback={<PageLoader />}><Newsletters /></Suspense>} />

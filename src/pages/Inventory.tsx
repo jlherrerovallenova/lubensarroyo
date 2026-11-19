@@ -21,7 +21,8 @@ import {
   FileDown,
   Upload,
   MessageSquare,
-  Mail
+  Mail,
+  Box
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -448,6 +449,15 @@ export default function Inventory() {
             <Button
               type="button"
               variant="secondary"
+              onClick={() => window.open('/edificio-3d', '_self')}
+              className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/80 shadow-xs"
+              title="Abrir maqueta 3D interactiva"
+            >
+              <Box size={18} className="text-indigo-600" /> Edificio 3D
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
               onClick={() => setIsImportModalOpen(true)}
               className="bg-white/80 shadow-sm"
             >
@@ -816,6 +826,15 @@ export default function Inventory() {
                           title="Forma de Pago Premium"
                         >
                           <Euro size={18} />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => window.open(`https://lubens-farnesio.netlify.app/#unit=${property.portal}-${property.planta}-${property.letra}`, '_blank')}
+                          className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                          title="Ver en Maqueta 3D"
+                        >
+                          <Box size={18} />
                         </button>
 
                         <button type="button"
