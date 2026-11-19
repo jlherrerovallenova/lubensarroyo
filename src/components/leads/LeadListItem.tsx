@@ -23,13 +23,13 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
       className={`cursor-pointer group border-b border-slate-100 border-l-4 ${cfg.border} ${isSelected ? 'bg-blue-50/80 ring-1 ring-blue-100/50 z-10 sticky' : 'hover:bg-slate-50/80'} transition-all duration-150 relative`}
     >
       {/* ================= DESKTOP VIEW ================= */}
-      <div className="hidden md:grid grid-cols-[20fr_14fr_12fr_16fr_10fr_12fr_10fr_8fr] gap-3 px-6 py-4 items-center">
-        <div className="flex items-center justify-start gap-3.5 min-w-0">
+      <div className="hidden md:grid grid-cols-[22fr_13fr_13fr_19fr_10fr_11fr_10fr_12fr] gap-3 px-6 py-4 items-center">
+        <div className="flex items-center justify-start gap-3 min-w-0">
           <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center border border-slate-100 shrink-0">
             <User size={18} strokeWidth={2.5} />
           </div>
-          <div className="min-w-0 flex items-center gap-2">
-            <h3 className="font-bold text-slate-900 text-sm truncate group-hover:text-altavik-700 transition-colors leading-tight">{lead.name}</h3>
+          <div className="min-w-0 flex items-center gap-1.5 flex-1">
+            <h3 className="font-bold text-slate-900 text-sm truncate group-hover:text-altavik-700 transition-colors leading-tight" title={lead.name || ''}>{lead.name}</h3>
             {lead.promocion_interes === 'farnesio' && (
               <span className="shrink-0 text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
                 Farnesio
@@ -52,21 +52,21 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
           <ComercialBadge name={lead.assigned_to} />
         </div>
 
-        <div className="flex justify-center items-center">
-          <div className="flex items-center gap-2 text-xs text-slate-500 truncate">
+        <div className="flex justify-center items-center min-w-0">
+          <div className="flex items-center gap-2 text-xs text-slate-600 truncate font-medium">
             <div className="w-5 h-5 rounded-md bg-altavik-50 flex items-center justify-center shrink-0">
               <Phone size={11} className="text-altavik-400" />
             </div>
-            <span className="truncate">{lead.phone || <span className="text-slate-300 italic">Sin teléfono</span>}</span>
+            <span className="truncate">{lead.phone || <span className="text-slate-300 italic font-normal">Sin teléfono</span>}</span>
           </div>
         </div>
 
-        <div className="flex justify-center items-center">
-          <div className="flex items-center gap-2 text-xs text-slate-500 truncate">
+        <div className="flex justify-center items-center min-w-0">
+          <div className="flex items-center gap-2 text-xs text-slate-600 truncate font-medium" title={lead.email || ''}>
             <div className="w-5 h-5 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
               <Mail size={11} className="text-blue-400" />
             </div>
-            <span className="truncate">{lead.email || <span className="text-slate-300 italic">Sin email</span>}</span>
+            <span className="truncate">{lead.email || <span className="text-slate-300 italic font-normal">Sin email</span>}</span>
           </div>
         </div>
 
@@ -84,11 +84,11 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
           </p>
         </div>
 
-        <div className="flex items-center justify-center gap-1 transition-opacity">
+        <div className="flex items-center justify-center gap-1 shrink-0">
           <button type="button" onClick={(e) => { e.stopPropagation(); onCompose(lead, 'whatsapp'); }} className="p-1.5 text-slate-400 hover:text-altavik-600 hover:bg-altavik-50 rounded-lg transition-all" title="WhatsApp"><MessageCircle strokeWidth={2.5} size={15} /></button>
           <button type="button" onClick={(e) => { e.stopPropagation(); onCompose(lead, 'email'); }} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Email"><Mail strokeWidth={2.5} size={15} /></button>
           <button type="button" onClick={(e) => { e.stopPropagation(); onSendFeedback(lead); }} className="p-1.5 text-slate-400 hover:text-pink-500 hover:bg-pink-50 rounded-lg transition-all" title="Enviar Encuesta de Opinión"><Heart strokeWidth={2.5} size={15} /></button>
-          <ChevronRight strokeWidth={2.5} size={15} className="text-slate-300 group-hover:text-altavik-500 transition-colors" />
+          <ChevronRight strokeWidth={2.5} size={15} className="text-slate-300 group-hover:text-altavik-500 transition-colors shrink-0" />
         </div>
       </div>
 

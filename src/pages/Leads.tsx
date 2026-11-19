@@ -160,7 +160,7 @@ export default function Leads() {
       />
 
       <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm mb-6">
-        <div className="flex flex-col lg:flex-row gap-3 items-center p-3">
+        <div className="flex flex-col xl:flex-row gap-3 items-center p-3">
           <div className="relative flex-1 w-full group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-altavik-600 transition-colors" strokeWidth={2.5} size={18} />
             <input
@@ -172,7 +172,7 @@ export default function Leads() {
             />
           </div>
 
-          <div className="flex flex-wrap items-center w-full lg:w-auto gap-2.5">
+          <div className="flex flex-wrap items-center w-full xl:w-auto gap-2.5">
             <CustomSelect
               className="flex-1 sm:flex-none sm:w-auto min-w-[170px]"
               value={promocionFilter}
@@ -253,37 +253,39 @@ export default function Leads() {
             {hasActiveFilters && <button type="button" onClick={clearFilters} className="text-altavik-600 font-bold text-sm mt-4 hover:underline px-4 py-2 bg-altavik-50 rounded-lg">Limpiar filtros</button>}
           </div>
         ) : (
-          <div className="flex-1">
-            <div className="grid md:grid-cols-[20fr_14fr_12fr_16fr_10fr_12fr_10fr_8fr] gap-3 px-6 py-3.5 bg-altavik-600 text-white text-[10px] font-black uppercase tracking-widest border-b border-altavik-700 hidden md:grid rounded-t-2xl shadow-sm">
-              <div className={`flex items-center justify-center gap-1 cursor-pointer select-none transition-colors ${sortField === 'name' ? 'text-white font-bold' : 'hover:text-white/80 text-white/90'}`} onClick={() => handleSort('name')}>
-                Cliente
-                {sortField === 'name' ? (sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />) : <ArrowUpDown size={12} className="opacity-50" />}
+          <div className="flex-1 overflow-x-auto custom-scrollbar">
+            <div className="md:min-w-[1080px]">
+              <div className="grid md:grid-cols-[22fr_13fr_13fr_19fr_10fr_11fr_10fr_12fr] gap-3 px-6 py-3.5 bg-altavik-600 text-white text-[10px] font-black uppercase tracking-widest border-b border-altavik-700 hidden md:grid rounded-t-2xl shadow-sm">
+                <div className={`flex items-center justify-start pl-2 gap-1 cursor-pointer select-none transition-colors ${sortField === 'name' ? 'text-white font-bold' : 'hover:text-white/80 text-white/90'}`} onClick={() => handleSort('name')}>
+                  Cliente
+                  {sortField === 'name' ? (sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />) : <ArrowUpDown size={12} className="opacity-50" />}
+                </div>
+                <div className="flex items-center justify-center">Comercial</div>
+                <div className="flex items-center justify-center">Teléfono</div>
+                <div className="flex items-center justify-center">Email</div>
+                <div className="flex items-center justify-center">Origen</div>
+                <div className="flex items-center justify-center">Estado</div>
+                <div className={`flex items-center justify-center gap-1 cursor-pointer select-none transition-colors ${sortField === 'created_at' ? 'text-white font-bold' : 'hover:text-white/80 text-white/90'}`} onClick={() => handleSort('created_at')}>
+                  Alta
+                  {sortField === 'created_at' ? (sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />) : <ArrowUpDown size={12} className="opacity-50" />}
+                </div>
+                <div className="flex items-center justify-center">Acciones</div>
               </div>
-              <div className="flex items-center justify-center">Comercial</div>
-              <div className="flex items-center justify-center">Teléfono</div>
-              <div className="flex items-center justify-center">Email</div>
-              <div className="flex items-center justify-center">Origen</div>
-              <div className="flex items-center justify-center">Estado</div>
-              <div className={`flex items-center justify-center gap-1 cursor-pointer select-none transition-colors ${sortField === 'created_at' ? 'text-white font-bold' : 'hover:text-white/80 text-white/90'}`} onClick={() => handleSort('created_at')}>
-                Alta
-                {sortField === 'created_at' ? (sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />) : <ArrowUpDown size={12} className="opacity-50" />}
-              </div>
-              <div className="flex items-center justify-center">Acciones</div>
-            </div>
 
-            {leads.map((lead) => (
-              <LeadListItem 
-                key={lead.id} 
-                lead={lead} 
-                isSelected={selectedLead?.id === lead.id} 
-                onClick={() => setSelectedLead(lead)} 
-                onCompose={handleCompose}
-                onSendFeedback={(l) => {
-                  setSelectedLeadForFeedback(l);
-                  setIsFeedbackModalOpen(true);
-                }}
-              />
-            ))}
+              {leads.map((lead) => (
+                <LeadListItem 
+                  key={lead.id} 
+                  lead={lead} 
+                  isSelected={selectedLead?.id === lead.id} 
+                  onClick={() => setSelectedLead(lead)} 
+                  onCompose={handleCompose}
+                  onSendFeedback={(l) => {
+                    setSelectedLeadForFeedback(l);
+                    setIsFeedbackModalOpen(true);
+                  }}
+                />
+              ))}
+            </div>
           </div>
         )}
 
