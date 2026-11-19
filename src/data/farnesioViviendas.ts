@@ -72,7 +72,7 @@ export const FARNESIO_VIVIENDAS_19: ViviendaSeed[] = [
     "precio": 415000,
     "garaje": "SÍ",
     "trastero": "SÍ",
-    "estado_vivienda": "DISPONIBLE",
+    "estado_vivienda": "RESERVADA",
     "promocion": "farnesio",
     "ficha_url": "/planos/farnesio/plano_farnesio_1A_E.pdf"
   },
@@ -376,7 +376,7 @@ export const FARNESIO_VIVIENDAS_19: ViviendaSeed[] = [
     "precio": 305000,
     "garaje": "SÍ",
     "trastero": "SÍ",
-    "estado_vivienda": "DISPONIBLE",
+    "estado_vivienda": "RESERVADA",
     "promocion": "farnesio",
     "ficha_url": "/planos/farnesio/plano_farnesio_1B_AC.pdf"
   },
