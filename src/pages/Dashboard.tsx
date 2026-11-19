@@ -15,10 +15,8 @@ import { Button } from '../components/ui/Button';
 import { PageHeader } from '../components/ui/PageHeader';
 
 // Dashboard Components
-import { StatCard } from '../components/dashboard/StatCard';
 import { TabButton } from '../components/dashboard/TabButton';
 import { EmptyState } from '../components/dashboard/EmptyState';
-import { RadarItem } from '../components/dashboard/RadarItem';
 import { FeedbackListItem } from '../components/dashboard/FeedbackListItem';
 import { AgendaListItem } from '../components/dashboard/AgendaListItem';
 
@@ -247,29 +245,6 @@ ${promotionWebsite}`;
     window.open(whatsappUrl, '_blank');
   };
 
-  const getSourceIcon = (sourceName: string) => {
-    const lower = sourceName.toLowerCase();
-    if (lower.includes('importado') || lower.includes('excel') || lower.includes('csv')) {
-      return (
-        <div className="w-[22px] h-[22px] bg-amber-50 flex items-center justify-center rounded-md border border-amber-200">
-          <FileSpreadsheet className="text-amber-600" size={13} />
-        </div>
-      );
-    }
-    if (lower.includes('idealista')) {
-      return (
-        <div className="w-[22px] h-[22px] bg-slate-100 flex items-center justify-center rounded-md border border-slate-200">
-          <span translate="no" className="text-[9px] font-black text-slate-500 leading-none select-none">ID</span>
-        </div>
-      );
-    }
-    if (lower.includes('google sem') || lower.includes('sem')) return <Search />;
-    if (lower.includes('web')) return <Globe />;
-    if (lower.includes('insta')) return <Smartphone />;
-    if (lower.includes('referido')) return <Users />;
-    return <Target />;
-  };
-
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -289,33 +264,6 @@ ${promotionWebsite}`;
       />
 
       <div className="grid grid-cols-12 gap-5 flex-1">
-        <div className="col-span-12 sm:col-span-6 lg:col-span-3">
-          <StatCard
-            title="TOTAL CLIENTES"
-            value={stats.totalLeads.toString()}
-            subtitle={activePromotion.name}
-            icon={<Users />}
-            color="slate"
-            onClick={() => navigate(`/leads?promo=${activePromotionId}`)}
-          />
-        </div>
-        {stats.topSources.map((source, idx) => {
-          const colors: Array<'indigo' | 'emerald' | 'amber' | 'rose'> = ['indigo', 'emerald', 'amber', 'rose'];
-          return (
-            // react-doctor-disable-next-line no-array-index-as-key
-            <div key={idx} className="col-span-12 sm:col-span-6 lg:col-span-3">
-              <StatCard
-                title={`ORIGEN: ${source.name.toUpperCase()}`}
-                value={source.count.toString()}
-                subtitle={`${source.percentage}% de ${activePromotion.name}`}
-                icon={getSourceIcon(source.name)}
-                color={colors[idx % colors.length]}
-                onClick={() => navigate(`/leads?source=${encodeURIComponent(source.name)}&promo=${activePromotionId}`)}
-              />
-            </div>
-          );
-        })}
-
         <Card variant="glass" noPadding className="col-span-12 lg:col-span-8 flex flex-col group">
           <div className="p-8 bg-altavik-100 border-b border-altavik-200/50 flex justify-between items-center">
             <div>
@@ -619,7 +567,7 @@ ${promotionWebsite}`;
                 Ver todos
               </button>
             </div>
-            <div className="p-4 space-y-1.5 overflow-y-auto max-h-[300px]">
+            <div className="p-4 space-y-1.5 overflow-y-auto max-h-[550px]">
               {recentLeads.map((lead) => (
                 <div
                   key={lead.id}
