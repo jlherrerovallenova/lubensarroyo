@@ -640,6 +640,9 @@ INSERT INTO public.inventory (n_orden, portal, planta, letra, dormitorios, banos
 VALUES ('1B-3B', '1B', '3ª', 'B', 3, 2, 91.79, 15.88, 110.48, 0, 'OESTE', 355000, 'SÍ', 'SÍ', 'DISPONIBLE', 'farnesio', '/planos/farnesio/plano_farnesio_1B_B.pdf')
 ON CONFLICT (n_orden) DO UPDATE SET ficha_url = EXCLUDED.ficha_url, estado_vivienda = EXCLUDED.estado_vivienda;
 INSERT INTO public.inventory (n_orden, portal, planta, letra, dormitorios, banos, sup_util, sup_terrazas, sup_construida, sup_porche, orientacion, precio, garaje, trastero, estado_vivienda, promocion, ficha_url)
+VALUES ('1B-3F', '1B', '3ª', 'F', 1, 1, 46.85, 5.81, 54.46, 0, 'OESTE', 180000, 'SÍ', 'SÍ', 'DISPONIBLE', 'farnesio', '/planos/farnesio/plano_farnesio_1B_F.pdf')
+ON CONFLICT (n_orden) DO UPDATE SET ficha_url = EXCLUDED.ficha_url, estado_vivienda = EXCLUDED.estado_vivienda;
+INSERT INTO public.inventory (n_orden, portal, planta, letra, dormitorios, banos, sup_util, sup_terrazas, sup_construida, sup_porche, orientacion, precio, garaje, trastero, estado_vivienda, promocion, ficha_url)
 VALUES ('1B-4C', '1B', '4ª', 'C', 2, 2, 70.39, 8.1, 83.01, 0, 'OESTE', 270000, 'SÍ', 'SÍ', 'DISPONIBLE', 'farnesio', '/planos/farnesio/plano_farnesio_1B_C.pdf')
 ON CONFLICT (n_orden) DO UPDATE SET ficha_url = EXCLUDED.ficha_url, estado_vivienda = EXCLUDED.estado_vivienda;
 INSERT INTO public.inventory (n_orden, portal, planta, letra, dormitorios, banos, sup_util, sup_terrazas, sup_construida, sup_porche, orientacion, precio, garaje, trastero, estado_vivienda, promocion, ficha_url)

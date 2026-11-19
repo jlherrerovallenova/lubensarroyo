@@ -172,6 +172,25 @@ export const FARNESIO_VIVIENDAS_19: ViviendaSeed[] = [
     "ficha_url": "/planos/farnesio/plano_farnesio_1B_B.pdf"
   },
   {
+    "n_orden": "1B-3F",
+    "portal": "1B",
+    "planta": "3ª",
+    "letra": "F",
+    "dormitorios": 1,
+    "banos": 1,
+    "sup_util": 46.85,
+    "sup_construida": 54.46,
+    "sup_terrazas": 5.81,
+    "sup_porche": 0,
+    "orientacion": "OESTE",
+    "precio": 180000,
+    "garaje": "SÍ",
+    "trastero": "SÍ",
+    "estado_vivienda": "DISPONIBLE",
+    "promocion": "farnesio",
+    "ficha_url": "/planos/farnesio/plano_farnesio_1B_F.pdf"
+  },
+  {
     "n_orden": "1B-4C",
     "portal": "1B",
     "planta": "4ª",
