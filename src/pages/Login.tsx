@@ -51,9 +51,9 @@ export default function Login() {
         {/* LOGO O ICONO */}
         <div className="flex justify-center mb-6 px-4 sm:px-0">
           <img
-            src="/logo-lubens-arroyo.png"
-            alt="Lubens Arroyo"
-            className="h-20 w-auto object-contain drop-shadow-sm"
+            src="/logo-lubens-residencial.png"
+            alt="Lubens Residencial"
+            className="h-20 sm:h-24 w-auto object-contain drop-shadow-sm"
           />
         </div>
 
