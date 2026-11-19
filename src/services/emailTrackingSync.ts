@@ -7,6 +7,9 @@ import { getResendApiKey } from './emailService';
  * la API de Resend para actualizar la tabla email_tracking y lead_history en Supabase.
  */
 export async function syncResendEmailOpens(): Promise<number> {
+  // En producción (Bolt, Netlify, etc.), /api/resend no existe
+  if (!import.meta.env?.DEV) return 0;
+
   const apiKey = await getResendApiKey();
   if (!apiKey) return 0;
 
@@ -14,7 +17,9 @@ export async function syncResendEmailOpens(): Promise<number> {
     const res = await fetch('/api/resend/emails', {
       headers: { Authorization: `Bearer ${apiKey}` }
     });
-    if (!res.ok) return 0;
+
+    const contentType = res.headers.get('content-type') || '';
+    if (!res.ok || !contentType.includes('application/json')) return 0;
 
     const json = await res.json();
     const resendEmails: any[] = json.data || [];

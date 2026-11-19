@@ -42,11 +42,15 @@ export async function getResendApiKey(): Promise<string> {
 /**
  * Envía un correo electrónico utilizando Resend:
  * - Intenta primero a través de la Supabase Edge Function `send-email`.
- * - Si la Edge Function no está desplegada (404) o falla, utiliza el proxy local /api/resend.
+ * - Si está en entorno de desarrollo local (Vite) y la función no está desplegada, recurre al proxy local /api/resend.
+ * - En producción (Bolt, Netlify, Vercel, etc.), informa claramente si la Edge Function no está desplegada o si falló.
  */
 export async function sendEmail({ to, subject, html, from, bcc }: SendEmailParams): Promise<{ success: boolean; id?: string }> {
   const apiKey = await getResendApiKey();
   const recipientList = Array.isArray(to) ? to : [to];
+
+  let edgeFunctionError: string | null = null;
+  let isFunctionNotFound = false;
 
   // 1. Intentar invocar la Edge Function de Supabase
   try {
@@ -65,16 +69,62 @@ export async function sendEmail({ to, subject, html, from, bcc }: SendEmailParam
       return { success: true, id: data?.id };
     }
 
-    // Si la función responde con error que no sea 404, extraer mensaje
-    const errMsg = data?.error || error?.message || '';
-    if (errMsg && !errMsg.includes('404') && !errMsg.includes('Not Found')) {
-      console.warn('Supabase Edge Function error:', errMsg);
+    if (data?.error) {
+      edgeFunctionError = typeof data.error === 'string' ? data.error : JSON.stringify(data.error);
     }
-  } catch (err) {
-    console.warn('Supabase Edge Function send-email invoke error, intentando envío alternativo:', err);
+
+    if (error) {
+      if ('context' in error && (error as any).context instanceof Response) {
+        const resp = (error as any).context as Response;
+        if (resp.status === 404) {
+          isFunctionNotFound = true;
+        }
+        try {
+          const cloned = resp.clone();
+          const ct = cloned.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            const errJson = await cloned.json();
+            edgeFunctionError = errJson.error || errJson.message || edgeFunctionError;
+          } else {
+            const text = await cloned.text();
+            if (text && !text.includes('<!DOCTYPE')) {
+              edgeFunctionError = text;
+            }
+          }
+        } catch {
+          // ignore error reading context
+        }
+      }
+      if (!edgeFunctionError) {
+        edgeFunctionError = error.message || 'Error desconocido al invocar la función.';
+      }
+      if (edgeFunctionError && (edgeFunctionError.includes('404') || edgeFunctionError.includes('Not Found') || edgeFunctionError.includes('Failed to send a request'))) {
+        isFunctionNotFound = true;
+      }
+    }
+  } catch (err: any) {
+    edgeFunctionError = err?.message || 'Error de conexión con la Edge Function';
+    if (edgeFunctionError && (edgeFunctionError.includes('404') || edgeFunctionError.includes('Failed to send'))) {
+      isFunctionNotFound = true;
+    }
   }
 
-  // 2. Si la Edge Function no está disponible o falló, utilizar el proxy de Resend
+  // 2. Si estamos en producción (Bolt, Vercel, Netlify, etc.), el proxy /api/resend NO existe
+  const isDev = Boolean(import.meta.env?.DEV);
+  if (!isDev) {
+    if (isFunctionNotFound) {
+      throw new Error(
+        'La función "send-email" no está desplegada en tu proyecto de Supabase. Al desplegar en Bolt, debes desplegar las Edge Functions en Supabase ejecutando: `npx supabase functions deploy send-email`.'
+      );
+    }
+    throw new Error(
+      edgeFunctionError || 'Error al enviar el correo a través de Supabase Edge Function.'
+    );
+  }
+
+  // 3. Fallback exclusivo para desarrollo local (Vite dev server con proxy /api/resend)
+  console.warn('Edge Function no disponible en entorno local, intentando proxy /api/resend:', edgeFunctionError);
+
   if (!apiKey) {
     throw new Error(
       'No se ha configurado la API Key de Resend. Por favor, añádela en Configuración > Integraciones > Resend API Key o en el archivo .env como VITE_RESEND_API_KEY.'
@@ -95,6 +145,17 @@ export async function sendEmail({ to, subject, html, from, bcc }: SendEmailParam
       html,
     }),
   });
+
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const rawText = await response.text();
+    if (rawText.includes('<!DOCTYPE')) {
+      throw new Error(
+        'El servidor local no tiene configurado el proxy hacia Resend o la ruta no existe.'
+      );
+    }
+    throw new Error(`Respuesta inválida del servidor: ${rawText.slice(0, 100)}`);
+  }
 
   const resData = await response.json();
 
