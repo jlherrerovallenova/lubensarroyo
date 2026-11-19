@@ -363,7 +363,7 @@ export default function Inventory() {
         if (data.section === 'body' && data.column.index === 8) {
           const status = data.cell.raw as string;
           if (status === 'DISPONIBLE') data.cell.styles.textColor = [107, 148, 185];
-          if (status === 'RESERVADA') data.cell.styles.textColor = [245, 158, 11];
+          if (status === 'RESERVADA' || status === 'RESERVADO') data.cell.styles.textColor = [245, 158, 11];
           if (['BLOQUEADA', 'NO DISPONIBLE'].includes(status)) data.cell.styles.textColor = [239, 68, 68];
         }
       }
@@ -588,7 +588,7 @@ export default function Inventory() {
                 <div key={property.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 relative overflow-hidden flex flex-col gap-3">
                   {property.estado_vivienda && property.estado_vivienda !== 'DISPONIBLE' && (
                     <div className={`absolute top-0 left-0 right-0 py-1 text-center text-[10px] font-black uppercase tracking-widest ${
-                      property.estado_vivienda === 'RESERVADA' ? 'bg-indigo-500 text-white' : 
+                      (property.estado_vivienda === 'RESERVADA' || property.estado_vivienda === 'RESERVADO') ? 'bg-indigo-500 text-white' : 
                       property.estado_vivienda === 'BLOQUEADA' || property.estado_vivienda === 'NO DISPONIBLE' ? 'bg-red-500 text-white' :
                       'bg-slate-200 text-slate-700'
                     }`}>
@@ -599,7 +599,7 @@ export default function Inventory() {
                   <div className={`flex items-start justify-between ${property.estado_vivienda && property.estado_vivienda !== 'DISPONIBLE' ? 'mt-4' : ''}`}>
                     <div className="flex items-center gap-3">
                       <div className={`min-w-[3.5rem] px-2.5 h-12 rounded-xl flex items-center justify-center font-black text-base whitespace-nowrap shadow-inner shrink-0 ${
-                          property.estado_vivienda === 'RESERVADA' 
+                          (property.estado_vivienda === 'RESERVADA' || property.estado_vivienda === 'RESERVADO')
                             ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' 
                             : 'bg-altavik-50 text-altavik-600 border border-altavik-200'
                         }`}>
@@ -700,7 +700,7 @@ export default function Inventory() {
                   <tr 
                     key={property.id} 
                     className={`hover:bg-slate-50/50 transition-colors group relative ${
-                      property.estado_vivienda === 'RESERVADA' 
+                      (property.estado_vivienda === 'RESERVADA' || property.estado_vivienda === 'RESERVADO') 
                         ? 'bg-indigo-50/40' 
                         : property.estado_vivienda === 'BLOQUEADA' || property.estado_vivienda === 'NO DISPONIBLE'
                         ? 'opacity-75 grayscale-[0.5]'
@@ -710,7 +710,7 @@ export default function Inventory() {
                     <td className="px-4 py-5">
                       <div className="flex flex-col items-center justify-center gap-1">
                         <div className={`min-w-[3.25rem] px-2 h-9 rounded-lg flex items-center justify-center font-bold text-xs whitespace-nowrap shadow-sm shrink-0 ${
-                          property.estado_vivienda === 'RESERVADA' 
+                          (property.estado_vivienda === 'RESERVADA' || property.estado_vivienda === 'RESERVADO') 
                             ? 'bg-indigo-600 text-white shadow-indigo-200' 
                             : 'bg-altavik-50 text-altavik-600'
                         }`}>
@@ -718,7 +718,7 @@ export default function Inventory() {
                         </div>
                         {property.estado_vivienda && property.estado_vivienda !== 'DISPONIBLE' && (
                           <span className={`text-[8px] font-black uppercase tracking-tighter px-1.5 py-0.5 rounded-md border ${
-                            property.estado_vivienda === 'RESERVADA' 
+                            (property.estado_vivienda === 'RESERVADA' || property.estado_vivienda === 'RESERVADO') 
                               ? 'bg-indigo-100 text-indigo-700 border-indigo-200' 
                               : property.estado_vivienda === 'BLOQUEADA' || property.estado_vivienda === 'NO DISPONIBLE'
                               ? 'bg-red-100 text-red-700 border-red-200'
