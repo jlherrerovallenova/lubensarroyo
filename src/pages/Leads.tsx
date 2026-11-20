@@ -232,9 +232,14 @@ export default function Leads() {
             />
 
             {hasActiveFilters && (
-              <Button type="button" variant="danger" size="sm" onClick={clearFilters} className="shrink-0 aspect-square p-0 w-11 h-11" title="Limpiar filtros">
-                <FilterX strokeWidth={3} size={20} />
-              </Button>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="shrink-0 aspect-square p-0 w-11 h-11 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 border border-emerald-200/80 transition-all flex items-center justify-center shadow-xs active:scale-95"
+                title="Limpiar filtros"
+              >
+                <FilterX strokeWidth={2.5} size={20} />
+              </button>
             )}
           </div>
         </div>

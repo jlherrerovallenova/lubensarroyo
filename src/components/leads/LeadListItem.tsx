@@ -20,7 +20,7 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
   return (
     <div
       onClick={onClick}
-      className={`cursor-pointer group border-b border-slate-100 border-l-4 ${cfg.border} ${isSelected ? 'bg-blue-50/80 ring-1 ring-blue-100/50 z-10 sticky' : 'hover:bg-slate-50/80'} transition-all duration-150 relative`}
+      className={`cursor-pointer group border-b border-slate-100 border-l-4 ${cfg.border} ${isSelected ? 'bg-emerald-50/50 ring-1 ring-emerald-200/50 z-10 sticky' : 'hover:bg-slate-50/80'} transition-all duration-150 relative`}
     >
       {/* ================= DESKTOP VIEW ================= */}
       <div className="hidden md:grid grid-cols-[22fr_13fr_13fr_19fr_10fr_11fr_10fr_12fr] gap-3 px-6 py-4 items-center">
@@ -63,8 +63,8 @@ export function LeadListItem({ lead, isSelected, onClick, onCompose, onSendFeedb
 
         <div className="flex justify-center items-center min-w-0">
           <div className="flex items-center gap-2 text-xs text-slate-600 truncate font-medium" title={lead.email || ''}>
-            <div className="w-5 h-5 rounded-md bg-blue-50 flex items-center justify-center shrink-0">
-              <Mail size={11} className="text-blue-400" />
+            <div className="w-5 h-5 rounded-md bg-emerald-50/70 flex items-center justify-center shrink-0">
+              <Mail size={11} className="text-emerald-600" />
             </div>
             <span className="truncate">{lead.email || <span className="text-slate-300 italic font-normal">Sin email</span>}</span>
           </div>

@@ -116,12 +116,12 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const STATUS_CONFIG: Record<string, { dot: string; pill: string; border: string }> = {
-  new:         { dot: 'bg-blue-400',    pill: 'bg-blue-50 text-blue-700 border border-blue-200',       border: 'border-l-blue-400' },
-  contacted:   { dot: 'bg-purple-400',  pill: 'bg-purple-50 text-purple-700 border border-purple-200', border: 'border-l-purple-400' },
-  qualified:   { dot: 'bg-altavik-400', pill: 'bg-altavik-50 text-altavik-700 border border-emerald-200', border: 'border-l-altavik-400' },
-  visiting:    { dot: 'bg-cyan-400',    pill: 'bg-cyan-50 text-cyan-700 border border-cyan-200',       border: 'border-l-cyan-400' },
-  closed:      { dot: 'bg-emerald-500', pill: 'bg-emerald-50 text-emerald-700 border border-emerald-200', border: 'border-l-emerald-500' },
-  lost:        { dot: 'bg-red-400',     pill: 'bg-red-50 text-red-700 border border-red-200',         border: 'border-l-red-400' },
+  new:         { dot: 'bg-slate-400',    pill: 'bg-slate-100 text-slate-700 border border-slate-200',       border: 'border-l-slate-400' },
+  contacted:   { dot: 'bg-emerald-500',  pill: 'bg-emerald-50 text-emerald-700 border border-emerald-200', border: 'border-l-emerald-500' },
+  qualified:   { dot: 'bg-emerald-600', pill: 'bg-emerald-50 text-emerald-800 border border-emerald-300', border: 'border-l-emerald-600' },
+  visiting:    { dot: 'bg-teal-500',    pill: 'bg-teal-50 text-teal-700 border border-teal-200',       border: 'border-l-teal-500' },
+  closed:      { dot: 'bg-emerald-700', pill: 'bg-emerald-100 text-emerald-900 border border-emerald-300', border: 'border-l-emerald-700' },
+  lost:        { dot: 'bg-slate-400',     pill: 'bg-slate-100 text-slate-600 border border-slate-200',         border: 'border-l-slate-300' },
 };
 
 export function StatusBadge({ status }: { status: string | null }) {

@@ -535,7 +535,7 @@ export default function Inventory() {
 
             <button type="button"
               onClick={resetFilters}
-              className="p-2.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors shadow-sm flex items-center justify-center shrink-0"
+              className="p-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/80 rounded-xl transition-all shadow-xs flex items-center justify-center shrink-0 active:scale-95"
               title="Limpiar Filtros"
             >
               <RotateCcw size={18} />
