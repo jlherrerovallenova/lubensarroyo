@@ -26,7 +26,6 @@ import { useAuth } from '../context/AuthContext';
 import type { Database } from '../types/supabase';
 import { summarizeLeadWithCopilot, type CopilotSummaryResponse } from '../services/aiCopilot';
 import { handleTaskCompletedTransition } from '../utils/leadStateTransitions';
-import { useQueryClient } from '@tanstack/react-query';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 type AgendaItem = Database['public']['Tables']['agenda']['Row'];
@@ -68,7 +67,6 @@ export default function LeadDetail() {
   const [savingStatus, setSavingStatus] = useState(false);
   const [currentStatus, setCurrentStatus] = useState<string>('');
 
-  const queryClient = useQueryClient();
   const { session } = useAuth();
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [savingTask, setSavingTask] = useState(false);
