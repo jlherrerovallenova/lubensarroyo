@@ -20,24 +20,22 @@ type AgendaItem = Database['public']['Tables']['agenda']['Row'];
 // getAvatarColor removed as it's no longer used for emerald square avatars
 
 const STATUS_CONFIG: Record<string, { dot: string; pill: string; label: string; icon: any }> = {
-  new:         { dot: 'bg-blue-400',    pill: 'bg-blue-900/40 text-blue-200 border border-blue-700/50',     label: 'Nuevo', icon: Circle },
-  contacted:   { dot: 'bg-purple-400',  pill: 'bg-purple-900/40 text-purple-200 border border-purple-700/50', label: 'Contactado', icon: MessageCircle },
-  qualified:   { dot: 'bg-altavik-400', pill: 'bg-altavik-900/40 text-altavik-200 border border-altavik-700/50', label: 'Cualificado', icon: CheckCircle2 },
-  visiting:    { dot: 'bg-cyan-400',    pill: 'bg-cyan-900/40 text-cyan-200 border border-cyan-700/50',       label: 'Visitando', icon: Compass },
-
-
-  closed:      { dot: 'bg-slate-400',   pill: 'bg-slate-700/50 text-slate-300 border border-slate-600/50',   label: 'Venta Cerrada', icon: ShoppingCart },
-  lost:        { dot: 'bg-red-400',     pill: 'bg-red-900/40 text-red-200 border border-red-700/50',         label: 'Perdido', icon: X },
+  new:         { dot: 'bg-slate-400',    pill: 'bg-slate-100 text-slate-700 border border-slate-200',     label: 'Nuevo', icon: Circle },
+  contacted:   { dot: 'bg-slate-400',    pill: 'bg-slate-100 text-slate-700 border border-slate-200',     label: 'Contactado', icon: MessageCircle },
+  qualified:   { dot: 'bg-emerald-500',  pill: 'bg-emerald-50 text-emerald-700 border border-emerald-200', label: 'Cualificado', icon: CheckCircle2 },
+  visiting:    { dot: 'bg-slate-400',    pill: 'bg-slate-100 text-slate-700 border border-slate-200',     label: 'Visitando', icon: Compass },
+  closed:      { dot: 'bg-emerald-600',  pill: 'bg-emerald-50 text-emerald-800 border border-emerald-200', label: 'Venta Cerrada', icon: ShoppingCart },
+  lost:        { dot: 'bg-rose-400',     pill: 'bg-rose-50 text-rose-700 border border-rose-200',         label: 'Perdido', icon: X },
 };
 
 const SOURCE_CONFIG = [
-  { id: 'Importado', label: 'Importado', icon: FileSpreadsheet, color: 'text-amber-500' },
+  { id: 'Importado', label: 'Importado', icon: FileSpreadsheet, color: 'text-slate-400' },
   { id: 'Idealista', label: 'Idealista', icon: IdealistaIcon },
-  { id: 'Web', label: 'Web', icon: Globe, color: 'text-blue-500' },
-  { id: 'Google SEM', label: 'Google SEM', icon: Search, color: 'text-blue-600' },
-  { id: 'Redes Sociales', label: 'Redes Sociales', icon: Smartphone, color: 'text-purple-500' },
-  { id: 'Referido', label: 'Referido', icon: Users, color: 'text-emerald-500' },
-  { id: 'Valla', label: 'Valla', icon: MapPin, color: 'text-orange-500' },
+  { id: 'Web', label: 'Web', icon: Globe, color: 'text-slate-400' },
+  { id: 'Google SEM', label: 'Google SEM', icon: Search, color: 'text-slate-400' },
+  { id: 'Redes Sociales', label: 'Redes Sociales', icon: Smartphone, color: 'text-slate-400' },
+  { id: 'Referido', label: 'Referido', icon: Users, color: 'text-slate-400' },
+  { id: 'Valla', label: 'Valla', icon: MapPin, color: 'text-slate-400' },
 ];
 
 interface Props {
@@ -592,22 +590,22 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
       <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
         <div className="bg-white w-full max-w-6xl rounded-none sm:rounded-2xl shadow-2xl overflow-hidden h-full sm:h-auto sm:max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200 border border-slate-200">
           
-          {/* HEADER PREMIUM */}
-          <div className="shrink-0 px-5 sm:px-8 py-3 bg-slate-100 border-b border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4 w-full sm:w-auto">
-              <div className="w-11 h-11 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-lg shrink-0 border-2 border-slate-800">
-                <User size={20} strokeWidth={2.5} />
+          {/* HEADER */}
+          <div className="shrink-0 px-5 sm:px-8 py-3.5 bg-slate-50 border-b border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5 w-full sm:w-auto">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <User size={18} strokeWidth={2} />
               </div>
               <div className="space-y-0.5 min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-base sm:text-lg font-black text-[#1e293b] leading-tight tracking-tight truncate">{formData.name}</h2>
-                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider ${statusCfg.pill}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot} animate-pulse`} />
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight tracking-tight truncate">{formData.name}</h2>
+                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-medium tracking-normal ${statusCfg.pill}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />
                     {statusCfg.label}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate">Ficha del Contacto</span>
+                  <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider truncate">Ficha del Contacto</span>
                 </div>
               </div>
             </div>
@@ -615,82 +613,77 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
             <div className="flex items-center gap-4 absolute sm:static top-3 right-3">
               <button type="button" 
                 onClick={onClose} 
-                className="p-2.5 hover:bg-slate-100 rounded-xl transition-all text-slate-400 hover:text-slate-600 hover:rotate-90 duration-300"
+                className="p-2 hover:bg-slate-200/70 rounded-xl transition-all text-slate-400 hover:text-slate-700"
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
           </div>
 
           {/* TAB NAVIGATION */}
-          <div className="shrink-0 flex items-center px-4 sm:px-8 py-1.5 bg-white border-b border-slate-100 gap-2 overflow-x-auto overflow-y-hidden custom-scrollbar-hide">
+          <div className="shrink-0 flex items-center px-4 sm:px-8 py-2 bg-white border-b border-slate-200/80 gap-1.5 overflow-x-auto overflow-y-hidden custom-scrollbar-hide">
             <button type="button"
               onClick={() => setActiveTab('ficha')}
-              className={`flex items-center gap-2.5 px-6 py-2 text-[11px] font-bold tracking-widest relative transition-all rounded-xl ${
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
                 activeTab === 'ficha' 
-                  ? 'text-blue-600 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] ring-1 ring-slate-200/50' 
-                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                  ? 'text-slate-900 bg-slate-100 font-bold' 
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
-              <FileText size={14} />
+              <FileText size={14} className={activeTab === 'ficha' ? 'text-slate-800' : 'text-slate-400'} />
               FICHA Y AGENDA
-              {activeTab === 'ficha' && <div className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 w-8 h-1 bg-blue-600 rounded-t-full" />}
             </button>
             <button type="button"
               onClick={() => setActiveTab('venta')}
               disabled={formData.status !== 'closed' && !lead.sale_status}
               title={formData.status !== 'closed' && !lead.sale_status ? 'Solo disponible cuando el estado es Venta Cerrada o hay una reserva activa' : ''}
-              className={`flex items-center gap-2.5 px-6 py-2 text-[11px] font-bold tracking-widest relative transition-all rounded-xl ${
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
                 formData.status !== 'closed' && !lead.sale_status
-                  ? 'opacity-50 cursor-not-allowed text-slate-300'
+                  ? 'opacity-40 cursor-not-allowed text-slate-300'
                   : activeTab === 'venta' 
-                    ? 'text-altavik-600 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] ring-1 ring-slate-200/50' 
-                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                    ? 'text-slate-900 bg-slate-100 font-bold' 
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
-              <ShoppingCart size={14} />
+              <ShoppingCart size={14} className={activeTab === 'venta' ? 'text-slate-800' : 'text-slate-400'} />
               GESTIÓN DE COMPRA
               {lead.sale_status === 'reserva' && (
-                <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-[8px] font-black uppercase">Reserva</span>
+                <span className="ml-1 px-1.5 py-0.5 bg-slate-200/80 text-slate-700 rounded text-[9px] font-bold uppercase">Reserva</span>
               )}
-              {activeTab === 'venta' && <div className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 w-8 h-1 bg-altavik-600 rounded-t-full" />}
             </button>
-             <button type="button"
+            <button type="button"
               onClick={() => setActiveTab('historial')}
-              className={`flex items-center gap-2.5 px-6 py-2 text-[11px] font-bold tracking-widest relative transition-all rounded-xl ${
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
                 activeTab === 'historial' 
-                  ? 'text-indigo-600 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] ring-1 ring-slate-200/50' 
-                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                  ? 'text-slate-900 bg-slate-100 font-bold' 
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
-              <Clock size={14} />
+              <Clock size={14} className={activeTab === 'historial' ? 'text-slate-800' : 'text-slate-400'} />
               HISTORIAL
-              {activeTab === 'historial' && <div className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 w-8 h-1 bg-indigo-600 rounded-t-full" />}
             </button>
             <button type="button"
               onClick={() => setActiveTab('notas')}
-              className={`flex items-center gap-2.5 px-6 py-2 text-[11px] font-bold tracking-widest relative transition-all rounded-xl ${
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
                 activeTab === 'notas' 
-                  ? 'text-emerald-600 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] ring-1 ring-slate-200/50' 
-                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                  ? 'text-slate-900 bg-slate-100 font-bold' 
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
-              <StickyNote size={14} />
+              <StickyNote size={14} className={activeTab === 'notas' ? 'text-slate-800' : 'text-slate-400'} />
               NOTAS Y OBSERVACIONES
-              {activeTab === 'notas' && <div className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 w-8 h-1 bg-emerald-600 rounded-t-full" />}
             </button>
             {lead.survey_data && Object.keys(lead.survey_data).length > 0 && (
               <button type="button"
                 onClick={() => setActiveTab('encuesta')}
-                className={`flex items-center gap-2.5 px-6 py-2 text-[11px] font-bold tracking-widest relative transition-all rounded-xl ${
+                className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
                   activeTab === 'encuesta' 
-                    ? 'text-altavik-600 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.05)] ring-1 ring-slate-200/50' 
-                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                    ? 'text-slate-900 bg-slate-100 font-bold' 
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
                 }`}
               >
-                <Send size={14} />
+                <Send size={14} className={activeTab === 'encuesta' ? 'text-slate-800' : 'text-slate-400'} />
                 RESULTADOS ENCUESTA
-                {activeTab === 'encuesta' && <div className="absolute -bottom-[9px] left-1/2 -translate-x-1/2 w-8 h-1 bg-altavik-600 rounded-t-full" />}
               </button>
             )}
           </div>
