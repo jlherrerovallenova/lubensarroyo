@@ -48,6 +48,7 @@ interface Props {
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useUpdateLead, useDeleteLead } from '../../hooks/useLeads';
+import { handleTaskCompletedTransition } from '../../utils/leadStateTransitions';
 
 export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
   const queryClient = useQueryClient();
@@ -409,6 +410,24 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
     const newStatus = !task.completed;
     setTasks(tasks.map(t => t.id === task.id ? { ...t, completed: newStatus } : t));
     await (supabase as any).from('agenda').update({ completed: newStatus }).eq('id', task.id);
+    
+    // Si la acción se da por realizada, actualizar automáticamente el estado del lead
+    if (newStatus && lead.id) {
+      await handleTaskCompletedTransition(task, true, queryClient);
+      const targetState = (task.type || '').toLowerCase().includes('visita') ? 'visiting' : 'contacted';
+      setFormData(prev => {
+        // No degradar estados superiores
+        const rank: Record<string, number> = { new: 1, contacted: 2, qualified: 3, visiting: 4, proposal: 5, negotiation: 6, closed: 7, lost: 0 };
+        const currentRank = rank[prev.status] ?? 1;
+        const targetRank = rank[targetState] ?? 0;
+        if (targetRank > currentRank && prev.status !== 'closed' && prev.status !== 'lost') {
+          return { ...prev, status: targetState as any };
+        }
+        return prev;
+      });
+      onUpdate();
+    }
+
     queryClient.invalidateQueries({ queryKey: ['agenda'] });
     queryClient.invalidateQueries({ queryKey: ['dashboard_agenda'] });
   };

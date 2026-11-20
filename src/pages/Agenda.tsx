@@ -22,6 +22,7 @@ import { useDialog } from '../context/DialogContext';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
 import type { Database } from '../types/supabase';
+import { handleTaskCompletedTransition } from '../utils/leadStateTransitions';
 
 // Tipo AgendaItem enriquecido con datos del cliente
 type AgendaItem = Database['public']['Tables']['agenda']['Row'] & {
@@ -133,6 +134,9 @@ export default function Agenda() {
   const toggleStatus = async (item: AgendaItem) => {
     const newStatus = !item.completed;
     await (supabase as any).from('agenda').update({ completed: newStatus }).eq('id', item.id);
+    if (newStatus && item.lead_id) {
+      await handleTaskCompletedTransition(item, true, queryClient);
+    }
     fetchAgenda();
     queryClient.invalidateQueries({ queryKey: ['agenda'] });
     queryClient.invalidateQueries({ queryKey: ['dashboard_agenda'] });

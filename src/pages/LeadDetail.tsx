@@ -25,6 +25,8 @@ import { useDialog } from '../context/DialogContext';
 import { useAuth } from '../context/AuthContext';
 import type { Database } from '../types/supabase';
 import { summarizeLeadWithCopilot, type CopilotSummaryResponse } from '../services/aiCopilot';
+import { handleTaskCompletedTransition } from '../utils/leadStateTransitions';
+import { useQueryClient } from '@tanstack/react-query';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 type AgendaItem = Database['public']['Tables']['agenda']['Row'];
@@ -40,6 +42,7 @@ const STATUS_OPTIONS = [
 ];
 
 export default function LeadDetail() {
+  const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -195,6 +198,11 @@ export default function LeadDetail() {
         .update({ completed: newStatus })
         .eq('id', task.id);
       if (error) throw error;
+
+      if (newStatus && task.lead_id) {
+        await handleTaskCompletedTransition(task, true, queryClient);
+        await fetchLeadData();
+      }
     } catch (error) {
       console.error("Error actualizando tarea:", error);
       fetchLeadData(); // Recargar datos si falla

@@ -23,8 +23,11 @@ import { AgendaListItem } from '../components/dashboard/AgendaListItem';
 // Hooks
 import { useDashboardData, type AgendaItem } from '../hooks/useDashboardData';
 import { syncResendEmailOpens } from '../services/emailTrackingSync';
+import { useQueryClient } from '@tanstack/react-query';
+import { handleTaskCompletedTransition } from '../utils/leadStateTransitions';
 
 export default function Dashboard() {
+  const queryClient = useQueryClient();
   const { session, profile } = useAuth();
   const { showConfirm } = useDialog();
   const navigate = useNavigate();
@@ -187,6 +190,10 @@ export default function Dashboard() {
     try {
       const { error } = await (supabase as any).from('agenda').update({ completed: newStatus }).eq('id', task.id);
       if (error) throw error;
+      
+      if (newStatus && task.lead_id) {
+        await handleTaskCompletedTransition(task, true, queryClient);
+      }
     } catch (error) {
       console.error("Error cambiando estado de tarea:", error);
       refresh();
