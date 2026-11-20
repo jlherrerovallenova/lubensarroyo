@@ -44,14 +44,14 @@ export function FichaTab({
       <div className="md:col-start-1 md:col-end-8 md:row-start-1 md:row-span-2 flex flex-col gap-3">
         {/* DATOS DEL LEAD */}
         <section className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
-          <h3 className="text-xs font-bold text-slate-700 flex items-center gap-2 mb-2.5 uppercase tracking-wider">
-            <div className="p-1 bg-slate-100 text-slate-500 rounded-lg"><FileText size={15} /></div> DATOS DEL CONTACTO
+          <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 mb-2.5 uppercase tracking-wider">
+            <div className="p-1 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/70"><FileText size={15} /></div> DATOS DEL CONTACTO
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-x-4 md:gap-x-6 lg:gap-x-8 gap-y-2">
             <div className="space-y-1 sm:col-span-8">
               <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Nombre Completo</label>
-              <input name="name" value={formData.name} onChange={handleChange} className="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-slate-200 focus:border-slate-400 focus:bg-white transition-all shadow-xs outline-none" />
+              <input name="name" value={formData.name} onChange={handleChange} className="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all shadow-xs outline-none" />
             </div>
             <div className="space-y-1 sm:col-span-4">
               <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Teléfono</label>
@@ -61,14 +61,14 @@ export function FichaTab({
                   value={formData.phone} 
                   onChange={handleChange} 
                   placeholder="600 000 000"
-                  className="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 pr-11 focus:ring-2 focus:ring-slate-200 focus:border-slate-400 focus:bg-white transition-all shadow-xs outline-none" 
+                  className="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 pr-11 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all shadow-xs outline-none" 
                 />
                 {formData.phone && (
                   <a 
                     href={whatsappUrl} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center bg-slate-100 hover:bg-emerald-50 text-slate-500 hover:text-emerald-600 border border-slate-200 rounded-lg transition-all shadow-xs active:scale-95"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200/80 rounded-lg transition-all shadow-xs active:scale-95"
                     title="Abrir WhatsApp"
                   >
                     <MessageCircle size={15} strokeWidth={2.5} />
@@ -78,11 +78,11 @@ export function FichaTab({
             </div>
             <div className="space-y-1 sm:col-span-6">
               <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Correo Electrónico Principal</label>
-              <input name="email" value={formData.email} onChange={handleChange} placeholder="correo@ejemplo.com" className="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-slate-200 focus:border-slate-400 focus:bg-white transition-all shadow-xs outline-none" />
+              <input name="email" value={formData.email} onChange={handleChange} placeholder="correo@ejemplo.com" className="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all shadow-xs outline-none" />
             </div>
             <div className="space-y-1 sm:col-span-6">
               <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Correo Electrónico Alternativo</label>
-              <input name="secondary_email" value={formData.secondary_email || ''} onChange={handleChange} placeholder="alternativo@ejemplo.com" className="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-slate-200 focus:border-slate-400 focus:bg-white transition-all shadow-xs outline-none" />
+              <input name="secondary_email" value={formData.secondary_email || ''} onChange={handleChange} placeholder="alternativo@ejemplo.com" className="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all shadow-xs outline-none" />
             </div>
             <div className="space-y-1 sm:col-span-4">
               <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Promoción de Interés</label>
@@ -163,7 +163,7 @@ export function FichaTab({
                     checked={formData.is_subscribed}
                     onChange={(e) => setFormData({ ...formData, is_subscribed: e.target.checked })}
                   />
-                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-slate-900"></div>
+                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#15a870]"></div>
                 </label>
               </div>
             </div>
@@ -175,8 +175,8 @@ export function FichaTab({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* INTERÉS */}
             <div>
-              <h3 className="text-xs font-bold text-slate-700 flex items-center gap-2 mb-3 uppercase tracking-wider">
-                <div className="p-1 bg-slate-100 text-slate-500 rounded-lg"><Heart size={15} /></div> INTERÉS
+              <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 mb-3 uppercase tracking-wider">
+                <div className="p-1 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/70"><Heart size={15} /></div> INTERÉS
               </h3>
               <div className="space-y-4">
                 <div>
@@ -202,8 +202,8 @@ export function FichaTab({
                           }}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                             isSelected 
-                              ? 'bg-slate-900 text-white border-slate-900 shadow-xs' 
-                              : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+                              ? 'bg-[#15a870] text-white border-[#15a870] shadow-xs' 
+                              : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/50 hover:border-emerald-300 hover:text-emerald-800'
                           }`}
                         >
                           {bed}
@@ -235,8 +235,8 @@ export function FichaTab({
                           }}
                           className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${
                             isSelected 
-                              ? 'bg-slate-900 text-white border-slate-900 shadow-xs' 
-                              : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:border-slate-300'
+                              ? 'bg-[#15a870] text-white border-[#15a870] shadow-xs' 
+                              : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50/50 hover:border-emerald-300 hover:text-emerald-800'
                           }`}
                         >
                           {floor}
@@ -249,8 +249,8 @@ export function FichaTab({
             </div>
             {/* CALIDAD DEL CLIENTE */}
             <div>
-              <h3 className="text-xs font-bold text-slate-700 flex items-center gap-2 mb-3 uppercase tracking-wider">
-                <div className="p-1 bg-slate-100 text-slate-500 rounded-lg"><Star size={15} fill="currentColor" /></div> CALIDAD DEL CLIENTE
+              <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 mb-3 uppercase tracking-wider">
+                <div className="p-1 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/70"><Star size={15} fill="currentColor" /></div> CALIDAD DEL CLIENTE
               </h3>
               <div>
                 <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Valoración</label>
@@ -285,16 +285,16 @@ export function FichaTab({
             {/* WhatsApp */}
             <button type="button" 
               onClick={() => { setEmailModalMethod('whatsapp'); setIsEmailModalOpen(true); }}
-              className="flex flex-col items-center justify-center gap-1.5 h-13 rounded-xl bg-slate-50 hover:bg-slate-100/80 text-slate-700 hover:text-slate-900 border border-slate-200/70 transition-all active:scale-[0.98] group"
+              className="flex flex-col items-center justify-center gap-1.5 h-13 rounded-xl bg-white hover:bg-emerald-50/50 text-slate-700 hover:text-emerald-800 border border-slate-200/80 hover:border-emerald-200 transition-all active:scale-[0.98] group"
             >
-              <MessageCircle size={17} className="text-slate-500 group-hover:text-emerald-600 transition-colors" strokeWidth={2} />
+              <MessageCircle size={17} className="text-emerald-600 group-hover:scale-110 transition-transform" strokeWidth={2} />
               <span className="text-[10px] font-semibold uppercase tracking-wider">WhatsApp</span>
             </button>
 
             {/* Email */}
             <button type="button" 
               onClick={() => { setEmailModalMethod('email'); setIsEmailModalOpen(true); }}
-              className="flex flex-col items-center justify-center gap-1.5 h-13 rounded-xl bg-slate-50 hover:bg-slate-100/80 text-slate-700 hover:text-slate-900 border border-slate-200/70 transition-all active:scale-[0.98] group"
+              className="flex flex-col items-center justify-center gap-1.5 h-13 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200/80 hover:border-slate-300 transition-all active:scale-[0.98] group"
             >
               <Mail size={17} className="text-slate-500 group-hover:text-slate-900 transition-colors" strokeWidth={2} />
               <span className="text-[10px] font-semibold uppercase tracking-wider">Email</span>
@@ -303,16 +303,16 @@ export function FichaTab({
             {/* Primer Contacto */}
             <button type="button" 
               onClick={() => { setEmailModalMethod('whatsapp'); setFirstContactTemplateActive(true); setIsEmailModalOpen(true); }}
-              className="flex flex-col items-center justify-center gap-1.5 h-13 rounded-xl bg-slate-50 hover:bg-slate-100/80 text-slate-700 hover:text-slate-900 border border-slate-200/70 transition-all active:scale-[0.98] group"
+              className="flex flex-col items-center justify-center gap-1.5 h-13 rounded-xl bg-white hover:bg-emerald-50/50 text-slate-700 hover:text-emerald-800 border border-slate-200/80 hover:border-emerald-200 transition-all active:scale-[0.98] group"
             >
-              <Zap size={17} className="text-slate-500 group-hover:text-amber-500 transition-colors" strokeWidth={2} />
+              <Zap size={17} className="text-emerald-600 group-hover:scale-110 transition-transform" strokeWidth={2} />
               <span className="text-[10px] font-semibold uppercase tracking-wider">1er Contacto</span>
             </button>
 
             {/* Opinión */}
             <button type="button" 
               onClick={() => setIsFeedbackModalOpen(true)}
-              className="flex flex-col items-center justify-center gap-1.5 h-13 rounded-xl bg-slate-50 hover:bg-slate-100/80 text-slate-700 hover:text-slate-900 border border-slate-200/70 transition-all active:scale-[0.98] group"
+              className="flex flex-col items-center justify-center gap-1.5 h-13 rounded-xl bg-white hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200/80 hover:border-slate-300 transition-all active:scale-[0.98] group"
             >
               <Send size={17} className="text-slate-500 group-hover:text-slate-900 transition-colors" strokeWidth={2} />
               <span className="text-[10px] font-semibold uppercase tracking-wider">Encuesta</span>
@@ -322,14 +322,14 @@ export function FichaTab({
 
         {/* AGENDA DE ACCIONES */}
         <section className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-xs flex flex-col">
-          <h3 className="text-xs font-bold text-slate-700 flex items-center gap-2 mb-2 uppercase tracking-wider">
-            <div className="p-1 bg-slate-100 text-slate-500 rounded-lg"><CalendarIcon size={15} /></div> AGENDA DE ACCIONES
+          <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 mb-2 uppercase tracking-wider">
+            <div className="p-1 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/70"><CalendarIcon size={15} /></div> AGENDA DE ACCIONES
           </h3>
 
           <div className="bg-slate-50/70 p-3 rounded-xl border border-slate-200/70 mt-1 relative z-10">
             <div className="flex items-center justify-between mb-2.5">
               <h4 className="text-[10px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                {editingTaskId ? <Pencil size={12} className="text-amber-500" /> : <Plus size={12} className="text-slate-500" />}
+                {editingTaskId ? <Pencil size={12} className="text-amber-500" /> : <Plus size={12} className="text-emerald-600" />}
                 {editingTaskId ? 'Editar Acción' : 'Nueva Acción en Agenda'}
               </h4>
               {editingTaskId && (
@@ -363,7 +363,7 @@ export function FichaTab({
                       value={newTask.date}
                       onChange={(e) => setNewTask({ ...newTask, date: e.target.value })}
                       onClick={(e) => e.currentTarget.showPicker()}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-2 py-1.5 pr-8 text-xs font-semibold text-slate-700 shadow-xs cursor-pointer outline-none focus:border-slate-400"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-2 py-1.5 pr-8 text-xs font-semibold text-slate-700 shadow-xs cursor-pointer outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                     />
                     <CalendarIcon size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   </div>
@@ -374,7 +374,7 @@ export function FichaTab({
                     type="time"
                     value={newTask.time}
                     onChange={(e) => setNewTask({ ...newTask, time: e.target.value })}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-xs font-semibold text-slate-700 shadow-xs outline-none focus:border-slate-400"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-2 py-1.5 text-xs font-semibold text-slate-700 shadow-xs outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                   />
                 </div>
               </div>
@@ -387,12 +387,12 @@ export function FichaTab({
                     placeholder={editingTaskId ? "Modificar descripción..." : "Ej: Llamar para confirmar visita"}
                     value={newTask.title}
                     onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    className="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-slate-200 focus:border-slate-400 shadow-xs outline-none transition-all"
+                    className="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-xs outline-none transition-all"
                   />
                   <button type="button"
                     onClick={() => saveTask()}
                     disabled={loading || !newTask.title}
-                    className="px-5 rounded-xl flex items-center justify-center gap-1.5 text-white text-xs font-bold tracking-wider transition-all shadow-xs active:scale-95 disabled:opacity-50 bg-slate-900 hover:bg-slate-800"
+                    className="px-5 rounded-xl flex items-center justify-center gap-1.5 text-white text-xs font-bold tracking-wider transition-all shadow-xs active:scale-95 disabled:opacity-50 bg-[#15a870] hover:bg-[#128f5f]"
                   >
                     {loading ? <Loader2 size={15} className="animate-spin" /> : editingTaskId ? <Save size={15} /> : <Plus size={15} />}
                     {editingTaskId ? 'Guardar' : 'Añadir'}

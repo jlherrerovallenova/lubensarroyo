@@ -626,11 +626,11 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
               onClick={() => setActiveTab('ficha')}
               className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
                 activeTab === 'ficha' 
-                  ? 'text-slate-900 bg-slate-100 font-bold' 
+                  ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
                   : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
-              <FileText size={14} className={activeTab === 'ficha' ? 'text-slate-800' : 'text-slate-400'} />
+              <FileText size={14} className={activeTab === 'ficha' ? 'text-[#15a870]' : 'text-slate-400'} />
               FICHA Y AGENDA
             </button>
             <button type="button"
@@ -641,36 +641,36 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
                 formData.status !== 'closed' && !lead.sale_status
                   ? 'opacity-40 cursor-not-allowed text-slate-300'
                   : activeTab === 'venta' 
-                    ? 'text-slate-900 bg-slate-100 font-bold' 
+                    ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
                     : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
-              <ShoppingCart size={14} className={activeTab === 'venta' ? 'text-slate-800' : 'text-slate-400'} />
+              <ShoppingCart size={14} className={activeTab === 'venta' ? 'text-[#15a870]' : 'text-slate-400'} />
               GESTIÓN DE COMPRA
               {lead.sale_status === 'reserva' && (
-                <span className="ml-1 px-1.5 py-0.5 bg-slate-200/80 text-slate-700 rounded text-[9px] font-bold uppercase">Reserva</span>
+                <span className="ml-1 px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[9px] font-bold uppercase">Reserva</span>
               )}
             </button>
             <button type="button"
               onClick={() => setActiveTab('historial')}
               className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
                 activeTab === 'historial' 
-                  ? 'text-slate-900 bg-slate-100 font-bold' 
+                  ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
                   : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
-              <Clock size={14} className={activeTab === 'historial' ? 'text-slate-800' : 'text-slate-400'} />
+              <Clock size={14} className={activeTab === 'historial' ? 'text-[#15a870]' : 'text-slate-400'} />
               HISTORIAL
             </button>
             <button type="button"
               onClick={() => setActiveTab('notas')}
               className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
                 activeTab === 'notas' 
-                  ? 'text-slate-900 bg-slate-100 font-bold' 
+                  ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
                   : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
               }`}
             >
-              <StickyNote size={14} className={activeTab === 'notas' ? 'text-slate-800' : 'text-slate-400'} />
+              <StickyNote size={14} className={activeTab === 'notas' ? 'text-[#15a870]' : 'text-slate-400'} />
               NOTAS Y OBSERVACIONES
             </button>
             {lead.survey_data && Object.keys(lead.survey_data).length > 0 && (
@@ -678,11 +678,11 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
                 onClick={() => setActiveTab('encuesta')}
                 className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
                   activeTab === 'encuesta' 
-                    ? 'text-slate-900 bg-slate-100 font-bold' 
+                    ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
                     : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
                 }`}
               >
-                <Send size={14} className={activeTab === 'encuesta' ? 'text-slate-800' : 'text-slate-400'} />
+                <Send size={14} className={activeTab === 'encuesta' ? 'text-[#15a870]' : 'text-slate-400'} />
                 RESULTADOS ENCUESTA
               </button>
             )}
@@ -836,7 +836,7 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
               <button type="button" 
                 onClick={handleUpdate}
                 disabled={loading}
-                className="px-8 py-2 bg-[#334155] text-white rounded-xl font-bold text-xs hover:bg-[#1e293b] transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                className="px-8 py-2 bg-[#15a870] text-white rounded-xl font-bold text-xs hover:bg-[#128f5f] transition-all shadow-xs active:scale-95 flex items-center gap-2"
               >
                 {loading && <Loader2 size={14} className="animate-spin" />} Guardar cambios
               </button>
