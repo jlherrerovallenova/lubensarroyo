@@ -272,28 +272,28 @@ ${promotionWebsite}`;
 
       <div className="grid grid-cols-12 gap-5 flex-1 items-start">
         <Card variant="glass" noPadding className="col-span-12 lg:col-span-8 flex flex-col group">
-          <div className="px-6 sm:px-8 py-5 min-h-[96px] bg-altavik-100/70 border-b border-altavik-200/50 flex justify-between items-center">
+          <div className="px-6 sm:px-8 py-5 min-h-[96px] bg-slate-50/70 border-b border-slate-200/70 flex justify-between items-center">
             <div>
-              <h3 className="font-black text-slate-950 flex items-center gap-2.5 text-base sm:text-lg tracking-tight">
-                <div className="w-9 h-9 bg-white rounded-xl shadow-xs border border-altavik-100/50 flex items-center justify-center shrink-0">
-                  <Clock size={19} className="text-altavik-600" />
+              <h3 className="font-bold text-slate-900 flex items-center gap-2.5 text-base sm:text-lg tracking-tight">
+                <div className="w-9 h-9 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-center shrink-0">
+                  <Clock size={19} className="text-emerald-600" />
                 </div>
                 Agenda Comercial
               </h3>
-              <p className="text-xs text-slate-500 font-semibold mt-1">Seguimiento de acciones prioritarias</p>
+              <p className="text-xs text-slate-500 font-medium mt-1">Seguimiento de acciones prioritarias</p>
             </div>
 
             <button type="button"
               onClick={() => navigate('/agenda')}
-              className="text-[10px] font-black uppercase tracking-wider text-altavik-600 hover:text-altavik-700 transition-all bg-white px-3.5 py-2 rounded-xl border border-altavik-200/60 shadow-xs hover:bg-altavik-50 shrink-0"
+              className="text-[10px] font-bold uppercase tracking-wider text-slate-700 hover:text-slate-900 transition-all bg-white px-3.5 py-2 rounded-xl border border-slate-200/80 shadow-xs hover:bg-slate-50 shrink-0"
             >
               Calendario Completo
             </button>
           </div>
 
-          <div className="px-8 py-5 border-b border-slate-100/80">
+          <div className="px-6 sm:px-8 py-4 border-b border-slate-100">
             <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <div className="flex p-1 bg-slate-100/50 backdrop-blur rounded-2xl w-full sm:w-auto overflow-x-auto custom-scrollbar">
+              <div className="flex p-1 bg-slate-100/80 rounded-xl w-full sm:w-auto overflow-x-auto custom-scrollbar">
                 <TabButton 
                   label="Hoy" 
                   count={todayCount > 0 ? todayCount : undefined} 
@@ -336,7 +336,7 @@ ${promotionWebsite}`;
                   placeholder="Buscar contacto o tarea..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-2.5 bg-slate-100/30 border border-slate-200/50 rounded-2xl text-xs font-medium focus:outline-none focus:ring-4 focus:ring-altavik-500/5 focus:bg-white transition-all text-slate-700"
+                  className="w-full pl-11 pr-4 py-2 bg-slate-50 border border-slate-200/80 rounded-full text-xs font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all text-slate-700"
                 />
               </div>
             </div>
@@ -560,20 +560,20 @@ ${promotionWebsite}`;
 
         <div className="col-span-12 lg:col-span-4 space-y-6 flex flex-col">
           <Card variant="white" noPadding className="flex-1 flex flex-col group">
-            <div className="px-6 sm:px-8 py-5 min-h-[96px] bg-green-50/80 border-b border-green-100/60 flex justify-between items-center">
+            <div className="px-6 sm:px-8 py-5 min-h-[96px] bg-slate-50/70 border-b border-slate-200/70 flex justify-between items-center">
               <div>
-                <h3 className="font-black text-slate-900 flex items-center gap-2.5 text-base sm:text-lg tracking-tight">
-                  <div className="w-9 h-9 bg-white rounded-xl shadow-xs border border-green-100/60 flex items-center justify-center shrink-0">
-                    <TrendingUp size={19} className="text-green-600" />
+                <h3 className="font-bold text-slate-900 flex items-center gap-2.5 text-base sm:text-lg tracking-tight">
+                  <div className="w-9 h-9 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-center shrink-0">
+                    <TrendingUp size={19} className="text-emerald-600" />
                   </div>
                   Nuevos Contactos
                 </h3>
-                <p className="text-xs text-slate-500 font-semibold mt-1">Últimas entradas al sistema</p>
+                <p className="text-xs text-slate-500 font-medium mt-1">Últimas entradas al sistema</p>
               </div>
               <button 
                 type="button" 
                 onClick={() => navigate('/leads')} 
-                className="text-[10px] font-black uppercase tracking-wider text-green-700 hover:text-green-800 transition-all bg-white px-3.5 py-2 rounded-xl border border-green-200/60 shadow-xs hover:bg-green-50 shrink-0"
+                className="text-[10px] font-bold uppercase tracking-wider text-slate-700 hover:text-slate-900 transition-all bg-white px-3.5 py-2 rounded-xl border border-slate-200/80 shadow-xs hover:bg-slate-50 shrink-0"
               >
                 Ver todos
               </button>
@@ -583,17 +583,17 @@ ${promotionWebsite}`;
                 <div
                   key={lead.id}
                   onClick={() => navigate(`/leads?search=${encodeURIComponent(lead.name)}`)}
-                  className="flex items-center gap-3 p-3 hover:bg-slate-100/50 rounded-2xl transition-all cursor-pointer group"
+                  className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition-all cursor-pointer group border border-transparent hover:border-slate-200/60"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-100 group-hover:scale-105 group-hover:border-altavik-200 transition-all duration-300">
+                  <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-100 group-hover:scale-105 group-hover:border-emerald-200 group-hover:text-emerald-600 transition-all duration-300">
                     <User size={18} strokeWidth={2.5} />
                   </div>
                   <div className="overflow-hidden">
-                    <p className="text-[13px] font-bold text-slate-800 tracking-tight group-hover:text-altavik-700 transition-colors">{lead.name}</p>
+                    <p className="text-[13px] font-bold text-slate-800 tracking-tight group-hover:text-emerald-600 transition-colors">{lead.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-[10px] text-slate-400 font-medium">{lead.source || 'Directo'}</span>
                       <span className="text-[8px] text-slate-300">•</span>
-                      <span className="text-[10px] text-slate-400 font-medium">{new Date(lead.created_at).toLocaleDateString()}</span>
+                      <span className="text-[10px] text-slate-400 font-medium font-mono">{new Date(lead.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
@@ -611,9 +611,6 @@ ${promotionWebsite}`;
           )}
         </div>
       </div>
-      
-      <div className="absolute top-[-5%] left-[-2%] w-96 h-96 bg-altavik-200/15 rounded-full blur-[100px] pointer-events-none -z-10" />
-      <div className="absolute bottom-[10%] right-[-5%] w-[500px] h-[500px] bg-indigo-200/10 rounded-full blur-[120px] pointer-events-none -z-10" />
     </div>
   );
 }

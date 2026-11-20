@@ -218,7 +218,7 @@ export default function Agenda() {
       />
 
       {/* Lista */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col min-h-[400px]">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] overflow-hidden flex flex-col min-h-[400px]">
         <div className="p-6 border-b border-slate-100 bg-white flex justify-between items-center">
           <h3 className="font-bold text-slate-700">Próximas Actividades</h3>
           <span className="text-xs font-medium text-slate-400">{totalItems} registros</span>

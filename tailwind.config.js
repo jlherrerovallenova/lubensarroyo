@@ -4,34 +4,51 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Paleta Altavik basada en el azul del logo (#6b94b9)
+        // Norviq PropTech Palette
+        canvas: '#f0f3f7',
+        obsidian: {
+          900: '#0e131b',
+          950: '#090d13',
+        },
+        emerald: {
+          brand: '#15a870',
+          hover: '#128f5f',
+          active: '#0d6b47',
+          light: '#effaf5',
+          dark: '#0c271c',
+          text: '#7ce3b6',
+        },
+        // Mapeo armonizado de altavik al verde esmeralda y menta de Norviq
         altavik: {
-          50: '#f4f7f9',
-          100: '#e7eef3',
-          200: '#cedde8',
-          300: '#abc6d9',
-          400: '#88aec9',
-          500: '#6b94b9', // Principal del logo
-          600: '#557ba0',
-          700: '#466383',
-          800: '#3a516b',
-          900: '#2d3f54',
+          50: '#effaf5',
+          100: '#d7f4e7',
+          200: '#b0e8cf',
+          300: '#7ce3b6',
+          400: '#3cd295',
+          500: '#15a870', // Primario Norviq
+          600: '#128f5f',
+          700: '#0f754e',
+          800: '#0c5c3e',
+          900: '#0c271c',
         },
         brand: {
-          light: '#f4f7f9',
-          primary: '#6b94b9',
-          dark: '#3a516b',
+          light: '#f0f3f7',
+          primary: '#15a870',
+          dark: '#0e131b',
         },
         slate: {
-          850: '#1e293b', 
-          950: '#020617', 
+          850: '#151b24', 
+          950: '#0e131b', 
         }
       },
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
-        display: ['Outfit', 'sans-serif'],
+        sans: ['Manrope', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Manrope', 'sans-serif'],
+        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
-      // Eliminamos los bordes exagerados (4xl) del diseño anterior en los nuevos componentes
+      borderRadius: {
+        '2xl': '1.25rem', // 20px - Estándar Norviq
+      }
     },
   },
   plugins: [],

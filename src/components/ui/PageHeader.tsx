@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { Card } from './Card';
 
 interface PageHeaderProps {
   title: string;
@@ -11,20 +10,20 @@ interface PageHeaderProps {
 
 export const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions, icon }) => {
   return (
-    <Card variant="glass" className="mb-8 animate-fade-in-scale !rounded-[2.5rem] border-none">
+    <div className="mb-6 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)]">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           {icon && (
-            <div className="p-3 bg-altavik-600 rounded-2xl shadow-lg shadow-altavik-600/20 text-white">
+            <div className="w-12 h-12 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
               {icon}
             </div>
           )}
           <div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight text-gradient leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight leading-tight">
               {title}
             </h1>
             {subtitle && (
-              <div className="text-slate-500 text-sm font-medium mt-1 flex items-center gap-2">
+              <div className="text-slate-500 text-xs sm:text-sm font-medium mt-1 flex items-center gap-2">
                 {subtitle}
               </div>
             )}
@@ -36,6 +35,6 @@ export const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, actions
           </div>
         )}
       </div>
-    </Card>
+    </div>
   );
 };

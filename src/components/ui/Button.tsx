@@ -15,20 +15,20 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   ...props 
 }) => {
-  const baseStyles = 'btn-premium font-bold rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'btn-premium font-semibold rounded-xl flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variants = {
-    primary: 'bg-altavik-600 text-white shadow-lg shadow-altavik-600/20 hover:bg-altavik-700 hover:shadow-altavik-700/30',
-    secondary: 'bg-slate-100 text-slate-700 hover:bg-slate-200',
-    ghost: 'bg-transparent text-altavik-600 hover:bg-altavik-50',
-    danger: 'bg-rose-500 text-white shadow-lg shadow-rose-500/20 hover:bg-rose-600',
-    glass: 'glass-card bg-white/20 text-altavik-900 border-white/50 hover:bg-white/30'
+    primary: 'bg-[#15a870] text-white shadow-xs hover:bg-[#128f5f] active:bg-[#0d6b47]',
+    secondary: 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50 shadow-xs',
+    ghost: 'bg-transparent text-slate-600 hover:bg-slate-100/80',
+    danger: 'bg-rose-600 text-white shadow-xs hover:bg-rose-700',
+    glass: 'bg-white text-slate-800 border border-slate-200/80 hover:bg-slate-50 shadow-xs'
   };
 
   const sizes = {
     sm: 'px-3 py-1.5 text-xs',
-    md: 'px-6 py-2.5 text-sm',
-    lg: 'px-8 py-3.5 text-base'
+    md: 'px-5 py-2 text-sm',
+    lg: 'px-7 py-3 text-base'
   };
 
   return (

@@ -61,7 +61,7 @@ export default function Login() {
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-10 px-6 shadow-2xl shadow-slate-200/50 sm:rounded-[2.5rem] border border-slate-100 sm:px-12 animate-in fade-in zoom-in duration-500">
+        <div className="bg-white py-10 px-6 shadow-xl shadow-slate-200/50 sm:rounded-2xl border border-slate-200/80 sm:px-12 animate-in fade-in zoom-in duration-500">
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* EMAIL */}

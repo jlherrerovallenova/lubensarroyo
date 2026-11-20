@@ -11,9 +11,9 @@ export const IdealistaIcon = ({ className = "" }: { className?: string; size?: n
 // 1. Tarjeta de Estadísticas
 export function StatCard({ title, value, subtext, icon, type = 'neutral' }: any) {
   const colors = {
-    primary: 'bg-blue-500',
+    primary: 'bg-[#15a870]',
     warning: 'bg-amber-500',
-    success: 'bg-altavik-500',
+    success: 'bg-emerald-500',
     neutral: 'bg-slate-400',
     error: 'bg-rose-500'
   };
@@ -22,12 +22,12 @@ export function StatCard({ title, value, subtext, icon, type = 'neutral' }: any)
 
   return (
     <div 
-      className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between h-32 relative overflow-hidden group hover:border-slate-300 transition-all animate-in fade-in zoom-in-95 duration-300"
+      className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] flex flex-col justify-between h-32 relative overflow-hidden group hover:border-slate-300 transition-all animate-in fade-in zoom-in-95 duration-300"
     >
       <div className="flex justify-between items-start z-10">
         <div>
           <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">{title}</p>
-          <h3 className="text-2xl font-bold text-slate-900 tracking-tight">{value}</h3>
+          <h3 className="text-2xl font-bold font-mono text-slate-900 tracking-tight">{value}</h3>
         </div>
         <div className="text-slate-400 group-hover:text-slate-600 transition-colors">
             {icon}
@@ -46,18 +46,18 @@ export function StatCard({ title, value, subtext, icon, type = 'neutral' }: any)
 // 2. Badge de Estado (CONECTADO A DB)
 export function StageBadge({ stage }: { stage: string }) {
   const config: any = {
-     'new':         { label: 'Nuevo', class: 'bg-slate-100 text-slate-600 border-slate-200' },
+     'new':         { label: 'Nuevo', class: 'bg-slate-100 text-slate-700 border-slate-200' },
      'contacted':   { label: 'Contactado', class: 'bg-blue-50 text-blue-700 border-blue-200' },
      'qualified':   { label: 'Cualificado', class: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
      'visiting':    { label: 'Visitando', class: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
-     'closed':      { label: 'Venta Cerrada', class: 'bg-altavik-50 text-altavik-700 border-emerald-200' },
+     'closed':      { label: 'Venta Cerrada', class: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
      'lost':        { label: 'Perdido', class: 'bg-rose-50 text-rose-700 border-rose-200' },
   };
 
   const active = config[stage] || { label: stage, class: 'bg-slate-50 text-slate-600 border-slate-200' };
 
   return (
-     <span className={`px-2.5 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wide ${active.class}`}>
+     <span className={`px-3 py-0.5 rounded-full border text-[11px] font-medium tracking-normal ${active.class}`}>
         {active.label}
      </span>
   );

@@ -545,7 +545,7 @@ export default function Inventory() {
       </Card>
 
       {/* Tabla */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_3px_0_rgba(0,0,0,0.04)] overflow-hidden">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <Loader2 className="animate-spin text-altavik-600" size={40} />

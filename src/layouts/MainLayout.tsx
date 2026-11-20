@@ -228,7 +228,7 @@ export default function MainLayout() {
   const closeSidebar = () => setIsSidebarOpen(false);
 
   return (
-    <div className="flex h-screen bg-transparent font-sans text-slate-900 overflow-hidden">
+    <div className="flex h-screen bg-[#f0f3f7] font-sans text-slate-900 overflow-hidden">
       <ConnectionStatus />
 
       {/* Panel de depuración ultra-intrusivo para ver qué crashea la conexión, oculto en prod */}
@@ -251,12 +251,12 @@ export default function MainLayout() {
       )}
 
       <aside className={`
-        fixed inset-y-0 left-0 z-40 w-64 glass-card bg-slate-900/95 text-slate-300 flex flex-col shadow-2xl border-r border-white/5
+        fixed inset-y-0 left-0 z-40 w-64 bg-[#0e131b] text-slate-300 flex flex-col shadow-2xl border-r border-slate-800/80
         transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
 
-        <div className="h-16 flex items-center justify-between px-4 bg-slate-950 border-b border-slate-800">
+        <div className="h-16 flex items-center justify-between px-4 bg-[#090d13] border-b border-slate-800/80">
           <button
             type="button"
             onClick={openSelectorModal}
@@ -284,7 +284,7 @@ export default function MainLayout() {
           <SidebarItem to="/" icon={<LayoutDashboard size={18} />} label="Panel de Control" active={location.pathname === '/'} onClick={closeSidebar} />
           <SidebarItem to="/leads" icon={<Users size={18} />} label="Clientes" active={location.pathname.startsWith('/leads')} onClick={closeSidebar} />
           <SidebarItem to="/inventory" icon={<Map size={18} />} label="Viviendas" active={location.pathname === '/inventory'} onClick={closeSidebar} />
-          <SidebarItem to="/edificio-3d" icon={<Box size={18} className="text-indigo-400" />} label="Edificio 3D" active={location.pathname === '/edificio-3d'} onClick={closeSidebar} />
+          <SidebarItem to="/edificio-3d" icon={<Box size={18} className="text-emerald-400" />} label="Edificio 3D" active={location.pathname === '/edificio-3d'} onClick={closeSidebar} />
           <SidebarItem to="/pipeline" icon={<Calendar size={18} />} label="Fase de Venta" active={location.pathname === '/pipeline'} onClick={closeSidebar} />
           <SidebarItem to="/sales" icon={<BadgeDollarSign size={18} />} label="Ventas" active={location.pathname === '/sales'} onClick={closeSidebar} />
 
@@ -298,9 +298,9 @@ export default function MainLayout() {
           <SidebarItem to="/settings" icon={<Settings size={18} />} label="Configuración" active={location.pathname === '/settings'} onClick={closeSidebar} />
         </nav>
 
-        <div className="p-4 bg-slate-950 border-t border-slate-800">
+        <div className="p-4 bg-[#090d13] border-t border-slate-800/80">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded bg-gradient-to-br from-altavik-500 to-altavik-700 flex items-center justify-center text-white font-bold text-xs shadow-md uppercase">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center text-white font-bold text-xs shadow-md uppercase">
               {session.user.email?.substring(0, 2) || 'US'}
             </div>
             <div className="flex-1 overflow-hidden">
@@ -320,7 +320,7 @@ export default function MainLayout() {
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
 
-        <header className="h-20 glass-card bg-white/60 backdrop-blur-md border-b border-white/40 flex items-center justify-between px-4 md:px-6 z-40 relative flex-shrink-0">
+        <header className="h-20 bg-white/90 backdrop-blur-md border-b border-slate-200/80 flex items-center justify-between px-4 md:px-6 z-40 relative flex-shrink-0">
           {/* IZQUIERDA: Menú móvil */}
           <div className="flex items-center w-1/3">
             <button type="button"
@@ -505,17 +505,17 @@ function SidebarItem({ to, icon, label, active, onClick, badge }: SidebarItemPro
       to={to}
       onClick={onClick}
       className={`
-        flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group
+        flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group
         ${active
-          ? 'bg-altavik-600 text-white shadow-md shadow-altavik-900/20'
-          : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+          ? 'bg-[#0c271c] text-[#7ce3b6] border border-emerald-500/20 font-semibold'
+          : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
         }
       `}
     >
-      <span className={active ? 'text-altavik-100' : 'text-slate-500 group-hover:text-white'}>{icon}</span>
+      <span className={active ? 'text-[#15a870]' : 'text-slate-500 group-hover:text-white'}>{icon}</span>
       <span className="flex-1">{label}</span>
       {badge !== undefined && badge > 0 && (
-        <span className="min-w-[18px] h-[18px] bg-emerald-500 text-white text-[10px] font-black rounded-full flex items-center justify-center px-1">
+        <span className="min-w-[18px] h-[18px] bg-[#15a870] text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">
           {badge > 9 ? '9+' : badge}
         </span>
       )}
