@@ -46,3 +46,25 @@ export function getComercialConfig(name?: string | null): ComercialConfig | null
   if (!name) return null;
   return (COMERCIALES_CONFIG as Record<string, ComercialConfig>)[name] || null;
 }
+
+/**
+ * Normaliza el nombre o email de un usuario/perfil al nombre oficial del comercial.
+ * Por ejemplo: "juan" o "juan@terravall.com" -> "Juan Herrero"
+ */
+export function resolveCommercialName(rawNameOrEmail?: string | null): ComercialName | null {
+  if (!rawNameOrEmail) return null;
+  const lower = rawNameOrEmail.toLowerCase().trim();
+
+  if (lower.includes('juan') || lower.includes('jherrero') || lower.includes('jh')) {
+    return 'Juan Herrero';
+  }
+  if (lower.includes('mar') || lower.includes('rivas') || lower.includes('mr')) {
+    return 'Mar Rivas';
+  }
+  if (lower.includes('yolanda') || lower.includes('alba') || lower.includes('ya')) {
+    return 'Yolanda Alba';
+  }
+
+  const match = COMERCIALES.find(c => c.toLowerCase() === lower);
+  return match || null;
+}

@@ -246,7 +246,7 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
     queryFn: async () => {
       let query = supabase
         .from('leads')
-        .select('id, name, email, phone, source, status, created_at, assigned_to, agenda(id, completed)')
+        .select('id, name, email, phone, source, status, created_at, assigned_to, agenda(id, type, title, completed)')
         .not('status', 'in', '("closed","lost")');
 
       query = applyPromotionFilter(query, promotionId);
@@ -260,18 +260,22 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
       if (error) throw error;
 
       const now = new Date();
+      const treatedKeywords = ['llamada', 'whatsapp', 'visita', 'mail', 'email', 'correo', 'cita'];
 
       return (data || [])
         .filter((lead: any) => {
           const agendaItems = lead.agenda || [];
-          // Cliente sin tratar:
-          // 1. Está en estado 'new' O
-          // 2. No tiene ninguna acción en la agenda (o ninguna completada)
-          const hasCompletedAction = agendaItems.some((a: any) => a.completed);
-          const hasAnyAction = agendaItems.length > 0;
-          const isUntreated = lead.status === 'new' || !hasAnyAction || !hasCompletedAction;
+          
+          // Debe no tener realizada (completed === true) una acción de: llamada, whatsapp, visita o mail
+          const hasTreatedAction = agendaItems.some((a: any) => {
+            if (!a.completed) return false;
+            const typeLower = (a.type || '').toLowerCase();
+            const titleLower = (a.title || '').toLowerCase();
+            return treatedKeywords.some(kw => typeLower.includes(kw) || titleLower.includes(kw));
+          });
 
-          return isUntreated;
+          // Si NO tiene ninguna de estas acciones completadas, se considera sin tratar
+          return !hasTreatedAction;
         })
         .map((lead: any) => {
           const createdAt = new Date(lead.created_at);

@@ -23,6 +23,7 @@ import { UntreatedLeadsWidget } from '../components/dashboard/UntreatedLeadsWidg
 
 // Hooks
 import { useDashboardData, type AgendaItem } from '../hooks/useDashboardData';
+import { resolveCommercialName } from '../constants/commercials';
 import { syncResendEmailOpens } from '../services/emailTrackingSync';
 import { useQueryClient } from '@tanstack/react-query';
 import { handleTaskCompletedTransition } from '../utils/leadStateTransitions';
@@ -36,8 +37,8 @@ export default function Dashboard() {
   const { activePromotion, activePromotionId } = usePromotion();
 
   const userCommercialName = useMemo(() => {
-    return profile?.full_name || null;
-  }, [profile?.full_name]);
+    return resolveCommercialName(profile?.full_name) || resolveCommercialName(session?.user?.email) || profile?.full_name || null;
+  }, [profile?.full_name, session?.user?.email]);
 
   const {
     stats,
