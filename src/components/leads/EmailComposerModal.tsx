@@ -260,10 +260,16 @@ ${agentName} - TERRAVALL`);
   const [isGeneratingFichas, setIsGeneratingFichas] = useState(false);
   const [selectedPropertyIds, setSelectedPropertyIds] = useState<string[]>([]);
 
-  // Filtrar documentos del repositorio según la promoción activa
+  // Filtrar documentos del repositorio según la promoción activa (excluyendo planos sueltos de viviendas)
   const filteredAvailableDocs = useMemo(() => {
     const isFarnesio = activePromotion?.id === 'farnesio';
     return availableDocs.filter(d => {
+      const fileName = (d.name || '').toLowerCase();
+      // Excluir fichas / planos individuales de viviendas específicas
+      if (fileName.startsWith('plano_') || fileName.includes('plano_farnesio') || fileName.includes('plano_arroyo')) {
+        return false;
+      }
+
       const lower = (d.name + ' ' + (d.category || '')).toLowerCase();
       if (isFarnesio) {
         const isArroyoSpecific = lower.includes('arroyo') || lower.includes('olivo') || lower.includes('arce') || lower.includes('altavik') || lower.includes('parcelas');

@@ -23,8 +23,8 @@ export function useDocuments() {
         queryFn: async () => {
             let allDocs: SystemDocument[] = [];
 
-            // Listar TODO en el bucket 'documents' de forma recursiva (si es posible)
-            const foldersToList = ['', 'General', 'planos/farnesio', ...DOCUMENT_CATEGORIES];
+            // Listar TODO en el bucket 'documents' para el repositorio general (excluyendo planos individuales de viviendas)
+            const foldersToList = ['', 'General', ...DOCUMENT_CATEGORIES];
             
             const results = await Promise.all(foldersToList.map(async folder => {
                 const { data, error } = await supabase.storage.from('documents').list(folder);
@@ -34,7 +34,13 @@ export function useDocuments() {
                 }
 
                 if (data) {
-                    const validFiles = data.filter(f => f.name !== '.emptyFolderPlaceholder' && f.name !== '.emptyFolder' && f.id);
+                    const validFiles = data.filter(f => 
+                        f.name !== '.emptyFolderPlaceholder' && 
+                        f.name !== '.emptyFolder' && 
+                        f.id &&
+                        !f.name.toLowerCase().startsWith('plano_') &&
+                        !f.name.toLowerCase().includes('plano_farnesio')
+                    );
                     return validFiles.map(doc => {
                         const path = folder ? `${folder}/${doc.name}` : doc.name;
                         const { data: { publicUrl } } = supabase.storage.from('documents').getPublicUrl(path);
