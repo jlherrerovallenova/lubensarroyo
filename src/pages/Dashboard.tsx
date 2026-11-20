@@ -19,6 +19,7 @@ import { TabButton } from '../components/dashboard/TabButton';
 import { EmptyState } from '../components/dashboard/EmptyState';
 import { FeedbackListItem } from '../components/dashboard/FeedbackListItem';
 import { AgendaListItem } from '../components/dashboard/AgendaListItem';
+import { UntreatedLeadsWidget } from '../components/dashboard/UntreatedLeadsWidget';
 
 // Hooks
 import { useDashboardData, type AgendaItem } from '../hooks/useDashboardData';
@@ -34,6 +35,10 @@ export default function Dashboard() {
   const { data: settings } = useSettings();
   const { activePromotion, activePromotionId } = usePromotion();
 
+  const userCommercialName = useMemo(() => {
+    return profile?.full_name || null;
+  }, [profile?.full_name]);
+
   const {
     stats,
     recentLeads,
@@ -41,9 +46,10 @@ export default function Dashboard() {
     criticalLeads,
     feedbackLeads,
     autoImportedLeads,
+    untreatedLeads,
     refresh,
     setAgenda
-  } = useDashboardData(session?.user?.id, activePromotionId);
+  } = useDashboardData(session?.user?.id, activePromotionId, userCommercialName);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'hoy' | 'caducadas' | 'semana' | 'feedback' | 'emails'>('hoy');
@@ -559,6 +565,12 @@ ${promotionWebsite}`;
         </Card>
 
         <div className="col-span-12 lg:col-span-4 space-y-6 flex flex-col">
+          <UntreatedLeadsWidget
+            leads={untreatedLeads}
+            userName={userCommercialName}
+            onSelectLead={(lead) => navigate(`/leads?search=${encodeURIComponent(lead.name)}`)}
+          />
+
           <Card variant="white" noPadding className="flex-1 flex flex-col group">
             <div className="px-6 sm:px-8 py-5 min-h-[96px] bg-slate-50/70 border-b border-slate-200/70 flex justify-between items-center">
               <div>
@@ -578,7 +590,7 @@ ${promotionWebsite}`;
                 Ver todos
               </button>
             </div>
-            <div className="p-4 space-y-1.5 overflow-y-auto max-h-[550px]">
+            <div className="p-4 space-y-1.5 overflow-y-auto max-h-[350px]">
               {recentLeads.map((lead) => (
                 <div
                   key={lead.id}

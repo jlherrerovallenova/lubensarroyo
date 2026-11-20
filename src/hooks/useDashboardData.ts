@@ -21,6 +21,18 @@ export interface RecentLead {
   created_at: string;
 }
 
+export interface UntreatedLead {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  source: string | null;
+  status: string;
+  created_at: string;
+  assigned_to: string | null;
+  daysUntreated: number;
+}
+
 function applyPromotionFilter(query: any, promotionId?: string) {
   if (!promotionId || promotionId === 'all') return query;
   if (promotionId === 'arroyo') {
@@ -32,7 +44,7 @@ function applyPromotionFilter(query: any, promotionId?: string) {
   }
 }
 
-export function useDashboardData(userId: string | undefined, promotionId?: string) {
+export function useDashboardData(userId: string | undefined, promotionId?: string, userCommercialName?: string | null) {
   const queryClient = useQueryClient();
 
   // Escuchar cambios en tiempo real en la agenda y los clientes
@@ -42,6 +54,7 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
   useRealtimeSync('leads', ['dashboard_critical']);
   useRealtimeSync('leads', ['dashboard_feedback']);
   useRealtimeSync('leads', ['dashboard_auto_imported']);
+  useRealtimeSync('leads', ['dashboard_untreated']);
 
   const { data: statsData, isLoading: loadingStats, refetch: refetchStats } = useQuery({
     queryKey: ['dashboard_stats', userId, promotionId],
@@ -228,7 +241,62 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
     enabled: !!userId,
   });
 
-  const loading = loadingStats || loadingRecent || loadingAgenda || loadingCritical || loadingFeedback || loadingAuto;
+  const { data: untreatedLeads = [], isLoading: loadingUntreated, refetch: refetchUntreated } = useQuery({
+    queryKey: ['dashboard_untreated', userId, promotionId, userCommercialName],
+    queryFn: async () => {
+      let query = supabase
+        .from('leads')
+        .select('id, name, email, phone, source, status, created_at, assigned_to, agenda(id, completed)')
+        .not('status', 'in', '("closed","lost")');
+
+      query = applyPromotionFilter(query, promotionId);
+
+      // Si el usuario tiene comercial asignado, filtrar por sus clientes
+      if (userCommercialName) {
+        query = query.eq('assigned_to', userCommercialName);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      const now = new Date();
+
+      return (data || [])
+        .filter((lead: any) => {
+          const agendaItems = lead.agenda || [];
+          // Cliente sin tratar:
+          // 1. Está en estado 'new' O
+          // 2. No tiene ninguna acción en la agenda (o ninguna completada)
+          const hasCompletedAction = agendaItems.some((a: any) => a.completed);
+          const hasAnyAction = agendaItems.length > 0;
+          const isUntreated = lead.status === 'new' || !hasAnyAction || !hasCompletedAction;
+
+          return isUntreated;
+        })
+        .map((lead: any) => {
+          const createdAt = new Date(lead.created_at);
+          const diffMs = now.getTime() - createdAt.getTime();
+          const daysUntreated = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+
+          return {
+            id: lead.id,
+            name: lead.name,
+            email: lead.email,
+            phone: lead.phone,
+            source: lead.source,
+            status: lead.status,
+            created_at: lead.created_at,
+            assigned_to: lead.assigned_to,
+            daysUntreated,
+          } as UntreatedLead;
+        })
+        // Ordenados de más antiguo a más nuevo (mayor cantidad de días sin tratar primero)
+        .sort((a: UntreatedLead, b: UntreatedLead) => b.daysUntreated - a.daysUntreated);
+    },
+    enabled: !!userId,
+  });
+
+  const loading = loadingStats || loadingRecent || loadingAgenda || loadingCritical || loadingFeedback || loadingAuto || loadingUntreated;
 
   const refresh = () => {
     refetchStats();
@@ -237,6 +305,7 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
     refetchCritical();
     refetchFeedback();
     refetchAuto();
+    refetchUntreated();
   };
 
   const setAgenda = (updater: any) => {
@@ -250,6 +319,7 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
     criticalLeads,
     feedbackLeads,
     autoImportedLeads,
+    untreatedLeads,
     loading,
     refresh,
     setAgenda
