@@ -231,43 +231,51 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
   };
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-[60] flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-[#f8fafc] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200">
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[60] flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-200">
+      <div className="bg-[#f8fafc] w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 border border-slate-200 flex flex-col max-h-[92vh]">
 
         {/* Header */}
-        <div className="px-5 sm:px-8 py-2.5 bg-white border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-altavik-50 text-altavik-600 flex items-center justify-center">
-                    <Plus size={20} />
-                </div>
-                <h2 className="text-xl font-bold text-[#1e293b]">Nuevo Contacto</h2>
+        <div className="px-5 sm:px-7 py-3.5 bg-white border-b border-slate-100 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-altavik-50 text-altavik-600 flex items-center justify-center shadow-xs">
+              <Plus size={20} />
             </div>
-          <button type="button" onClick={onClose} className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-400">
-            <X size={24} />
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold text-[#1e293b] leading-tight">Nuevo Contacto</h2>
+              <p className="text-xs text-slate-400">Registra un nuevo interesado o cliente en el CRM</p>
+            </div>
+          </div>
+          <button 
+            type="button" 
+            onClick={onClose} 
+            className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600"
+            title="Cerrar"
+          >
+            <X size={20} />
           </button>
         </div>
 
-        <div className="p-5 space-y-3.5 overflow-y-auto max-h-[80vh] custom-scrollbar">
+        <div className="p-5 sm:p-7 space-y-4 overflow-y-auto custom-scrollbar flex-1">
           {/* Quick Paste Area */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 sm:p-4 shadow-xs">
              <button 
               type="button"
               onClick={() => setShowPaste(!showPaste)}
               className="flex items-center justify-between w-full text-slate-600 hover:text-altavik-700 transition-colors"
              >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
-                    <Sparkles size={16} />
+                    <Sparkles size={15} />
                   </div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-[#1e293b]">Pegado Rápido (Idealista)</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#1e293b]">Pegado Rápido (Idealista)</span>
                 </div>
                 <ChevronDown size={18} className={`transition-transform duration-300 ${showPaste ? 'rotate-180 text-blue-600' : 'text-slate-300'}`} />
              </button>
 
              {showPaste && (
-               <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+               <div className="mt-3.5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
                   <textarea 
-                    className="w-full h-32 p-4 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium placeholder:text-slate-400 focus:ring-2 focus:ring-blue-100 focus:bg-white outline-none transition-all resize-none italic shadow-inner"
+                    className="w-full h-28 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium placeholder:text-slate-400 focus:ring-2 focus:ring-blue-100 focus:bg-white outline-none transition-all resize-none italic shadow-inner"
                     placeholder="Pega aquí el contenido del correo de Idealista..."
                     value={pasteText}
                     onChange={(e) => setPasteText(e.target.value)}
@@ -275,7 +283,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
                   <button
                     type="button"
                     onClick={handlePasteParse}
-                    className="w-full py-2.5 bg-[#334155] text-white text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-[#1e293b] transition-all shadow-md active:scale-95"
+                    className="w-full py-2 bg-[#334155] text-white text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-[#1e293b] transition-all shadow-xs active:scale-[0.99]"
                   >
                     Extraer Datos del Contacto
                   </button>
@@ -285,40 +293,70 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
 
           <form onSubmit={handleSubmit} className="space-y-4">
           {errorMsg && (
-            <div className="p-4 bg-red-50 text-red-600 rounded-xl text-sm font-medium flex items-center gap-3 animate-in slide-in-from-top-2 border border-red-100">
+            <div className="p-3.5 bg-red-50 text-red-600 rounded-xl text-xs sm:text-sm font-medium flex items-center gap-3 animate-in slide-in-from-top-2 border border-red-100">
               <AlertCircle size={18} className="shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
 
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre Completo <span className="text-red-500">*</span></label>
-            <input
-              type="text"
-              required
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 focus:bg-white outline-none transition-all text-sm font-semibold text-slate-700 shadow-sm"
-              placeholder="Ej. Juan Pérez"
-              value={formData.name}
-              onChange={e => setFormData({ ...formData, name: e.target.value })}
-            />
+          {/* Nombre y Teléfono en fila equilibrada */}
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
+            <div className="sm:col-span-7 space-y-1.5">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+                Nombre Completo <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 focus:bg-white outline-none transition-all text-sm font-semibold text-slate-700 shadow-xs"
+                placeholder="Ej. Juan Pérez"
+                value={formData.name}
+                onChange={e => setFormData({ ...formData, name: e.target.value })}
+              />
+            </div>
+
+            <div className="sm:col-span-5 space-y-1.5">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Teléfono</label>
+              <div className="relative w-full group/phone">
+                <input
+                  type="tel"
+                  className="w-full pl-3.5 pr-11 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 focus:bg-white outline-none transition-all text-sm font-semibold text-slate-700 shadow-xs"
+                  placeholder="600 000 000"
+                  value={formData.phone}
+                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                />
+                {formData.phone && (
+                  <a 
+                    href={`https://wa.me/${formData.phone.replace(/\D/g, '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all shadow-xs active:scale-95"
+                    title="Abrir WhatsApp"
+                  >
+                    <Smartphone size={15} />
+                  </a>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
+          {/* Email Principal con espacio amplio y Email Alternativo */}
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5">
+            <div className="sm:col-span-7 space-y-1.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Principal</label>
               <input
                 type="email"
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm font-semibold text-slate-700 shadow-sm"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 focus:bg-white outline-none transition-all text-sm font-semibold text-slate-700 shadow-xs"
                 placeholder="juan@ejemplo.com"
                 value={formData.email}
                 onChange={e => setFormData({ ...formData, email: e.target.value })}
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Alternativo</label>
+            <div className="sm:col-span-5 space-y-1.5">
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Email Secundario</label>
               <input
                 type="email"
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm font-semibold text-slate-700 shadow-sm"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 focus:bg-white outline-none transition-all text-sm font-semibold text-slate-700 shadow-xs"
                 placeholder="secundario@ejemplo.com"
                 value={formData.secondary_email || ''}
                 onChange={e => setFormData({ ...formData, secondary_email: e.target.value })}
@@ -326,31 +364,8 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Teléfono</label>
-            <div className="relative w-full group/phone">
-              <input
-                type="tel"
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all text-sm font-semibold text-slate-700 shadow-sm pr-12"
-                placeholder="600 000 000"
-                value={formData.phone}
-                onChange={e => setFormData({ ...formData, phone: e.target.value })}
-              />
-              {formData.phone && (
-                <a 
-                  href={`https://wa.me/${formData.phone.replace(/\D/g, '')}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all shadow-sm active:scale-95"
-                  title="Abrir WhatsApp"
-                >
-                  <Smartphone size={16} />
-                </a>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+          {/* Origen y Comercial Asignado */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Origen</label>
               <CustomSelect
@@ -382,6 +397,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
             </div>
           </div>
 
+          {/* Promoción de Interés */}
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Promoción de Interés</label>
             <div className="grid grid-cols-3 gap-2">
@@ -406,30 +422,32 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
             </div>
           </div>
 
+          {/* Notas */}
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Notas Internas / Mensaje</label>
             <textarea
-              className="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:bg-white outline-none transition-all text-sm font-medium text-slate-700 h-28 resize-none shadow-inner italic"
+              className="w-full px-3.5 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-400 focus:bg-white outline-none transition-all text-sm font-medium text-slate-700 h-24 resize-none shadow-inner italic"
               placeholder="Ej. Interesado en piso de 3 habitaciones..."
               value={formData.notes}
               onChange={e => setFormData({ ...formData, notes: e.target.value })}
             />
           </div>
 
-          <div className="pt-4 flex gap-4">
+          {/* Botones de acción */}
+          <div className="pt-2 flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 text-slate-500 font-bold text-sm hover:bg-slate-100 rounded-xl transition-all"
+              className="flex-1 px-4 py-2.5 text-slate-500 font-bold text-sm hover:bg-slate-100 rounded-xl transition-all"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-3 bg-[#334155] text-white font-bold rounded-xl shadow-lg hover:bg-[#1e293b] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="flex-1 px-4 py-2.5 bg-[#334155] text-white font-bold rounded-xl shadow-md hover:bg-[#1e293b] active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
-              {loading ? <Loader2 className="animate-spin" size={20} /> : 'Guardar Contacto'}
+              {loading ? <Loader2 className="animate-spin" size={18} /> : 'Guardar Contacto'}
             </button>
           </div>
         </form>
