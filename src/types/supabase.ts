@@ -145,6 +145,79 @@ export interface Database {
           promocion_interes?: 'arroyo' | 'farnesio' | 'ambas' | null
         }
       }
+      dossiers: {
+        Row: {
+          id: string
+          lead_id: string
+          token: string
+          promocion_id: 'arroyo' | 'farnesio'
+          commercial_name: string
+          selected_property_ids: string[]
+          created_at: string
+          last_viewed_at: string | null
+          total_views: number
+          total_time_seconds: number
+          is_active: boolean
+        }
+        Insert: {
+          id?: string
+          lead_id: string
+          token: string
+          promocion_id?: 'arroyo' | 'farnesio'
+          commercial_name?: string
+          selected_property_ids?: string[]
+          created_at?: string
+          last_viewed_at?: string | null
+          total_views?: number
+          total_time_seconds?: number
+          is_active?: boolean
+        }
+        Update: {
+          id?: string
+          lead_id?: string
+          token?: string
+          promocion_id?: 'arroyo' | 'farnesio'
+          commercial_name?: string
+          selected_property_ids?: string[]
+          created_at?: string
+          last_viewed_at?: string | null
+          total_views?: number
+          total_time_seconds?: number
+          is_active?: boolean
+        }
+      }
+      dossier_events: {
+        Row: {
+          id: number
+          dossier_id: string
+          session_id: string
+          event_type: 'page_view' | 'zoom_plano' | 'expand_calidades' | 'contact_click'
+          page_section: string
+          duration_seconds: number
+          metadata: Json
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          dossier_id: string
+          session_id: string
+          event_type: 'page_view' | 'zoom_plano' | 'expand_calidades' | 'contact_click'
+          page_section: string
+          duration_seconds?: number
+          metadata?: Json
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          dossier_id?: string
+          session_id?: string
+          event_type?: 'page_view' | 'zoom_plano' | 'expand_calidades' | 'contact_click'
+          page_section?: string
+          duration_seconds?: number
+          metadata?: Json
+          created_at?: string
+        }
+      }
       inventory: {
         Row: {
           id: string

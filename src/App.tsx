@@ -30,6 +30,7 @@ const Edificio3D = lazy(() => import('./pages/Edificio3D'));
 const ClientLayout = lazy(() => import('./layouts/ClientLayout'));
 const ClientLogin = lazy(() => import('./pages/client/ClientLogin'));
 const ClientDashboard = lazy(() => import('./pages/client/ClientDashboard'));
+const InteractiveDossier = lazy(() => import('./pages/InteractiveDossier'));
 
 const PageLoader = () => (
   <div className="w-full h-[60vh] flex flex-col items-center justify-center">
@@ -55,6 +56,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/feedback" element={<Suspense fallback={<PageLoader />}><FeedbackResponse /></Suspense>} />
       <Route path="/view-document" element={<Suspense fallback={<PageLoader />}><DocumentViewer /></Suspense>} />
+      <Route path="/dossier/:token" element={<Suspense fallback={<PageLoader />}><InteractiveDossier /></Suspense>} />
       
       {/* Client Portal Routes */}
       <Route path="/client/login" element={<Suspense fallback={<PageLoader />}><ClientLogin /></Suspense>} />

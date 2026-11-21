@@ -2,6 +2,7 @@ import React from 'react';
 import { MessageCircle, Globe, Smartphone, Users, MapPin, FileText, Bell, Heart, Star, Send, Mail, Zap, Calendar as CalendarIcon, Plus, Pencil, Save, X, Clock, Check, CircleCheck as CheckCircle2, ChevronUp, ChevronDown, Trash2, Loader as Loader2, StickyNote, Hop as Home, Phone, UserCheck } from 'lucide-react';
 import { CustomSelect } from '../Shared';
 import { COMERCIALES, COMERCIALES_CONFIG } from '../../constants/commercials';
+import { DossierCard } from './DossierCard';
 
 interface FichaTabProps {
   formData: any;
@@ -274,6 +275,12 @@ export function FichaTab({
             </div>
           </div>
         </section>
+
+        {/* DOSSIER INTERACTIVO Y TELEMETRÍA */}
+        <DossierCard
+          lead={lead}
+          agentName={formData.assigned_to || 'Juan Herrero'}
+        />
       </div>
 
       {/* COLUMNA DERECHA */}
