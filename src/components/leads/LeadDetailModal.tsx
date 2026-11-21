@@ -1,6 +1,6 @@
 // src/components/leads/LeadDetailModal.tsx
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { X, Mail, Phone, Save, Trash2, Loader as Loader2, Send, Clock, Compass, MessageCircle, Calendar as CalendarIcon, CircleCheck as CheckCircle2, Circle, Plus, Pencil, RotateCcw, ShoppingCart, Smartphone, ChevronDown, ChevronUp, Globe, Users, FileText, Share, Bell, MessageSquareQuote, Heart, Circle as HelpCircle, Circle as XCircle, StickyNote, Check, Hop as Home, Zap, User, MapPin, Star, Search, FileSpreadsheet } from 'lucide-react';
+import { X, Mail, Phone, Save, Trash2, Loader as Loader2, Send, Clock, Compass, MessageCircle, Calendar as CalendarIcon, CircleCheck as CheckCircle2, Circle, Plus, Pencil, RotateCcw, ShoppingCart, Smartphone, ChevronDown, ChevronUp, Globe, Users, FileText, Share, Bell, MessageSquareQuote, Heart, Circle as HelpCircle, Circle as XCircle, StickyNote, Check, Hop as Home, Zap, User, MapPin, Star, Search, FileSpreadsheet, Sparkles } from 'lucide-react';
 import FeedbackEmailModal from './FeedbackEmailModal';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +11,7 @@ import { useDocuments } from '../../hooks/useDocuments';
 import SaleTab from './SaleTab';
 import { FichaTab } from './FichaTab';
 import LeadTimeline from './LeadTimeline';
+import { DossierCard } from './DossierCard';
 import { CustomSelect, IdealistaIcon } from '../Shared';
 import type { Database } from '../../types/supabase';
 
@@ -57,7 +58,7 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [emailModalMethod, setEmailModalMethod] = useState<'email' | 'whatsapp'>('email');
   const [firstContactTemplateActive, setFirstContactTemplateActive] = useState(false);
-  const [activeTab, setActiveTab] = useState<'ficha' | 'venta' | 'historial' | 'notas' | 'encuesta'>('ficha');
+  const [activeTab, setActiveTab] = useState<'ficha' | 'venta' | 'historial' | 'notas' | 'dossier' | 'encuesta'>('ficha');
   const { data: rawDocs = [] } = useDocuments();
   const availableDocs = rawDocs.filter(d => d.url).map(d => ({ name: d.name, url: d.url!, category: d.category }));
   const sentHistoryRef = useRef<any[]>([]);
@@ -663,6 +664,18 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
               HISTORIAL
             </button>
             <button type="button"
+              onClick={() => setActiveTab('dossier')}
+              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
+                activeTab === 'dossier' 
+                  ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+              }`}
+            >
+              <Sparkles size={14} className={activeTab === 'dossier' ? 'text-[#15a870]' : 'text-slate-400'} />
+              DOSSIER INTERACTIVO
+              <span className="ml-0.5 px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[9px] font-bold uppercase tracking-wider">Live</span>
+            </button>
+            <button type="button"
               onClick={() => setActiveTab('notas')}
               className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
                 activeTab === 'notas' 
@@ -738,6 +751,15 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
                     setEmailModalMethod('email');
                     setIsEmailModalOpen(true);
                   }}
+                />
+              </div>
+            )}
+
+            {activeTab === 'dossier' && (
+              <div className="max-w-4xl mx-auto py-4 animate-in fade-in duration-300">
+                <DossierCard
+                  lead={lead}
+                  agentName={formData.assigned_to || profile?.full_name || 'Juan Herrero'}
                 />
               </div>
             )}
