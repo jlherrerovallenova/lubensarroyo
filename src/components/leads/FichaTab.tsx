@@ -275,12 +275,6 @@ export function FichaTab({
             </div>
           </div>
         </section>
-
-        {/* DOSSIER INTERACTIVO Y TELEMETRÍA */}
-        <DossierCard
-          lead={lead}
-          agentName={formData.assigned_to || 'Juan Herrero'}
-        />
       </div>
 
       {/* COLUMNA DERECHA */}

@@ -589,7 +589,7 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
   return (
     <>
       <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-        <div className="bg-white w-full max-w-6xl rounded-none sm:rounded-2xl shadow-2xl overflow-hidden h-full sm:h-auto sm:max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200 border border-slate-200">
+        <div className="bg-white w-full max-w-6xl rounded-none sm:rounded-2xl shadow-2xl overflow-hidden h-full sm:h-[88vh] flex flex-col animate-in zoom-in-95 duration-200 border border-slate-200">
           
           {/* HEADER */}
           <div className="shrink-0 px-5 sm:px-8 py-3.5 bg-slate-50 border-b border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -702,7 +702,7 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
           </div>
 
           {/* CONTENIDO PRINCIPAL */}
-          <div className="flex-1 overflow-y-auto p-3 sm:p-4 custom-scrollbar-hide bg-white">
+          <div className="flex-1 min-h-0 overflow-y-auto p-3 sm:p-5 custom-scrollbar bg-white">
             {activeTab === 'ficha' && (
               <FichaTab
                 formData={formData}
@@ -765,7 +765,7 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
             )}
 
             {activeTab === 'notas' && (
-              <div className="max-w-4xl mx-auto py-4 h-[calc(100vh-320px)] min-h-[300px] flex flex-col animate-in fade-in duration-300">
+              <div className="max-w-4xl mx-auto py-2 h-full flex flex-col animate-in fade-in duration-300">
                 <section className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm transition-all hover:shadow-md flex flex-col flex-1 h-full">
                   <h3 className="text-xs font-bold text-[#1e293b] flex items-center gap-2.5 mb-3 text-slate-500 uppercase tracking-widest">
                     <div className="p-1.5 bg-slate-50 text-slate-600 rounded-xl"><StickyNote size={16} /></div> NOTAS Y OBSERVACIONES
@@ -775,15 +775,15 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
                     value={formData.notes || ''} 
                     onChange={handleChange}
                     placeholder="Anota aquí detalles, preferencias o recordatorios rápidos sobre el cliente..." 
-                    className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 text-[14px] font-medium text-slate-600 italic focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all resize-none shadow-sm leading-relaxed flex-1 min-h-[200px] h-full"
+                    className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 text-[14px] font-medium text-slate-600 italic focus:ring-2 focus:ring-blue-100 focus:bg-white transition-all resize-none shadow-sm leading-relaxed flex-1 min-h-[220px] h-full"
                   />
                 </section>
               </div>
             )}
             
             {activeTab === 'encuesta' && (
-              <div className="max-w-4xl mx-auto py-4 h-[calc(100vh-320px)] min-h-[300px] flex flex-col animate-in fade-in duration-300">
-                <section className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm transition-all hover:shadow-md flex flex-col flex-1 h-full overflow-y-auto custom-scrollbar-hide">
+              <div className="max-w-4xl mx-auto py-2 h-full flex flex-col animate-in fade-in duration-300">
+                <section className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm transition-all hover:shadow-md flex flex-col flex-1 h-full overflow-y-auto custom-scrollbar">
                   <h3 className="text-xs font-bold text-[#1e293b] flex items-center gap-2.5 mb-6 text-slate-500 uppercase tracking-widest">
                     <div className="p-1.5 bg-slate-50 text-slate-600 rounded-xl"><Send size={16} /></div> RESULTADOS DE LA ENCUESTA
                   </h3>
