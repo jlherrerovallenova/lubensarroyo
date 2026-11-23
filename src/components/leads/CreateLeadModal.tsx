@@ -1,5 +1,5 @@
 // src/components/leads/CreateLeadModal.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Loader2, AlertCircle, ClipboardPaste, Sparkles, Globe, Users, Plus, Smartphone, ChevronDown, ChevronUp, MapPin, Search, FileSpreadsheet } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
@@ -14,7 +14,6 @@ interface Props {
 }
 
 import { useCreateLead } from '../../hooks/useLeads';
-import { useAutosave } from '../../hooks/useAutosave';
 
 const SOURCE_CONFIG = [
   { id: 'Importado', label: 'Importado', icon: FileSpreadsheet, color: 'text-amber-500' },
@@ -37,7 +36,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
       ? profile.full_name
       : 'Juan Herrero');
 
-  const [formData, setFormData, clearFormData] = useAutosave('draft-create-lead', {
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     secondary_email: '',
@@ -49,6 +48,15 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
   });
   const [pasteText, setPasteText] = useState('');
   const [showPaste, setShowPaste] = useState(false);
+
+  // Asegurar que al abrirse se limpie cualquier borrador previo que pudiera quedar en localStorage
+  useEffect(() => {
+    try {
+      localStorage.removeItem('draft-create-lead');
+    } catch (e) {
+      // Ignorar errores de acceso a almacenamiento
+    }
+  }, []);
 
   if (!isOpen) return null;
 
@@ -218,7 +226,6 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
 
       createMutation.mutate(payload, {
         onSuccess: () => {
-          clearFormData();
           onSuccess();
           onClose();
         },
@@ -269,7 +276,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
                   <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
                     <Sparkles size={15} />
                   </div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#1e293b]">Pegado Rápido (Idealista)</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#1e293b]">Pegado Rápido</span>
                 </div>
                 <ChevronDown size={18} className={`transition-transform duration-300 ${showPaste ? 'rotate-180 text-blue-600' : 'text-slate-300'}`} />
              </button>
@@ -278,7 +285,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
                <div className="mt-3.5 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
                   <textarea 
                     className="w-full h-28 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium placeholder:text-slate-400 focus:ring-2 focus:ring-blue-100 focus:bg-white outline-none transition-all resize-none italic shadow-inner"
-                    placeholder="Pega aquí el contenido del correo de Idealista..."
+                    placeholder="Pega aquí el texto del mensaje o correo del cliente..."
                     value={pasteText}
                     onChange={(e) => setPasteText(e.target.value)}
                   />
