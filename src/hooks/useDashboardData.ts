@@ -44,7 +44,7 @@ function applyPromotionFilter(query: any, promotionId?: string) {
   }
 }
 
-export function useDashboardData(userId: string | undefined, promotionId?: string, userCommercialName?: string | null) {
+export function useDashboardData(userId: string | undefined, promotionId?: string, userCommercialName?: string | null, isAdmin: boolean = true) {
   const queryClient = useQueryClient();
 
   // Escuchar cambios en tiempo real en la agenda y los clientes
@@ -56,14 +56,21 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
   useRealtimeSync('leads', ['dashboard_auto_imported']);
   useRealtimeSync('leads', ['dashboard_untreated']);
 
+  const assignedScope = !isAdmin && userCommercialName ? userCommercialName : null;
+
   const { data: statsData, isLoading: loadingStats, refetch: refetchStats } = useQuery({
-    queryKey: ['dashboard_stats', userId, promotionId],
+    queryKey: ['dashboard_stats', userId, promotionId, assignedScope],
     queryFn: async () => {
       let countQuery = supabase.from('leads').select('*', { count: 'exact', head: true });
       let sourceQuery = supabase.from('leads').select('source');
 
       countQuery = applyPromotionFilter(countQuery, promotionId);
       sourceQuery = applyPromotionFilter(sourceQuery, promotionId);
+
+      if (assignedScope) {
+        countQuery = countQuery.eq('assigned_to', assignedScope);
+        sourceQuery = sourceQuery.eq('assigned_to', assignedScope);
+      }
 
       const [countRes, sourceRes] = await Promise.all([
         countQuery,
@@ -95,7 +102,7 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
   });
 
   const { data: recentLeads = [], isLoading: loadingRecent, refetch: refetchRecent } = useQuery({
-    queryKey: ['dashboard_recent', userId, promotionId],
+    queryKey: ['dashboard_recent', userId, promotionId, assignedScope],
     queryFn: async () => {
       let query = supabase
         .from('leads')
@@ -103,6 +110,9 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
         .order('created_at', { ascending: false })
         .limit(6);
       query = applyPromotionFilter(query, promotionId);
+      if (assignedScope) {
+        query = query.eq('assigned_to', assignedScope);
+      }
       const { data, error } = await query;
       if (error) throw error;
       return data as RecentLead[];
@@ -111,12 +121,12 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
   });
 
   const { data: agenda = [], isLoading: loadingAgenda, refetch: refetchAgenda } = useQuery({
-    queryKey: ['dashboard_agenda', userId, promotionId],
+    queryKey: ['dashboard_agenda', userId, promotionId, assignedScope],
     queryFn: async () => {
       const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
       const { data, error } = await supabase
         .from('agenda')
-        .select('*, leads(name, phone, promocion_interes), email_tracking(*)')
+        .select('*, leads(name, phone, promocion_interes, assigned_to), email_tracking(*)')
         .or(`completed.eq.false,and(completed.eq.true,due_date.gte.${lastWeek})`)
         .order('due_date', { ascending: true });
       if (error) throw error;
@@ -125,6 +135,14 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
         leads: Array.isArray(item.leads) ? item.leads[0] : item.leads,
         email_tracking: Array.isArray(item.email_tracking) ? item.email_tracking[0] : item.email_tracking
       })) as AgendaItem[];
+
+      // Si no es admin, filtrar solo las acciones de leads asignados a su comercial o creadas por él
+      if (assignedScope) {
+        list = list.filter((item: any) => {
+          if (!item.leads) return true;
+          return item.leads.assigned_to === assignedScope;
+        });
+      }
 
       if (promotionId && promotionId !== 'all') {
         list = list.filter((item: any) => {
@@ -145,13 +163,16 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
   });
 
   const { data: criticalLeads = [], isLoading: loadingCritical, refetch: refetchCritical } = useQuery({
-    queryKey: ['dashboard_critical', userId, promotionId],
+    queryKey: ['dashboard_critical', userId, promotionId, assignedScope],
     queryFn: async () => {
       let query = supabase
         .from('leads')
         .select('id, name, source, created_at, status, agenda(due_date, completed)')
         .not('status', 'in', '("closed","lost")');
       query = applyPromotionFilter(query, promotionId);
+      if (assignedScope) {
+        query = query.eq('assigned_to', assignedScope);
+      }
       const { data, error } = await query;
       if (error) throw error;
       const now = new Date();
@@ -184,7 +205,7 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
   });
 
   const { data: feedbackLeads = [], isLoading: loadingFeedback, refetch: refetchFeedback } = useQuery({
-    queryKey: ['dashboard_feedback', userId, promotionId],
+    queryKey: ['dashboard_feedback', userId, promotionId, assignedScope],
     queryFn: async () => {
       let feedbackData: any[] = [];
       let query = supabase
@@ -192,6 +213,9 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
         .select('id, name, email, source, created_at, status, feedback_sent, feedback_rating, feedback_responded_at')
         .or(`status.in.(visiting,closed),feedback_rating.not.is.null,feedback_sent.eq.true`);
       query = applyPromotionFilter(query, promotionId);
+      if (assignedScope) {
+        query = query.eq('assigned_to', assignedScope);
+      }
       const { data, error } = await query;
       
       if (!error && data) {
@@ -203,6 +227,9 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
           .in('status', ['visiting', 'closed'])
           .eq('feedback_sent', false);
         fallbackQuery = applyPromotionFilter(fallbackQuery, promotionId);
+        if (assignedScope) {
+          fallbackQuery = fallbackQuery.eq('assigned_to', assignedScope);
+        }
         const { data: fallbackData } = await fallbackQuery;
         feedbackData = fallbackData || [];
       }
@@ -225,7 +252,7 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
   });
 
   const { data: autoImportedLeads = [], isLoading: loadingAuto, refetch: refetchAuto } = useQuery({
-    queryKey: ['dashboard_auto_imported', userId, promotionId],
+    queryKey: ['dashboard_auto_imported', userId, promotionId, assignedScope],
     queryFn: async () => {
       let query = (supabase as any)
         .from('leads')
@@ -234,6 +261,9 @@ export function useDashboardData(userId: string | undefined, promotionId?: strin
         .order('created_at', { ascending: false })
         .limit(20);
       query = applyPromotionFilter(query, promotionId);
+      if (assignedScope) {
+        query = query.eq('assigned_to', assignedScope);
+      }
       const { data, error } = await query;
       if (error) throw error;
       return data || [];

@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { StatCard } from '../components/Shared';
+import { useAuth } from '../context/AuthContext';
 
 const loadPdfModules = async () => {
   const [{ default: jsPDF }, autoTableModule] = await Promise.all([
@@ -43,6 +44,7 @@ const COLORS = ['#6b94b9', '#466383', '#88aec9', '#3a516b', '#abc6d9', '#2d3f54'
 const BRAND_BLUE = '#6b94b9';
 
 export default function Stats() {
+  const { isAdmin, commercialName } = useAuth();
   const [loading, setLoading] = useState(true);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   type TimeRange = '1w' | '1m' | '3m' | '6m' | '12m' | 'all';
@@ -77,7 +79,7 @@ export default function Stats() {
   // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
     fetchStats();
-  }, []);
+  }, [isAdmin, commercialName]);
 
   // react-doctor-disable-next-line exhaustive-deps
   useEffect(() => {
@@ -89,10 +91,16 @@ export default function Stats() {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const { data: leads, error } = await supabase
+      let query = supabase
         .from('leads')
-        .select('name, email, phone, created_at, source, status')
+        .select('name, email, phone, created_at, source, status, assigned_to')
         .order('created_at', { ascending: false });
+
+      if (!isAdmin && commercialName) {
+        query = query.eq('assigned_to', commercialName);
+      }
+
+      const { data: leads, error } = await query;
 
       if (error) throw error;
 

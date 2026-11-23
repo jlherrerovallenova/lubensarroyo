@@ -18,18 +18,24 @@ export default function SurveyResults() {
   const [leads, setLeads] = useState<SurveyLead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { session } = useAuth();
+  const { session, isAdmin, commercialName } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
     const fetchSurveys = async () => {
       setLoading(true);
       try {
-        const { data, error: dbError } = await (supabase as any)
+        let query = (supabase as any)
           .from('leads')
-          .select('id, name, feedback_sent, feedback_sent_at, feedback_responded_at, feedback_rating, survey_data')
+          .select('id, name, feedback_sent, feedback_sent_at, feedback_responded_at, feedback_rating, survey_data, assigned_to')
           .eq('feedback_sent', true)
           .order('feedback_sent_at', { ascending: false });
+
+        if (!isAdmin && commercialName) {
+          query = query.eq('assigned_to', commercialName);
+        }
+
+        const { data, error: dbError } = await query;
 
         if (dbError) throw dbError;
         if (isMounted) {
@@ -51,7 +57,7 @@ export default function SurveyResults() {
     return () => {
       isMounted = false;
     };
-  }, [session]);
+  }, [session, isAdmin, commercialName]);
 
   if (loading) {
     return (

@@ -33,7 +33,7 @@ const ITEMS_PER_PAGE = 8;
 
 export default function Agenda() {
   const queryClient = useQueryClient();
-  const { session } = useAuth();
+  const { session, isAdmin, commercialName } = useAuth();
   const [items, setItems] = useState<AgendaItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -75,7 +75,12 @@ export default function Agenda() {
       // Consulta a 'agenda' trayendo el nombre del cliente relacionado
       let query = supabase
         .from('agenda')
-        .select('*, leads(name, phone)', { count: 'exact' });
+        .select('*, leads!inner(name, phone, assigned_to)', { count: 'exact' });
+
+      // Si no es administrador, filtrar solo tareas de clientes asignados a su comercial
+      if (!isAdmin && commercialName) {
+        query = query.eq('leads.assigned_to', commercialName);
+      }
 
       // Aplicar filtros inteligentes
       if (filterStatus === 'pending') {
@@ -124,7 +129,7 @@ export default function Agenda() {
         setLoading(false);
       }
     }
-  }, [session, page, filterStatus]);
+  }, [session, page, filterStatus, isAdmin, commercialName]);
 
   useEffect(() => {
     fetchAgenda();

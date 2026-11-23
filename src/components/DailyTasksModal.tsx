@@ -12,6 +12,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 interface DailyTasksModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ interface Task {
 }
 
 export const DailyTasksModal: React.FC<DailyTasksModalProps> = ({ isOpen, onClose }) => {
+  const { isAdmin, commercialName } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -46,18 +48,25 @@ export const DailyTasksModal: React.FC<DailyTasksModalProps> = ({ isOpen, onClos
         const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
         const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
 
-        const { data, error } = await supabase
+        let query = supabase
           .from('agenda')
           .select(`
             *,
-            leads (
-              name
+            leads!inner (
+              name,
+              assigned_to
             )
           `)
           .eq('completed', false)
           .gte('due_date', startOfDay)
           .lte('due_date', endOfDay)
           .order('due_date', { ascending: true });
+
+        if (!isAdmin && commercialName) {
+          query = query.eq('leads.assigned_to', commercialName);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
         if (isMounted) {

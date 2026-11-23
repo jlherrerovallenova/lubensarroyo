@@ -7,7 +7,7 @@ type LeadRow = Database['public']['Tables']['leads']['Row'];
 type InventoryRow = Database['public']['Tables']['inventory']['Row'];
 
 export interface SaleWithDetails extends SaleRow {
-  lead: Pick<LeadRow, 'id' | 'name' | 'email' | 'phone'>;
+  lead: Pick<LeadRow, 'id' | 'name' | 'email' | 'phone' | 'assigned_to'>;
   property: Pick<InventoryRow, 'id' | 'n_orden' | 'planta' | 'portal' | 'letra' | 'precio'>;
   promoter_invoices?: Array<{
     id: string;
@@ -26,7 +26,7 @@ export function useSales() {
         .from('sales')
         .select(`
           *,
-          lead:leads (id, name, email, phone),
+          lead:leads (id, name, email, phone, assigned_to),
           property:inventory (id, n_orden, planta, portal, letra, precio),
           promoter_invoices (id, milestone, amount, status, invoice_number)
         `)

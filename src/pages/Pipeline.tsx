@@ -19,6 +19,7 @@ import { COMERCIALES, COMERCIALES_CONFIG } from '../constants/commercials';
 import type { Database } from '../types/supabase';
 import LeadDetailModal from '../components/leads/LeadDetailModal';
 import { usePromotion } from '../context/PromotionContext';
+import { useAuth } from '../context/AuthContext';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 
@@ -32,11 +33,15 @@ const COLUMNS = [
 
 export default function Pipeline() {
   const navigate = useNavigate();
+  const { isAdmin, commercialName } = useAuth();
   const { activePromotion, activePromotionId } = usePromotion();
   const [promoFilter, setPromoFilter] = useState<'current' | 'all'>('current');
   const [comercialFilter, setComercialFilter] = useState<string>('');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const draggedLeadIdRef = useRef<string | null>(null);
+
+  // Si no es admin, forzar siempre su propio comercial
+  const effectiveComercialFilter = isAdmin ? (comercialFilter || undefined) : (commercialName || 'unassigned');
 
   // React Query para obtener todos los leads activos
   const { data, isLoading: loading } = useLeads({
@@ -44,7 +49,7 @@ export default function Pipeline() {
     pageSize: 1000, // En el pipeline queremos ver todos los activos a la vez
     statusFilter: undefined, // No filtramos por status aquí porque los separamos por columnas
     promocionFilter: promoFilter === 'current' ? activePromotionId : 'all',
-    assignedFilter: comercialFilter || undefined,
+    assignedFilter: effectiveComercialFilter,
     sortField: 'created_at',
     sortDirection: 'desc'
   });
@@ -140,21 +145,23 @@ export default function Pipeline() {
         }
         actions={
           <div className="flex items-center gap-2">
-            <CustomSelect
-              className="w-52 text-xs font-bold"
-              value={comercialFilter}
-              onChange={(val) => setComercialFilter(val)}
-              placeholder="Todos los Comerciales"
-              options={[
-                { id: '', label: 'Todos los Comerciales' },
-                ...COMERCIALES.map(c => ({
-                  id: c,
-                  label: c,
-                  dotColor: COMERCIALES_CONFIG[c]?.dotColor
-                })),
-                { id: 'unassigned', label: 'Sin Asignar' }
-              ]}
-            />
+            {isAdmin && (
+              <CustomSelect
+                className="w-52 text-xs font-bold"
+                value={comercialFilter}
+                onChange={(val) => setComercialFilter(val)}
+                placeholder="Todos los Comerciales"
+                options={[
+                  { id: '', label: 'Todos los Comerciales' },
+                  ...COMERCIALES.map(c => ({
+                    id: c,
+                    label: c,
+                    dotColor: COMERCIALES_CONFIG[c]?.dotColor
+                  })),
+                  { id: 'unassigned', label: 'Sin Asignar' }
+                ]}
+              />
+            )}
             <div className="flex items-center gap-1 bg-white/80 border border-slate-200 p-1 rounded-xl shadow-xs">
               <button
                 type="button"

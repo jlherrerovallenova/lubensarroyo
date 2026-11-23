@@ -39,12 +39,14 @@ import { STATUS_LABELS, STATUS_CONFIG } from '../components/leads/LeadStatus';
 import { COMERCIALES, COMERCIALES_CONFIG } from '../constants/commercials';
 
 import { usePromotion } from '../context/PromotionContext';
+import { useAuth } from '../context/AuthContext';
 
 type Lead = Database['public']['Tables']['leads']['Row'];
 const ITEMS_PER_PAGE = 10;
 
 export default function Leads() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { isAdmin, commercialName } = useAuth();
   const { activePromotion, activePromotionId } = usePromotion();
   const { data: rawDocs = [] } = useDocuments();
   const availableDocs = rawDocs
@@ -55,7 +57,9 @@ export default function Leads() {
   const statusFilter = searchParams.get('status') || '';
   const sourceFilter = searchParams.get('source') || '';
   const promocionFilter = searchParams.get('promo') || activePromotionId;
-  const assignedFilter = searchParams.get('comercial') || '';
+  const rawAssignedFilter = searchParams.get('comercial') || '';
+  // Si no es admin, SIEMPRE forzar el filtro a su propio comercial
+  const assignedFilter = isAdmin ? rawAssignedFilter : (commercialName || 'unassigned');
   const [page, setPage] = useState(1);
   const [sortField, setSortField] = useState<'name' | 'created_at' | 'client_quality_rating'>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -215,21 +219,23 @@ export default function Leads() {
               ]}
             />
 
-            <CustomSelect
-              className="flex-1 sm:flex-none sm:w-auto min-w-[175px]"
-              value={assignedFilter}
-              onChange={(val) => { setPage(1); updateURLParams('comercial', val); }}
-              placeholder="Todos los Comerciales"
-              options={[
-                { id: '', label: 'Todos los Comerciales' },
-                ...COMERCIALES.map(c => ({
-                  id: c,
-                  label: c,
-                  dotColor: COMERCIALES_CONFIG[c]?.dotColor
-                })),
-                { id: 'unassigned', label: 'Sin Asignar' }
-              ]}
-            />
+            {isAdmin && (
+              <CustomSelect
+                className="flex-1 sm:flex-none sm:w-auto min-w-[175px]"
+                value={assignedFilter}
+                onChange={(val) => { setPage(1); updateURLParams('comercial', val); }}
+                placeholder="Todos los Comerciales"
+                options={[
+                  { id: '', label: 'Todos los Comerciales' },
+                  ...COMERCIALES.map(c => ({
+                    id: c,
+                    label: c,
+                    dotColor: COMERCIALES_CONFIG[c]?.dotColor
+                  })),
+                  { id: 'unassigned', label: 'Sin Asignar' }
+                ]}
+              />
+            )}
 
             {hasActiveFilters && (
               <button

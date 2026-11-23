@@ -68,3 +68,14 @@ export function resolveCommercialName(rawNameOrEmail?: string | null): Comercial
   const match = COMERCIALES.find(c => c.toLowerCase() === lower);
   return match || null;
 }
+
+/**
+ * Determina si el usuario logueado es Administrador absoluto del CRM.
+ * El usuario Juan Herrero es el administrador y puede ver todos los clientes y tareas.
+ * Cualquier otro usuario sólo puede ver sus propios clientes, acciones y registros asignados.
+ */
+export function isUserAdmin(profile?: { full_name?: string | null; role?: string | null } | null, email?: string | null): boolean {
+  if (profile?.role === 'admin') return true;
+  const commercial = resolveCommercialName(profile?.full_name) || resolveCommercialName(email);
+  return commercial === 'Juan Herrero';
+}

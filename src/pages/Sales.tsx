@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BadgeDollarSign, Loader2, Calendar, FileText, CheckCircle2, User, Home, Search, AlertCircle } from 'lucide-react';
 import { useSales, type SaleWithDetails } from '../hooks/useSales';
+import { useAuth } from '../context/AuthContext';
 import { PageHeader } from '../components/ui/PageHeader';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,6 +17,7 @@ const salesCurrencyFormatter = new Intl.NumberFormat('es-ES', { style: 'currency
 
 export default function Sales() {
   const { data: sales, isLoading } = useSales();
+  const { isAdmin, commercialName } = useAuth();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('completada');
@@ -60,6 +62,13 @@ export default function Sales() {
   };
 
   const filteredSales = (sales || []).filter(sale => {
+    // Si no es admin, solo ver ventas de clientes asignados al propio comercial
+    if (!isAdmin && commercialName) {
+      if (sale.lead.assigned_to !== commercialName) {
+        return false;
+      }
+    }
+
     const matchesSearch = 
       sale.lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       sale.property.n_orden.toLowerCase().includes(searchTerm.toLowerCase());
@@ -69,7 +78,7 @@ export default function Sales() {
     return matchesSearch && matchesStatus;
   });
 
-  const totalClosedValue = (sales || [])
+  const totalClosedValue = filteredSales
     .filter(s => s.sale_status === 'completada')
     .reduce((acc, curr) => acc + (curr.sale_price || 0), 0);
 

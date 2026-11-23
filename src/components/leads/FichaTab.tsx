@@ -2,6 +2,7 @@ import React from 'react';
 import { MessageCircle, Globe, Smartphone, Users, MapPin, FileText, Bell, Heart, Star, Send, Mail, Zap, Calendar as CalendarIcon, Plus, Pencil, Save, X, Clock, Check, CircleCheck as CheckCircle2, ChevronUp, ChevronDown, Trash2, Loader as Loader2, StickyNote, Hop as Home, Phone, UserCheck } from 'lucide-react';
 import { CustomSelect } from '../Shared';
 import { COMERCIALES, COMERCIALES_CONFIG } from '../../constants/commercials';
+import { useAuth } from '../../context/AuthContext';
 import { DossierCard } from './DossierCard';
 
 interface FichaTabProps {
@@ -39,6 +40,7 @@ export function FichaTab({
   lead, tasks, editingTaskId, setEditingTaskId, newTask, setNewTask, saveTask, toggleTaskStatus,
   renderEmailTrackingBadge, expandedTasks, toggleExpand, parseTaskTitle, startEditingTask, deleteTask, loading, waData
 }: FichaTabProps) {
+  const { isAdmin } = useAuth();
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-stretch">
       {/* COLUMNA IZQUIERDA */}
@@ -126,6 +128,7 @@ export function FichaTab({
               <CustomSelect
                 value={formData.assigned_to || ''}
                 onChange={(val) => setFormData({ ...formData, assigned_to: val || null })}
+                disabled={!isAdmin}
                 className="w-full font-semibold"
                 options={[
                   { id: '', label: 'Sin asignar' },

@@ -11,7 +11,7 @@ interface AgendaAlerts {
 }
 
 export function useAgendaAlerts(): AgendaAlerts {
-  const { session } = useAuth();
+  const { session, isAdmin, commercialName } = useAuth();
   const [todayCount, setTodayCount] = useState(0);
   const [overdueCount, setOverdueCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -28,21 +28,27 @@ export function useAgendaAlerts(): AgendaAlerts {
         const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
         const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
 
-        const [todayRes, overdueRes] = await Promise.all([
-          // Tareas de hoy pendientes
-          (supabase as any)
-            .from('agenda')
-            .select('id', { count: 'exact', head: true })
-            .eq('completed', false)
-            .gte('due_date', startOfDay)
-            .lte('due_date', endOfDay),
+        let todayQuery = (supabase as any)
+          .from('agenda')
+          .select('id, leads!inner(assigned_to)', { count: 'exact', head: true })
+          .eq('completed', false)
+          .gte('due_date', startOfDay)
+          .lte('due_date', endOfDay);
 
-          // Tareas vencidas (antes de hoy, pendientes)
-          (supabase as any)
-            .from('agenda')
-            .select('id', { count: 'exact', head: true })
-            .eq('completed', false)
-            .lt('due_date', startOfDay),
+        let overdueQuery = (supabase as any)
+          .from('agenda')
+          .select('id, leads!inner(assigned_to)', { count: 'exact', head: true })
+          .eq('completed', false)
+          .lt('due_date', startOfDay);
+
+        if (!isAdmin && commercialName) {
+          todayQuery = todayQuery.eq('leads.assigned_to', commercialName);
+          overdueQuery = overdueQuery.eq('leads.assigned_to', commercialName);
+        }
+
+        const [todayRes, overdueRes] = await Promise.all([
+          todayQuery,
+          overdueQuery,
         ]);
 
         if (isMounted) {
@@ -66,7 +72,7 @@ export function useAgendaAlerts(): AgendaAlerts {
       isMounted = false;
       clearInterval(interval);
     };
-  }, [session]);
+  }, [session, isAdmin, commercialName]);
 
   return { todayCount, overdueCount, total: todayCount + overdueCount, loading };
 }

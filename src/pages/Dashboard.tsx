@@ -30,15 +30,15 @@ import { handleTaskCompletedTransition } from '../utils/leadStateTransitions';
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
-  const { session, profile } = useAuth();
+  const { session, profile, isAdmin, commercialName } = useAuth();
   const { showConfirm } = useDialog();
   const navigate = useNavigate();
   const { data: settings } = useSettings();
   const { activePromotion, activePromotionId } = usePromotion();
 
   const userCommercialName = useMemo(() => {
-    return resolveCommercialName(profile?.full_name) || resolveCommercialName(session?.user?.email) || profile?.full_name || null;
-  }, [profile?.full_name, session?.user?.email]);
+    return commercialName || resolveCommercialName(profile?.full_name) || resolveCommercialName(session?.user?.email) || profile?.full_name || null;
+  }, [commercialName, profile?.full_name, session?.user?.email]);
 
   const {
     stats,
@@ -50,7 +50,7 @@ export default function Dashboard() {
     untreatedLeads,
     refresh,
     setAgenda
-  } = useDashboardData(session?.user?.id, activePromotionId, userCommercialName);
+  } = useDashboardData(session?.user?.id, activePromotionId, userCommercialName, isAdmin);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'hoy' | 'caducadas' | 'semana' | 'feedback' | 'emails'>('hoy');

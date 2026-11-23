@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useRef, useMemo,
 import { supabase, withRetry } from '../lib/supabase';
 import type { Session, User } from '@supabase/supabase-js';
 import { Loader2, AlertCircle, XCircle } from 'lucide-react';
+import { resolveCommercialName, isUserAdmin, type ComercialName } from '../constants/commercials';
 
 interface Profile {
   id: string;
@@ -15,6 +16,8 @@ interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
+  isAdmin: boolean;
+  commercialName: ComercialName | null;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<{ error: any }>;
   refreshProfile: () => Promise<void>;
@@ -199,9 +202,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (user?.id) await fetchProfile(user.id);
   }, [user?.id]);
 
+  const commercialName = useMemo(() => {
+    return resolveCommercialName(profile?.full_name) || resolveCommercialName(user?.email) || null;
+  }, [profile?.full_name, user?.email]);
+
+  const isAdmin = useMemo(() => {
+    return isUserAdmin(profile, user?.email);
+  }, [profile, user?.email]);
+
   const value = useMemo(
-    () => ({ session, user, profile, loading, signIn, signOut, refreshProfile }),
-    [session, user, profile, loading, signIn, signOut, refreshProfile]
+    () => ({ session, user, profile, loading, isAdmin, commercialName, signIn, signOut, refreshProfile }),
+    [session, user, profile, loading, isAdmin, commercialName, signIn, signOut, refreshProfile]
   );
 
   if (loading) {

@@ -30,7 +30,7 @@ interface DailyBriefingModalProps {
 }
 
 export function DailyBriefingModal({ waReplies, onClose, onMarkRepliesSeen }: DailyBriefingModalProps) {
-  const { session } = useAuth();
+  const { session, isAdmin, commercialName } = useAuth();
   const navigate = useNavigate();
   const [todayTasks, setTodayTasks] = useState<AgendaTask[]>([]);
   const [overdueTasks, setOverdueTasks] = useState<AgendaTask[]>([]);
@@ -44,22 +44,31 @@ export function DailyBriefingModal({ waReplies, onClose, onMarkRepliesSeen }: Da
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
       const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).toISOString();
 
+      let todayQuery = (supabase as any)
+        .from('agenda')
+        .select('id, title, type, due_date, lead_id, leads!inner(assigned_to)')
+        .eq('completed', false)
+        .gte('due_date', startOfDay)
+        .lte('due_date', endOfDay)
+        .order('due_date', { ascending: true })
+        .limit(5);
+
+      let overdueQuery = (supabase as any)
+        .from('agenda')
+        .select('id, title, type, due_date, lead_id, leads!inner(assigned_to)')
+        .eq('completed', false)
+        .lt('due_date', startOfDay)
+        .order('due_date', { ascending: false })
+        .limit(3);
+
+      if (!isAdmin && commercialName) {
+        todayQuery = todayQuery.eq('leads.assigned_to', commercialName);
+        overdueQuery = overdueQuery.eq('leads.assigned_to', commercialName);
+      }
+
       const [todayRes, overdueRes] = await Promise.all([
-        (supabase as any)
-          .from('agenda')
-          .select('id, title, type, due_date, lead_id')
-          .eq('completed', false)
-          .gte('due_date', startOfDay)
-          .lte('due_date', endOfDay)
-          .order('due_date', { ascending: true })
-          .limit(5),
-        (supabase as any)
-          .from('agenda')
-          .select('id, title, type, due_date, lead_id')
-          .eq('completed', false)
-          .lt('due_date', startOfDay)
-          .order('due_date', { ascending: false })
-          .limit(3),
+        todayQuery,
+        overdueQuery,
       ]);
 
       if (isMounted) {
@@ -72,7 +81,7 @@ export function DailyBriefingModal({ waReplies, onClose, onMarkRepliesSeen }: Da
     return () => {
       isMounted = false;
     };
-  }, [session]);
+  }, [session, isAdmin, commercialName]);
 
   const handleClose = () => {
     onMarkRepliesSeen();

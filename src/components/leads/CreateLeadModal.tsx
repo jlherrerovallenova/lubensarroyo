@@ -27,13 +27,15 @@ const SOURCE_CONFIG = [
 ];
 
 export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPromotionId = 'arroyo' }: Props) {
-  const { user, profile } = useAuth();
+  const { user, profile, isAdmin, commercialName } = useAuth();
   const createMutation = useCreateLead();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const defaultCommercial = (profile?.full_name && (COMERCIALES as readonly string[]).includes(profile.full_name))
-    ? profile.full_name
-    : 'Juan Herrero';
+  const defaultCommercial = !isAdmin && commercialName
+    ? commercialName
+    : ((profile?.full_name && (COMERCIALES as readonly string[]).includes(profile.full_name))
+      ? profile.full_name
+      : 'Juan Herrero');
 
   const [formData, setFormData, clearFormData] = useAutosave('draft-create-lead', {
     name: '',
@@ -385,6 +387,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
               <CustomSelect
                 value={formData.assigned_to || ''}
                 onChange={(val) => setFormData({ ...formData, assigned_to: val })}
+                disabled={!isAdmin}
                 options={[
                   { id: '', label: 'Sin asignar' },
                   ...COMERCIALES.map(c => ({

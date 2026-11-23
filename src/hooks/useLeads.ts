@@ -147,6 +147,13 @@ export function useLeads(params: FetchLeadsParams) {
           }
           if (statusFilter) fallbackQuery = fallbackQuery.eq('status', statusFilter);
           if (sourceFilter) fallbackQuery = fallbackQuery.ilike('source', `%${sourceFilter}%`);
+          if (assignedFilter) {
+            if (assignedFilter === 'unassigned') {
+              fallbackQuery = fallbackQuery.or('assigned_to.is.null,assigned_to.eq.""');
+            } else {
+              fallbackQuery = fallbackQuery.eq('assigned_to', assignedFilter);
+            }
+          }
           const fbResult = await fallbackQuery.range(from, to);
           if (fbResult.error) throw fbResult.error;
           return {
