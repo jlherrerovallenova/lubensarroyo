@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, type ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { PROMOTIONS, type PromotionConfig } from '../config/promotions';
 import { Building2, Check, ChevronRight, X } from 'lucide-react';
 
@@ -16,8 +17,21 @@ const PromotionContext = createContext<PromotionContextType | undefined>(undefin
 const STORAGE_KEY = 'lubens_active_promotion';
 const SESSION_CHOICE_KEY = 'lubens_promotion_session_chosen';
 
+const PUBLIC_PREFIXES = ['/view-document', '/feedback', '/client', '/login'];
+
 export const PromotionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const location = useLocation();
+  const isPublicRoute = PUBLIC_PREFIXES.some(prefix => location.pathname.startsWith(prefix));
+
   const [activePromotionId, setActivePromotionId] = useState<'arroyo' | 'farnesio'>(() => {
+    // Si la URL pública trae el parámetro ?promo=, asignarlo directamente
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const urlPromo = searchParams.get('promo');
+      if (urlPromo === 'farnesio' || urlPromo === 'arroyo') {
+        return urlPromo;
+      }
+    }
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'farnesio' || saved === 'arroyo') {
       return saved;
@@ -26,9 +40,22 @@ export const PromotionProvider: React.FC<{ children: ReactNode }> = ({ children 
   });
 
   const [isSelectorModalOpen, setIsSelectorModalOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const isPublic = PUBLIC_PREFIXES.some(prefix => window.location.pathname.startsWith(prefix));
+      if (isPublic) return false;
+    }
     const chosenInSession = sessionStorage.getItem(SESSION_CHOICE_KEY);
     return !chosenInSession;
   });
+
+  // Si la ruta cambia y pasa a ser una ruta pública o trae promo en los query params, sincronizar
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const urlPromo = searchParams.get('promo');
+    if ((urlPromo === 'farnesio' || urlPromo === 'arroyo') && urlPromo !== activePromotionId) {
+      setActivePromotionId(urlPromo);
+    }
+  }, [location.search, activePromotionId]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, activePromotionId);
@@ -64,7 +91,7 @@ export const PromotionProvider: React.FC<{ children: ReactNode }> = ({ children 
   return (
     <PromotionContext.Provider value={contextValue}>
       {children}
-      {isSelectorModalOpen && (
+      {!isPublicRoute && isSelectorModalOpen && (
         <PromotionSelectionModal
           activeId={activePromotionId}
           onSelect={selectPromotion}

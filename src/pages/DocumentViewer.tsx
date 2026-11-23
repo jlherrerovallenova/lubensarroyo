@@ -1,7 +1,7 @@
 // src/pages/DocumentViewer.tsx
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Download, MessageCircle, Phone, FileText, Clock } from 'lucide-react';
+import { Download, MessageCircle, Phone, FileText } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { PROMOTIONS } from '../config/promotions';
 
@@ -25,7 +25,6 @@ export default function DocumentViewer() {
   const docUrl = searchParams.get('url') || '';
   const promoId = searchParams.get('promo') || 'farnesio';
 
-  const [activeSeconds, setActiveSeconds] = useState(0);
   const activeSecondsRef = useRef(0);
   const historyRecordIdRef = useRef<string | null>(null);
   const isDocumentVisibleRef = useRef(!document.hidden);
@@ -115,11 +114,10 @@ export default function DocumentViewer() {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('beforeunload', handleBeforeUnload);
 
-    // Temporizador cada segundo
+    // Temporizador cada segundo (en segundo plano sin mostrar en UI)
     const interval = setInterval(() => {
       if (isDocumentVisibleRef.current) {
         activeSecondsRef.current += 1;
-        setActiveSeconds(activeSecondsRef.current);
       }
     }, 1000);
 
@@ -167,12 +165,6 @@ export default function DocumentViewer() {
               </span>
             </div>
           </div>
-        </div>
-
-        {/* Indicador discreto de tiempo activo */}
-        <div className="hidden md:flex items-center gap-2 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700/60 text-xs font-medium text-slate-300">
-          <Clock size={13} className="text-altavik-400" />
-          <span>Tiempo de lectura: <strong className="text-white font-bold">{formatDuration(activeSeconds)}</strong></span>
         </div>
 
         {/* Botones de Acción */}
