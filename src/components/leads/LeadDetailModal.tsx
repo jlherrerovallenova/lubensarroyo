@@ -431,51 +431,80 @@ export default function LeadDetailModal({ lead, onClose, onUpdate }: Props) {
     queryClient.invalidateQueries({ queryKey: ['dashboard_agenda'] });
   };
 
-  /** Calcula el siguiente slot dentro del horario comercial (10-14h y 17-20h) */
-  const getNextCommercialSlot = (): Date => {
+  /** Calcula el siguiente slot para llamada no atendida:
+   * - Si se hace por la mañana (< 14:00): hoy a las 17:00h
+   * - Si se hace por la tarde (>= 14:00): mañana a las 10:00h (o lunes si cae en fin de semana)
+   */
+  const getNextUnattendedCallSlot = (): Date => {
     const now = new Date();
-    const totalMin = now.getHours() * 60 + now.getMinutes();
+    const currentHour = now.getHours();
 
-    if (totalMin >= 10 * 60 && totalMin < 14 * 60 - 30) {
-      return new Date(now.getTime() + 30 * 60 * 1000);
+    if (currentHour < 14) {
+      const afternoonSlot = new Date(now);
+      afternoonSlot.setHours(17, 0, 0, 0);
+      return afternoonSlot;
     }
-    if (totalMin >= 17 * 60 && totalMin < 20 * 60 - 30) {
-      return new Date(now.getTime() + 30 * 60 * 1000);
-    }
-    if (totalMin < 10 * 60) {
-      const slot = new Date(now); slot.setHours(10, 0, 0, 0); return slot;
-    }
-    if (totalMin >= 14 * 60 && totalMin < 17 * 60) {
-      const slot = new Date(now); slot.setHours(17, 0, 0, 0); return slot;
-    }
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(10, 0, 0, 0);
-    if (tomorrow.getDay() === 6) tomorrow.setDate(tomorrow.getDate() + 2);
-    if (tomorrow.getDay() === 0) tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow;
+
+    const nextDay = new Date(now);
+    nextDay.setDate(nextDay.getDate() + 1);
+    nextDay.setHours(10, 0, 0, 0);
+    // Si cae en sábado (6) o domingo (0), pasar al lunes
+    if (nextDay.getDay() === 6) nextDay.setDate(nextDay.getDate() + 2);
+    if (nextDay.getDay() === 0) nextDay.setDate(nextDay.getDate() + 1);
+    return nextDay;
   };
 
   const handleCallResult = async (task: AgendaItem, attended: boolean) => {
     const comentarioText = attended ? 'Llamada atendida ✅' : 'No atendida ❌ — reintento programado';
+    
+    // Marcar la tarea actual como completada
     await (supabase as any)
       .from('agenda')
       .update({ completed: true, comentario: comentarioText })
       .eq('id', task.id);
 
+    // Actualizar estado de lead si fue atendida
+    if (attended && lead.id) {
+      await handleTaskCompletedTransition(task, true, queryClient);
+      setFormData(prev => {
+        const rank: Record<string, number> = { new: 1, contacted: 2, qualified: 3, visiting: 4, proposal: 5, negotiation: 6, closed: 7, lost: 0 };
+        const currentRank = rank[prev.status] ?? 1;
+        if (currentRank < 2 && prev.status !== 'closed' && prev.status !== 'lost') {
+          return { ...prev, status: 'contacted' as any };
+        }
+        return prev;
+      });
+      if (onUpdate) onUpdate();
+    }
+
+    // Si NO fue atendida, programar la nueva llamada automática
     if (!attended && session?.user.id) {
-      const nextSlot = getNextCommercialSlot();
+      const nextSlot = getNextUnattendedCallSlot();
+      const horaTexto = nextSlot.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      const fechaTexto = nextSlot.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+      
+      const newTitle = task.title.startsWith('Reintento llamada')
+        ? task.title
+        : `Reintento llamada: ${task.title}`;
+
       await (supabase as any).from('agenda').insert([{
-        title: task.title,
+        title: newTitle,
         type: 'Llamada',
         due_date: nextSlot.toISOString(),
         lead_id: task.lead_id,
         user_id: session.user.id,
         completed: false,
-        comentario: null
+        comentario: `Generado automáticamente tras llamada no atendida. Prevista para ${fechaTexto} a las ${horaTexto}`
       }]);
+
+      await logEvent('note_added', `Llamada no atendida. Nueva llamada reprogramada automáticamente para el ${fechaTexto} a las ${horaTexto}.`);
+    } else if (attended) {
+      await logEvent('note_added', `Llamada realizada y atendida con éxito.`);
     }
-    fetchTasks();
+
+    await fetchTasks();
+    queryClient.invalidateQueries({ queryKey: ['agenda'] });
+    queryClient.invalidateQueries({ queryKey: ['dashboard_agenda'] });
   };
 
   const handleUpdate = async (e?: React.FormEvent) => {
@@ -731,6 +760,7 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
                 deleteTask={deleteTask}
                 loading={loading}
                 waData={waData}
+                handleCallResult={handleCallResult}
               />
             )}
             {activeTab === 'venta' && (

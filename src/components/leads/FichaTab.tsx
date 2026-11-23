@@ -32,13 +32,15 @@ interface FichaTabProps {
   deleteTask: any;
   loading: boolean;
   waData: any;
+  handleCallResult?: (task: any, attended: boolean) => Promise<void>;
 }
 
 export function FichaTab({
   formData, setFormData, handleChange, whatsappUrl, SOURCE_CONFIG, STATUS_CONFIG,
   setEmailModalMethod, setIsEmailModalOpen, setFirstContactTemplateActive, setIsFeedbackModalOpen,
   lead, tasks, editingTaskId, setEditingTaskId, newTask, setNewTask, saveTask, toggleTaskStatus,
-  renderEmailTrackingBadge, expandedTasks, toggleExpand, parseTaskTitle, startEditingTask, deleteTask, loading, waData
+  renderEmailTrackingBadge, expandedTasks, toggleExpand, parseTaskTitle, startEditingTask, deleteTask, loading, waData,
+  handleCallResult
 }: FichaTabProps) {
   const { isAdmin } = useAuth();
   return (
@@ -469,6 +471,28 @@ export function FichaTab({
                     </div>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {task.type === 'Llamada' && handleCallResult && (
+                      <div className="flex items-center gap-1 mr-1">
+                        <button
+                          type="button"
+                          onClick={() => handleCallResult(task, true)}
+                          className="px-2 py-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors flex items-center gap-1"
+                          title="Llamada atendida"
+                        >
+                          <Phone size={11} className="text-emerald-600" />
+                          <span>Atendida</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleCallResult(task, false)}
+                          className="px-2 py-1 text-[10px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors flex items-center gap-1"
+                          title="No atendida (reprogramar automáticamente)"
+                        >
+                          <Phone size={11} className="text-amber-600 rotate-[135deg]" />
+                          <span>No Atendida</span>
+                        </button>
+                      </div>
+                    )}
                     {task.type === 'Visita' && whatsappUrl && (
                       <a
                         href={`${whatsappUrl}${whatsappUrl.includes('?') ? '&' : '?'}text=${encodeURIComponent(
