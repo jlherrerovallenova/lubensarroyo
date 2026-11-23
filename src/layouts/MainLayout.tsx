@@ -71,7 +71,8 @@ export default function MainLayout() {
     setShowNotification(true);
   });
 
-  // Mostrar briefing una vez al día tras cargar
+  // Mostrar briefing una vez al día tras cargar (desactivado: se puede consultar manualmente desde la campana)
+  /*
   useEffect(() => {
     if (!session) return;
     const timer = setTimeout(() => {
@@ -82,6 +83,7 @@ export default function MainLayout() {
     }, 800);
     return () => clearTimeout(timer);
   }, [session]);
+  */
 
   // Cierra el popover al hacer clic fuera
   useEffect(() => {
