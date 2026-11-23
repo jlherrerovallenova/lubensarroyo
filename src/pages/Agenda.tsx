@@ -18,15 +18,18 @@ import {
   User
 } from 'lucide-react';
 import CreateTaskModal from '../components/CreateTaskModal';
+import LeadDetailModal from '../components/leads/LeadDetailModal';
 import { useDialog } from '../context/DialogContext';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
 import type { Database } from '../types/supabase';
 import { handleTaskCompletedTransition } from '../utils/leadStateTransitions';
 
+type Lead = Database['public']['Tables']['leads']['Row'];
+
 // Tipo AgendaItem enriquecido con datos del cliente
 type AgendaItem = Database['public']['Tables']['agenda']['Row'] & {
-  leads?: { name: string, phone: string | null } | null
+  leads?: Lead | null
 };
 
 const ITEMS_PER_PAGE = 8;
@@ -48,6 +51,7 @@ export default function Agenda() {
   const setFilterStatus = (s: 'all' | 'pending' | 'completed' | 'today' | 'overdue') => setUserFilterStatus(s);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const { showConfirm, showAlert } = useDialog();
 
   useEffect(() => {
@@ -72,10 +76,10 @@ export default function Agenda() {
       const from = (page - 1) * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
-      // Consulta a 'agenda' trayendo el nombre del cliente relacionado
+      // Consulta a 'agenda' trayendo el lead relacionado completo
       let query = supabase
         .from('agenda')
-        .select('*, leads!inner(name, phone, assigned_to)', { count: 'exact' });
+        .select('*, leads!inner(*)', { count: 'exact' });
 
       // Si no es administrador, filtrar solo tareas de clientes asignados a su comercial
       if (!isAdmin && commercialName) {
@@ -241,10 +245,24 @@ export default function Agenda() {
           ) : (
             items.map((item) => {
               const dateObj = new Date(item.due_date);
+              const hasLead = !!item.leads;
               return (
-                <div key={item.id} className={`p-5 flex items-center gap-4 hover:bg-slate-50 transition-colors group ${item.completed ? 'opacity-60 bg-slate-50/50' : ''}`}>
+                <div 
+                  key={item.id} 
+                  onClick={() => {
+                    if (item.leads) {
+                      setSelectedLead(item.leads);
+                    }
+                  }}
+                  className={`p-5 flex items-center gap-4 transition-colors group ${
+                    hasLead ? 'cursor-pointer hover:bg-slate-50' : ''
+                  } ${item.completed ? 'opacity-60 bg-slate-50/50' : ''}`}
+                >
                   <button type="button"
-                    onClick={() => toggleStatus(item)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleStatus(item);
+                    }}
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${item.completed ? 'bg-altavik-500 border-altavik-500 text-white' : 'border-slate-300 hover:border-altavik-500 text-transparent'}`}
                   >
                     <CheckCircle2 size={14} />
@@ -260,7 +278,7 @@ export default function Agenda() {
                     </div>
                     <div className="flex items-center gap-3 text-sm text-slate-500">
                       {item.leads?.name ? (
-                        <span className="flex items-center gap-1 text-altavik-700 font-medium bg-altavik-50 px-2 py-0.5 rounded-md">
+                        <span className="flex items-center gap-1 text-altavik-700 font-medium bg-altavik-50 px-2 py-0.5 rounded-md group-hover:bg-altavik-100 transition-colors">
                           <User size={12} /> {item.leads.name}
                         </span>
                       ) : (
@@ -272,10 +290,11 @@ export default function Agenda() {
                     </div>
                   </div>
 
-                   <div className="text-right flex items-center gap-4">
+                   <div className="text-right flex items-center gap-4" onClick={(e) => e.stopPropagation()}>
                      {item.type === 'Visita' && item.leads?.phone && (
                        <button type="button"
-                         onClick={() => {
+                         onClick={(e) => {
+                           e.stopPropagation();
                            const now = new Date();
                            const hour = now.getHours();
                            const greeting = hour < 14 ? 'Buenos días' : 'Buenas tardes';
@@ -302,7 +321,10 @@ export default function Agenda() {
                       {dateObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                     </p>
                     <button type="button"
-                      onClick={() => deleteItem(item.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteItem(item.id);
+                      }}
                       className="text-slate-300 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
                     >
                       <Trash2 size={18} />
@@ -337,6 +359,16 @@ export default function Agenda() {
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={() => fetchAgenda()}
       />
+
+      {selectedLead && (
+        <LeadDetailModal
+          lead={selectedLead}
+          onClose={() => setSelectedLead(null)}
+          onUpdate={() => {
+            fetchAgenda();
+          }}
+        />
+      )}
     </div>
   );
 }
