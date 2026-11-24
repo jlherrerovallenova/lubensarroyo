@@ -97,31 +97,42 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
     const phoneMatch = pasteText.match(/(?:\+?34\s?)?[6789][0-9\s-]{8,13}/);
     const phone = phoneMatch ? phoneMatch[0].trim().replace(/\s/g, '') : null;
 
-    // 3. Buscamos el Nombre (Heurística: línea anterior al email o teléfono, o tras "Contactado por")
+    // 3. Buscamos el Nombre
     let name = '';
-    const lines = pasteText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    const lines = pasteText.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
     
     // Función para ver si una línea es un teléfono
     const isPhone = (line: string) => /(?:\+?34\s?)?[6789][0-9\s-]{8,13}/.test(line);
 
-    // Intentamos buscar por palabras clave primero
-    const nameKeywordMatch = pasteText.match(/(?:Nombre|Te ha contactado|Contactado por|de)\s*[:\s-]*\s*([a-zA-ZáéíóúÁÉÍÓÚñÑ.\s]{3,40})/i);
-    
-    if (nameKeywordMatch && nameKeywordMatch[1]) {
-      name = nameKeywordMatch[1].trim();
-    } else {
-      // Si no hay palabras clave, buscamos la línea que NO sea el email ni el teléfono
+    // Intentamos buscar por palabras clave en cada línea específica (evita comerse saltos de línea con Email)
+    for (const line of lines) {
+      const lineMatch = line.match(/^(?:Nombre(?:\s+completo|\s+y\s+apellidos)?|Cliente|Solicitante|Persona\s+de\s+contacto|Te\s+ha\s+contactado(?:\s+por)?|Contactado\s+por|De)\s*[:\s-]\s*([^\r\n]+)/i);
+      if (lineMatch && lineMatch[1]) {
+        const candidate = lineMatch[1].trim();
+        if (!candidate.includes('@') && !isPhone(candidate) && candidate.length >= 2) {
+          name = candidate;
+          break;
+        }
+      }
+    }
+
+    // Si no se encontró por etiqueta de inicio de línea, usar heurística posicional
+    if (!name) {
       const emailLineIndex = lines.findIndex(l => email && l.includes(email));
       const phoneLineIndex = lines.findIndex(l => phone && l.replace(/\s/g, '').includes(phone));
       
-      // Buscamos un índice que no sea parte de los datos
       const dataIndices = [emailLineIndex, phoneLineIndex].filter(idx => idx !== -1);
       const minDataIndex = dataIndices.length > 0 ? Math.min(...dataIndices) : -1;
       
       if (minDataIndex > 0) {
         // Probamos la línea justo encima del primer dato encontrado
         const candidate = lines[minDataIndex - 1];
-        if (candidate.length > 3 && candidate.length < 40 && !candidate.includes('@') && !isPhone(candidate)) {
+        const lower = candidate.toLowerCase();
+        if (
+          candidate.length >= 2 && candidate.length < 50 &&
+          !candidate.includes('@') && !isPhone(candidate) &&
+          !lower.includes('idealista') && !lower.includes('fotocasa') && !lower.includes('habitaclia')
+        ) {
           name = candidate;
         }
       }
@@ -131,11 +142,14 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
         for (const line of lines.slice(0, 5)) {
           const lower = line.toLowerCase();
           if (
-            line.length > 3 && 
-            line.length < 40 && 
+            line.length >= 2 && 
+            line.length < 50 && 
             !lower.includes('idealista') && 
+            !lower.includes('fotocasa') && 
             !lower.includes('hola') && 
-            !lower.includes('@') &&
+            !lower.includes('notificación') && 
+            !lower.includes('aviso') && 
+            !line.includes('@') &&
             !isPhone(line)
           ) {
             name = line;
@@ -146,12 +160,11 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
     }
 
     // 4. Buscamos el MENSAJE (Notas)
-    // El mensaje suele empezar tras un saludo o después de los datos de contacto
     let message = '';
-    const messageMatch = pasteText.match(/(?:Mensaje|Comentario|Consulta):\s*([\s\S]+?)(?:\d{2}\/\d{2}\/\d{4}|Atentamente|Un saludo|$)/i);
+    const messageMatch = pasteText.match(/(?:Mensaje|Comentario|Consulta):\s*([\s\S]+?)(?:\r?\n\s*---|\r?\n\s*Date:|\r?\n\s*Fecha:|\d{2}\/\d{2}\/\d{4}|Atentamente|Un saludo|$)/i);
     
     if (messageMatch) {
-      message = messageMatch[1].trim();
+      message = messageMatch[1].split(/\r?\n\s*---/)[0].trim();
     } else {
       // Si no hay etiqueta, buscamos bloques de texto después del email/teléfono
       const emailLineIndex = lines.findIndex(l => email && l.includes(email));
@@ -159,8 +172,9 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
       const lastDataIndex = Math.max(emailLineIndex, phoneLineIndex);
       
       if (lastDataIndex !== -1 && lastDataIndex < lines.length - 1) {
-        const potentialMessage = lines.slice(lastDataIndex + 1).join('\n');
-        if (potentialMessage.length > 10) {
+        const potentialLines = lines.slice(lastDataIndex + 1).filter(l => !l.startsWith('---') && !/^Date:/i.test(l) && !/^Time:/i.test(l) && !/^Page URL:/i.test(l) && !/^User Agent:/i.test(l) && !/^Remote IP:/i.test(l) && !/^Powered by:/i.test(l));
+        const potentialMessage = potentialLines.join('\n');
+        if (potentialMessage.length > 5) {
           message = potentialMessage.trim();
         }
       }
@@ -169,6 +183,9 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
     // Limpieza final
     if (name) {
       name = name.replace(/^de:\s*/i, '').replace(/\.$/, '').trim();
+      // Eliminar residuos comunes si alguna etiqueta se coló
+      name = name.replace(/^(?:email|correo|teléfono|telefono|tfno|mensaje)[:\s]*/i, '').trim();
+      name = name.replace(/(?:\s*[\-_]\s*|\s+)?(?:email|correo|teléfono|telefono|tfno|mensaje)$/i, '').trim();
       if (name.toLowerCase().includes('altavik') || name.toLowerCase().includes('lubens') || name.toLowerCase().includes('terraval')) {
         name = '';
       }

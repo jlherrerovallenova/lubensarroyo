@@ -1,10 +1,12 @@
 // src/components/leads/ExportLeadsModal.tsx
 import { useState } from 'react';
-import { X, FileText, Loader2, Calendar } from 'lucide-react'; // Cambiado icono a FileText
+import { X, FileText, Loader2, Calendar, FileSpreadsheet, Download } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 import { useDialog } from '../../context/DialogContext';
+import { useAuth } from '../../context/AuthContext';
 
 interface Props {
   isOpen: boolean;
@@ -14,7 +16,9 @@ interface Props {
 export default function ExportLeadsModal({ isOpen, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const { showAlert } = useDialog();
+  const { isAdmin, commercialName } = useAuth();
   const [filterType, setFilterType] = useState<'all' | 'month'>('all');
+  const [exportFormat, setExportFormat] = useState<'xlsx' | 'csv' | 'pdf'>('xlsx');
   const [selectedMonth, setSelectedMonth] = useState(() => new Date().toISOString().slice(0, 7)); // YYYY-MM
 
   if (!isOpen) return null;
@@ -27,6 +31,11 @@ export default function ExportLeadsModal({ isOpen, onClose }: Props) {
         .select('*')
         .order('created_at', { ascending: false })
         .order('source', { ascending: true });
+
+      // Si no es admin, solo exporta los clientes asignados al propio comercial
+      if (!isAdmin && commercialName) {
+        query = query.eq('assigned_to', commercialName);
+      }
 
       // Aplicar filtro de mes si es necesario
       if (filterType === 'month' && selectedMonth) {
@@ -46,8 +55,16 @@ export default function ExportLeadsModal({ isOpen, onClose }: Props) {
         return;
       }
 
-      // Generar PDF
-      generatePDF(data);
+      const fileSuffix = filterType === 'month' ? selectedMonth : 'todos';
+
+      if (exportFormat === 'xlsx') {
+        generateExcel(data, fileSuffix);
+      } else if (exportFormat === 'csv') {
+        generateCSV(data, fileSuffix);
+      } else {
+        generatePDF(data);
+      }
+
       onClose();
 
     } catch (error) {
@@ -56,6 +73,69 @@ export default function ExportLeadsModal({ isOpen, onClose }: Props) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const STATUS_LABELS: Record<string, string> = {
+    new: 'Nuevo',
+    contacted: 'Contactado',
+    qualified: 'Cualificado',
+    visiting: 'Visitando',
+    closed: 'Venta Cerrada',
+    lost: 'Perdido',
+  };
+
+  const mapLeadRow = (lead: any) => ({
+    'Nombre': lead.name || '',
+    'Email': lead.email || '',
+    'Email Secundario': lead.secondary_email || '',
+    'Teléfono': lead.phone || '',
+    'Origen': lead.source || 'Desconocido',
+    'Estado': STATUS_LABELS[lead.status] || (lead.status || 'Nuevo'),
+    'Comercial Asignado': lead.assigned_to || 'Sin asignar',
+    'Promoción': lead.promocion_interes ? (lead.promocion_interes === 'farnesio' ? 'Lubens Farnesio' : 'Lubens Arroyo') : 'Lubens Arroyo',
+    'Fecha de Alta': lead.created_at ? new Date(lead.created_at).toLocaleDateString('es-ES') : '',
+    'Notas / Mensaje': lead.notes || ''
+  });
+
+  const generateExcel = (data: any[], suffix: string) => {
+    const formattedRows = data.map(mapLeadRow);
+    const worksheet = XLSX.utils.json_to_sheet(formattedRows);
+
+    // Auto-ajustar anchos de columnas
+    const colWidths = [
+      { wch: 25 }, // Nombre
+      { wch: 28 }, // Email
+      { wch: 28 }, // Email Secundario
+      { wch: 15 }, // Teléfono
+      { wch: 18 }, // Origen
+      { wch: 16 }, // Estado
+      { wch: 20 }, // Comercial
+      { wch: 18 }, // Promoción
+      { wch: 14 }, // Fecha de Alta
+      { wch: 40 }, // Notas
+    ];
+    worksheet['!cols'] = colWidths;
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Clientes');
+    XLSX.writeFile(workbook, `clientes_lubens_${suffix}.xlsx`);
+  };
+
+  const generateCSV = (data: any[], suffix: string) => {
+    const formattedRows = data.map(mapLeadRow);
+    const worksheet = XLSX.utils.json_to_sheet(formattedRows);
+    const csvContent = XLSX.utils.sheet_to_csv(worksheet, { FS: ';' }); // Separador punto y coma estándar para Excel en español
+
+    // BOM UTF-8 para que Excel reconozca tildes y caracteres especiales
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `clientes_lubens_${suffix}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const generatePDF = (data: any[]) => {
