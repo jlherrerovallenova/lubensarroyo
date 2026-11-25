@@ -618,7 +618,7 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
   return (
     <>
       <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-        <div className="bg-white w-full max-w-6xl rounded-none sm:rounded-2xl shadow-2xl overflow-hidden h-full sm:h-auto sm:max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200 border border-slate-200">
+        <div className="bg-white w-full max-w-6xl rounded-none sm:rounded-2xl shadow-2xl overflow-hidden h-full sm:h-[88vh] sm:max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200 border border-slate-200">
           
           {/* HEADER */}
           <div className="shrink-0 px-5 sm:px-8 py-3.5 bg-slate-50 border-b border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -651,81 +651,81 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
           </div>
 
           {/* TAB NAVIGATION */}
-          <div className="shrink-0 flex items-center px-4 sm:px-8 py-2 bg-white border-b border-slate-200/80 gap-1.5 overflow-x-auto overflow-y-hidden custom-scrollbar-hide">
+          <div className="shrink-0 flex items-center px-4 sm:px-8 py-2.5 bg-slate-50/60 border-b border-slate-200/80 gap-2 overflow-x-auto overflow-y-hidden custom-scrollbar-hide">
             <button type="button"
               onClick={() => setActiveTab('ficha')}
-              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
+              className={`flex-1 min-w-[170px] h-10 flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl border whitespace-nowrap ${
                 activeTab === 'ficha' 
-                  ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  ? 'text-emerald-900 bg-emerald-50/80 border-emerald-300 font-bold shadow-xs' 
+                  : 'text-slate-600 bg-white border-slate-200/80 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300'
               }`}
             >
               <FileText size={14} className={activeTab === 'ficha' ? 'text-[#15a870]' : 'text-slate-400'} />
-              FICHA Y AGENDA
+              <span>FICHA Y AGENDA</span>
             </button>
             <button type="button"
               onClick={() => setActiveTab('venta')}
               disabled={formData.status !== 'closed' && !lead.sale_status}
               title={formData.status !== 'closed' && !lead.sale_status ? 'Solo disponible cuando el estado es Venta Cerrada o hay una reserva activa' : ''}
-              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
+              className={`flex-1 min-w-[170px] h-10 flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl border whitespace-nowrap ${
                 formData.status !== 'closed' && !lead.sale_status
-                  ? 'opacity-40 cursor-not-allowed text-slate-300'
+                  ? 'opacity-40 cursor-not-allowed text-slate-300 bg-slate-50/50 border-slate-200/50'
                   : activeTab === 'venta' 
-                    ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
-                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                    ? 'text-emerald-900 bg-emerald-50/80 border-emerald-300 font-bold shadow-xs' 
+                    : 'text-slate-600 bg-white border-slate-200/80 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300'
               }`}
             >
               <ShoppingCart size={14} className={activeTab === 'venta' ? 'text-[#15a870]' : 'text-slate-400'} />
-              GESTIÓN DE COMPRA
+              <span>GESTIÓN DE COMPRA</span>
               {lead.sale_status === 'reserva' && (
                 <span className="ml-1 px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[9px] font-bold uppercase">Reserva</span>
               )}
             </button>
             <button type="button"
               onClick={() => setActiveTab('historial')}
-              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
+              className={`flex-1 min-w-[170px] h-10 flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl border whitespace-nowrap ${
                 activeTab === 'historial' 
-                  ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  ? 'text-emerald-900 bg-emerald-50/80 border-emerald-300 font-bold shadow-xs' 
+                  : 'text-slate-600 bg-white border-slate-200/80 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300'
               }`}
             >
               <Clock size={14} className={activeTab === 'historial' ? 'text-[#15a870]' : 'text-slate-400'} />
-              HISTORIAL
+              <span>HISTORIAL</span>
             </button>
             <button type="button"
               onClick={() => setActiveTab('dossier')}
-              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
+              className={`flex-1 min-w-[170px] h-10 flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl border whitespace-nowrap ${
                 activeTab === 'dossier' 
-                  ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  ? 'text-emerald-900 bg-emerald-50/80 border-emerald-300 font-bold shadow-xs' 
+                  : 'text-slate-600 bg-white border-slate-200/80 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300'
               }`}
             >
               <Sparkles size={14} className={activeTab === 'dossier' ? 'text-[#15a870]' : 'text-slate-400'} />
-              DOSSIER INTERACTIVO
+              <span>DOSSIER INTERACTIVO</span>
               <span className="ml-0.5 px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded text-[9px] font-bold uppercase tracking-wider">Live</span>
             </button>
             <button type="button"
               onClick={() => setActiveTab('notas')}
-              className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
+              className={`flex-1 min-w-[170px] h-10 flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl border whitespace-nowrap ${
                 activeTab === 'notas' 
-                  ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                  ? 'text-emerald-900 bg-emerald-50/80 border-emerald-300 font-bold shadow-xs' 
+                  : 'text-slate-600 bg-white border-slate-200/80 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300'
               }`}
             >
               <StickyNote size={14} className={activeTab === 'notas' ? 'text-[#15a870]' : 'text-slate-400'} />
-              NOTAS Y OBSERVACIONES
+              <span>NOTAS Y OBSERVACIONES</span>
             </button>
             {lead.survey_data && Object.keys(lead.survey_data).length > 0 && (
               <button type="button"
                 onClick={() => setActiveTab('encuesta')}
-                className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl ${
+                className={`flex-1 min-w-[170px] h-10 flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold tracking-wider transition-all rounded-xl border whitespace-nowrap ${
                   activeTab === 'encuesta' 
-                    ? 'text-emerald-900 bg-emerald-50/70 border border-emerald-200/70 font-bold' 
-                    : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                    ? 'text-emerald-900 bg-emerald-50/80 border-emerald-300 font-bold shadow-xs' 
+                    : 'text-slate-600 bg-white border-slate-200/80 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300'
                 }`}
               >
                 <Send size={14} className={activeTab === 'encuesta' ? 'text-[#15a870]' : 'text-slate-400'} />
-                RESULTADOS ENCUESTA
+                <span>RESULTADOS ENCUESTA</span>
               </button>
             )}
           </div>
