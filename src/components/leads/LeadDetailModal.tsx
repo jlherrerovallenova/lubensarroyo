@@ -761,6 +761,11 @@ Quedo a la espera de sus comentarios. ¡Muchas gracias y un saludo!`;
                 loading={loading}
                 waData={waData}
                 handleCallResult={handleCallResult}
+                onResendEmail={(draft) => {
+                  setResendDraft(draft);
+                  setEmailModalMethod('email');
+                  setIsEmailModalOpen(true);
+                }}
               />
             )}
             {activeTab === 'venta' && (

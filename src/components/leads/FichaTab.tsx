@@ -4,6 +4,7 @@ import { CustomSelect } from '../Shared';
 import { COMERCIALES, COMERCIALES_CONFIG } from '../../constants/commercials';
 import { useAuth } from '../../context/AuthContext';
 import { DossierCard } from './DossierCard';
+import LeadTimeline from './LeadTimeline';
 
 interface FichaTabProps {
   formData: any;
@@ -33,6 +34,7 @@ interface FichaTabProps {
   loading: boolean;
   waData: any;
   handleCallResult?: (task: any, attended: boolean) => Promise<void>;
+  onResendEmail?: (draft: { subject?: string; message?: string; docs?: string[] }) => void;
 }
 
 export function FichaTab({
@@ -40,7 +42,7 @@ export function FichaTab({
   setEmailModalMethod, setIsEmailModalOpen, setFirstContactTemplateActive, setIsFeedbackModalOpen,
   lead, tasks, editingTaskId, setEditingTaskId, newTask, setNewTask, saveTask, toggleTaskStatus,
   renderEmailTrackingBadge, expandedTasks, toggleExpand, parseTaskTitle, startEditingTask, deleteTask, loading, waData,
-  handleCallResult
+  handleCallResult, onResendEmail
 }: FichaTabProps) {
   const { isAdmin } = useAuth();
   return (
@@ -592,6 +594,33 @@ export function FichaTab({
           )}
         </section>
       )}
+
+      {/* HISTORIAL DEL CLIENTE INTEGRADO */}
+      <section className="col-span-1 md:col-span-12 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/70">
+              <Clock size={16} />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                HISTORIAL DE ACTIVIDAD
+              </h3>
+              <p className="text-[10px] text-slate-400 font-medium">
+                Cronología completa de interacciones, llamadas, emails y visitas
+              </p>
+            </div>
+          </div>
+          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-full uppercase tracking-wider">
+            En tiempo real
+          </span>
+        </div>
+
+        <LeadTimeline 
+          leadId={lead.id} 
+          onResendEmail={onResendEmail} 
+        />
+      </section>
     </div>
   );
 }
