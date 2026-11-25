@@ -415,99 +415,106 @@ export function FichaTab({
                 <Clock size={12} /> Acciones pendientes de realizar ({tasks.filter(t => !t.completed).length})
               </p>
               {tasks.filter(t => !t.completed).map(task => (
-                <div key={task.id} className="flex items-center justify-between p-3 bg-white border border-slate-200/80 rounded-xl shadow-xs hover:border-slate-300 transition-all group">
-                  <div className="flex items-center gap-3">
-                    <button type="button" 
-                      onClick={() => toggleTaskStatus(task)}
-                      className="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-transparent hover:border-emerald-600 hover:text-emerald-600 transition-all"
-                    >
-                      <Check size={12} strokeWidth={3} />
-                    </button>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-semibold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                          {task.type}
-                        </span>
-                        {renderEmailTrackingBadge(task)}
-                        {(() => {
-                          const { isDocSend, prefix, docs } = parseTaskTitle(task.title);
-                          if (!isDocSend) {
-                            return <h5 className="text-[12px] font-bold text-slate-700">{task.title}</h5>;
-                          }
-                          const isExpanded = !!expandedTasks[task.id];
-                          return (
-                            <div className="flex flex-col gap-1">
-                              <div className="flex items-center gap-2">
-                                <h5 className="text-[12px] font-bold text-slate-700">{prefix}</h5>
-                                <button type="button" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleExpand(task.id);
-                                  }}
-                                  className="flex items-center gap-1 text-[10px] font-black uppercase text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-lg transition-all"
-                                >
-                                  <span>{docs.length} {docs.length === 1 ? 'documento' : 'documentos'}</span>
-                                  {isExpanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-                                </button>
-                              </div>
-                              {isExpanded && (
-                                <div className="mt-1 pl-2 border-l-2 border-slate-100 flex flex-col gap-1">
-                                  {docs.map((doc: any, idx: number) => (
-                                    // react-doctor-disable-next-line no-array-index-as-key
-                                    <span key={idx} className="text-[11px] font-medium text-slate-500 flex items-center gap-1.5">
-                                      <FileText size={10} className="text-slate-400 shrink-0" />
-                                      <span className="truncate max-w-[300px]">{doc}</span>
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })()}
-                      </div>
-                      <p className="text-[10px] text-slate-400 font-medium">
-                        {new Date(task.due_date).toLocaleDateString('es-ES')} a las {new Date(task.due_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                      </p>
+                <div key={task.id} className="p-3 bg-white border border-slate-200/80 rounded-xl shadow-xs hover:border-slate-300 transition-all group">
+                  {/* Fila superior: Checkbox + Tipo de Acción a la izquierda, y Botones de Acción a la derecha */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <button type="button" 
+                        onClick={() => toggleTaskStatus(task)}
+                        className="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-transparent hover:border-emerald-600 hover:text-emerald-600 transition-all shrink-0"
+                      >
+                        <Check size={12} strokeWidth={3} />
+                      </button>
+                      <span className="text-[9px] font-semibold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                        {task.type}
+                      </span>
+                      {renderEmailTrackingBadge(task)}
+                    </div>
+
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {task.type === 'Llamada' && handleCallResult && (
+                        <div className="flex items-center gap-1 mr-1">
+                          <button
+                            type="button"
+                            onClick={() => handleCallResult(task, true)}
+                            className="px-2 py-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors flex items-center gap-1"
+                            title="Llamada atendida"
+                          >
+                            <Phone size={11} className="text-emerald-600" />
+                            <span>Atendida</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleCallResult(task, false)}
+                            className="px-2 py-1 text-[10px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors flex items-center gap-1"
+                            title="No atendida (reprogramar automáticamente)"
+                          >
+                            <Phone size={11} className="text-amber-600 rotate-[135deg]" />
+                            <span>No Atendida</span>
+                          </button>
+                        </div>
+                      )}
+                      {task.type === 'Visita' && whatsappUrl && (
+                        <a
+                          href={`${whatsappUrl}${whatsappUrl.includes('?') ? '&' : '?'}text=${encodeURIComponent(
+                            `${new Date().getHours() < 14 ? 'Buenos días' : 'Buenas tardes'}, ${formData.name ? formData.name.split(' ')[0] : ''}.\nSoy Juan Herrero de Terravall inmobiliaria.\nLe envío un recordatorio de la cita:\n${new Date(task.due_date).toLocaleDateString('es-ES')} a las ${new Date(task.due_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}.\nPlaza Mayor 8 1ºA`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
+                          title="Recordatorio de cita por WhatsApp"
+                        >
+                          <MessageCircle size={14} />
+                        </a>
+                      )}
+                      <button type="button" onClick={() => startEditingTask(task)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Pencil size={14} /></button>
+                      <button type="button" onClick={() => deleteTask(task.id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={14} /></button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {task.type === 'Llamada' && handleCallResult && (
-                      <div className="flex items-center gap-1 mr-1">
-                        <button
-                          type="button"
-                          onClick={() => handleCallResult(task, true)}
-                          className="px-2 py-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors flex items-center gap-1"
-                          title="Llamada atendida"
-                        >
-                          <Phone size={11} className="text-emerald-600" />
-                          <span>Atendida</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleCallResult(task, false)}
-                          className="px-2 py-1 text-[10px] font-bold text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-lg transition-colors flex items-center gap-1"
-                          title="No atendida (reprogramar automáticamente)"
-                        >
-                          <Phone size={11} className="text-amber-600 rotate-[135deg]" />
-                          <span>No Atendida</span>
-                        </button>
-                      </div>
-                    )}
-                    {task.type === 'Visita' && whatsappUrl && (
-                      <a
-                        href={`${whatsappUrl}${whatsappUrl.includes('?') ? '&' : '?'}text=${encodeURIComponent(
-                          `${new Date().getHours() < 14 ? 'Buenos días' : 'Buenas tardes'}, ${formData.name ? formData.name.split(' ')[0] : ''}.\nSoy Juan Herrero de Terravall inmobiliaria.\nLe envío un recordatorio de la cita:\n${new Date(task.due_date).toLocaleDateString('es-ES')} a las ${new Date(task.due_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}.\nPlaza Mayor 8 1ºA`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all"
-                        title="Recordatorio de cita por WhatsApp"
-                      >
-                        <MessageCircle size={14} />
-                      </a>
-                    )}
-                    <button type="button" onClick={() => startEditingTask(task)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"><Pencil size={14} /></button>
-                    <button type="button" onClick={() => deleteTask(task.id)} className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"><Trash2 size={14} /></button>
+
+                  {/* Fila inferior: Fecha, Hora y Motivo de la llamada */}
+                  <div className="mt-1.5 pl-7 flex items-baseline gap-2 flex-wrap">
+                    <span className="text-[10px] text-slate-400 font-medium shrink-0">
+                      {new Date(task.due_date).toLocaleDateString('es-ES')} a las {new Date(task.due_date).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    <span className="text-slate-300 text-xs shrink-0">•</span>
+                    <div className="flex-1 min-w-[200px]">
+                      {(() => {
+                        const { isDocSend, prefix, docs } = parseTaskTitle(task.title);
+                        if (!isDocSend) {
+                          return <h5 className="text-[12px] font-bold text-slate-700 leading-snug">{task.title}</h5>;
+                        }
+                        const isExpanded = !!expandedTasks[task.id];
+                        return (
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h5 className="text-[12px] font-bold text-slate-700 leading-snug">{prefix}</h5>
+                              <button type="button" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleExpand(task.id);
+                                }}
+                                className="flex items-center gap-1 text-[10px] font-black uppercase text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-2 py-0.5 rounded-lg transition-all"
+                              >
+                                <span>{docs.length} {docs.length === 1 ? 'documento' : 'documentos'}</span>
+                                {isExpanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+                              </button>
+                            </div>
+                            {isExpanded && (
+                              <div className="mt-1 pl-2 border-l-2 border-slate-100 flex flex-col gap-1">
+                                {docs.map((doc: any, idx: number) => (
+                                  // react-doctor-disable-next-line no-array-index-as-key
+                                  <span key={idx} className="text-[11px] font-medium text-slate-500 flex items-center gap-1.5">
+                                    <FileText size={10} className="text-slate-400 shrink-0" />
+                                    <span className="truncate max-w-[300px]">{doc}</span>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </div>
                   </div>
                 </div>
               ))}
