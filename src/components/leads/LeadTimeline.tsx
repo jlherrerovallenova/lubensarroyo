@@ -165,27 +165,27 @@ export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProp
   );
 
   return (
-    <div className="relative space-y-3.5 pt-1 pb-2">
-      <div className="absolute left-6 top-3 bottom-3 w-px bg-slate-100"></div>
+    <div className="relative space-y-2.5 pt-1 pb-1">
+      <div className="absolute left-[15px] top-2 bottom-2 w-px bg-slate-100"></div>
       
       {events.map((event) => {
         const config = EVENT_CONFIG[event.event_type] || EVENT_CONFIG.note;
         const Icon = config.icon;
         
         return (
-          <div key={event.id} className="relative pl-13 animate-in fade-in slide-in-from-left-2 duration-300">
+          <div key={event.id} className="relative pl-10 animate-in fade-in slide-in-from-left-2 duration-200">
             {/* Timeline dot/icon */}
-            <div className={`absolute left-2.5 top-0.5 w-7 h-7 rounded-lg shadow-2xs border border-white flex items-center justify-center z-10 ${config.color}`}>
-              <Icon size={14} />
+            <div className={`absolute left-1 top-1 w-6 h-6 rounded-md shadow-2xs border border-white flex items-center justify-center z-10 ${config.color}`}>
+              <Icon size={13} />
             </div>
 
             {/* Content card */}
-            <div className="bg-slate-50/60 p-3 rounded-xl border border-slate-200/70 shadow-2xs hover:bg-white hover:border-slate-300 transition-all group">
-              <div className="flex justify-between items-start mb-1">
-                <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+            <div className="bg-slate-50/70 p-2.5 rounded-xl border border-slate-200/70 shadow-2xs hover:bg-white hover:border-slate-300 transition-all group">
+              <div className="flex justify-between items-center mb-0.5">
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
                   {config.label}
                 </span>
-                <span className="text-[10px] font-bold text-slate-400 italic">
+                <span className="text-[10px] font-medium text-slate-400 italic">
                   {new Date(event.created_at).toLocaleString('es-ES', { 
                     day: '2-digit', 
                     month: 'short', 
@@ -194,7 +194,7 @@ export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProp
                   })}
                 </span>
               </div>
-              <p className="text-sm text-slate-700 font-medium leading-relaxed break-words">
+              <p className="text-xs text-slate-700 font-medium leading-snug break-words">
                 {event.description.split('||').join(', ')}
               </p>
               {event.event_type === 'document_view' && event.metadata && (

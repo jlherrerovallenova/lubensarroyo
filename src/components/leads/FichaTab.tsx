@@ -617,7 +617,7 @@ export function FichaTab({
         </div>
 
         {/* Contenedor de scroll exclusivo para el historial */}
-        <div className="overflow-y-auto max-h-[220px] sm:max-h-[250px] xl:max-h-[280px] pr-2 custom-scrollbar overscroll-contain">
+        <div className="overflow-y-auto max-h-[260px] sm:max-h-[300px] xl:max-h-[340px] pr-2 custom-scrollbar overscroll-contain">
           <LeadTimeline 
             leadId={lead.id} 
             onResendEmail={onResendEmail} 
