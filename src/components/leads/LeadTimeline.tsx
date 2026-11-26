@@ -8,11 +8,13 @@ import {
   MessageSquare, 
   FileText, 
   StickyNote,
-  Clock,
-  Check,
-  CheckCheck,
-  RotateCcw,
-  Eye
+  Clock, 
+  Check, 
+  CheckCheck, 
+  RotateCcw, 
+  Eye,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 
 interface TimelineEvent {
@@ -21,6 +23,20 @@ interface TimelineEvent {
   event_type: string;
   description: string;
   metadata?: any;
+}
+
+interface GroupedTimelineEvent extends TimelineEvent {
+  isGroupedViews?: boolean;
+  views?: TimelineEvent[];
+}
+
+function formatTotalDuration(seconds: number): string {
+  if (!seconds || seconds <= 0) return '0s';
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  if (mins === 0) return `${secs}s`;
+  if (secs === 0) return `${mins}m`;
+  return `${mins}m ${secs}s`;
 }
 
 interface LeadTimelineProps {
@@ -41,13 +57,18 @@ const EVENT_CONFIG: Record<string, { icon: any; color: string; label: string }> 
 };
 
 export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProps) {
-  const [events, setEvents] = useState<TimelineEvent[]>([]);
+  const [events, setEvents] = useState<GroupedTimelineEvent[]>([]);
   const [trackingRecords, setTrackingRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedEmails, setExpandedEmails] = useState<Record<string, boolean>>({});
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
 
   const toggleEmailExpand = (eventId: string) => {
     setExpandedEmails(prev => ({ ...prev, [eventId]: !prev[eventId] }));
+  };
+
+  const toggleGroupExpand = (groupId: string) => {
+    setExpandedGroups(prev => ({ ...prev, [groupId]: !prev[groupId] }));
   };
 
   const isMountedRef = useRef(true);
@@ -139,8 +160,49 @@ export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProp
       // Ordenar por fecha descendente
       allEvents.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       
+      // Agrupar lecturas de plano / documento consecutivas
+      const groupedEvents: GroupedTimelineEvent[] = [];
+      let currentViews: TimelineEvent[] = [];
+
+      const flushViews = () => {
+        if (currentViews.length === 0) return;
+        if (currentViews.length === 1) {
+          groupedEvents.push(currentViews[0]);
+        } else {
+          const totalSecs = currentViews.reduce((acc, v) => acc + (v.metadata?.duration_seconds || 0), 0);
+          const uniqueDocs = new Set(currentViews.map(v => v.metadata?.doc_name).filter(Boolean)).size;
+          const newest = currentViews[0];
+
+          groupedEvents.push({
+            id: `grouped-views-${newest.id}`,
+            created_at: newest.created_at,
+            event_type: 'document_view',
+            description: `${currentViews.length} lecturas de planos / documentos (${uniqueDocs} ${uniqueDocs === 1 ? 'documento' : 'documentos'})`,
+            metadata: {
+              total_seconds: totalSecs,
+              total_formatted: formatTotalDuration(totalSecs),
+              views_count: currentViews.length,
+              unique_docs_count: uniqueDocs
+            },
+            isGroupedViews: true,
+            views: currentViews
+          });
+        }
+        currentViews = [];
+      };
+
+      for (const ev of allEvents) {
+        if (ev.event_type === 'document_view') {
+          currentViews.push(ev);
+        } else {
+          flushViews();
+          groupedEvents.push(ev);
+        }
+      }
+      flushViews();
+
       if (isMountedRef.current) {
-        setEvents(allEvents);
+        setEvents(groupedEvents);
       }
     } catch (err) {
       console.error('Error fetching aggregated timeline:', err);
@@ -172,6 +234,90 @@ export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProp
         const config = EVENT_CONFIG[event.event_type] || EVENT_CONFIG.note;
         const Icon = config.icon;
         
+        // Vista para grupo de lecturas de plano / documento
+        if (event.isGroupedViews && event.views) {
+          const isExpanded = !!expandedGroups[event.id];
+          const totalFormatted = event.metadata?.total_formatted || '0s';
+          const viewsCount = event.metadata?.views_count || event.views.length;
+          const uniqueDocs = event.metadata?.unique_docs_count || 1;
+
+          return (
+            <div key={event.id} className="relative pl-10 animate-in fade-in slide-in-from-left-2 duration-200">
+              {/* Timeline dot/icon */}
+              <div className="absolute left-1 top-1 w-6 h-6 rounded-md shadow-2xs border border-white flex items-center justify-center z-10 bg-purple-100 text-purple-600">
+                <Icon size={13} />
+              </div>
+
+              {/* Grouped card */}
+              <div className="bg-purple-50/40 p-2.5 rounded-xl border border-purple-200/70 shadow-2xs hover:bg-white hover:border-purple-300 transition-all group">
+                <div className="flex justify-between items-center mb-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[9px] font-black uppercase tracking-wider text-purple-700 bg-purple-100/70 border border-purple-200/80 px-2 py-0.5 rounded-full">
+                      Lecturas de Planos / Documentos
+                    </span>
+                    <span className="text-[10px] font-bold text-purple-700 bg-white border border-purple-200 px-1.5 py-0.2 rounded-md shadow-2xs">
+                      {viewsCount} lecturas
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-medium text-slate-400 italic">
+                    {new Date(event.created_at).toLocaleString('es-ES', { 
+                      day: '2-digit', 
+                      month: 'short', 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 mt-1 flex-wrap">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-purple-700 bg-purple-50 border border-purple-200/60 rounded-md px-2 py-0.5 shadow-2xs">
+                      <Clock size={11} className="text-purple-600" />
+                      Tiempo total: {totalFormatted}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-medium">
+                      • {uniqueDocs} {uniqueDocs === 1 ? 'documento consultado' : 'documentos consultados'}
+                    </span>
+                  </div>
+
+                  <button 
+                    type="button"
+                    onClick={() => toggleGroupExpand(event.id)}
+                    className="text-[10px] font-bold text-purple-700 hover:text-purple-900 bg-white hover:bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-md flex items-center gap-1 transition-all shadow-2xs cursor-pointer"
+                  >
+                    <span>{isExpanded ? 'Ocultar' : `Ver detalle (${viewsCount})`}</span>
+                    {isExpanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+                  </button>
+                </div>
+
+                {isExpanded && (
+                  <div className="mt-2.5 pt-2 border-t border-purple-100 space-y-1.5 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
+                    {event.views.map((item) => (
+                      <div key={item.id} className="flex items-center justify-between text-xs py-1.5 px-2 rounded-lg bg-white border border-purple-100/80 hover:border-purple-200 transition-all">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <FileText size={12} className="text-purple-500 shrink-0" />
+                          <span className="truncate max-w-[280px] font-medium text-slate-700 text-[11px]">
+                            {item.metadata?.doc_name || item.description}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0 text-[10px]">
+                          <span className="font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200/60">
+                            {item.metadata?.duration_formatted || `${item.metadata?.duration_seconds || 0}s`}
+                          </span>
+                          <span className="text-slate-400">
+                            {new Date(item.created_at).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        // Evento regular (llamada, email, nota, o lectura individual)
         return (
           <div key={event.id} className="relative pl-10 animate-in fade-in slide-in-from-left-2 duration-200">
             {/* Timeline dot/icon */}
@@ -198,13 +344,13 @@ export default function LeadTimeline({ leadId, onResendEmail }: LeadTimelineProp
                 {event.description.split('||').join(', ')}
               </p>
               {event.event_type === 'document_view' && event.metadata && (
-                <div className="mt-2.5 flex items-center gap-2 flex-wrap">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-700 bg-purple-50 border border-purple-200 rounded-lg px-2.5 py-1 shadow-2xs">
-                    <Clock size={13} className="text-purple-600" />
+                <div className="mt-1.5 flex items-center gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-purple-700 bg-purple-50 border border-purple-200/60 rounded-md px-2 py-0.5 shadow-2xs">
+                    <Clock size={11} className="text-purple-600" />
                     Tiempo de lectura: {event.metadata.duration_formatted || `${event.metadata.duration_seconds || 0}s`}
                   </span>
                   {event.metadata.doc_name && (
-                    <span className="text-xs text-slate-500 font-semibold truncate max-w-xs">
+                    <span className="text-[11px] text-slate-500 font-medium truncate max-w-xs">
                       📄 {event.metadata.doc_name}
                     </span>
                   )}
