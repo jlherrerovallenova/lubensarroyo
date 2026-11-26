@@ -595,9 +595,9 @@ export function FichaTab({
         </section>
       )}
 
-      {/* HISTORIAL DEL CLIENTE INTEGRADO */}
-      <section className="col-span-1 md:col-span-12 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+      {/* HISTORIAL DEL CLIENTE INTEGRADO CON SCROLL INDEPENDIENTE */}
+      <section className="col-span-1 md:col-span-12 bg-white rounded-2xl p-3.5 sm:p-4 border border-slate-200/80 shadow-xs flex flex-col">
+        <div className="shrink-0 flex items-center justify-between border-b border-slate-100 pb-2.5 mb-3">
           <div className="flex items-center gap-2">
             <div className="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/70">
               <Clock size={16} />
@@ -616,10 +616,13 @@ export function FichaTab({
           </span>
         </div>
 
-        <LeadTimeline 
-          leadId={lead.id} 
-          onResendEmail={onResendEmail} 
-        />
+        {/* Contenedor de scroll exclusivo para el historial */}
+        <div className="overflow-y-auto max-h-[220px] sm:max-h-[250px] xl:max-h-[280px] pr-2 custom-scrollbar overscroll-contain">
+          <LeadTimeline 
+            leadId={lead.id} 
+            onResendEmail={onResendEmail} 
+          />
+        </div>
       </section>
     </div>
   );
