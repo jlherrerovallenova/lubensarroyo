@@ -34,3 +34,9 @@ entrypoint = "./functions/receive-email-webhook/index.ts"
 [functions.track-email-open]
 enabled = true
 verify_jwt = false
+
+
+[functions.import-lead]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/import-lead/index.ts"
