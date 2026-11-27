@@ -48,7 +48,7 @@ export function FichaTab({
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-stretch">
       {/* COLUMNA IZQUIERDA */}
-      <div className="md:col-start-1 md:col-end-8 md:row-start-1 md:row-span-2 flex flex-col gap-3">
+      <div className="md:col-span-7 flex flex-col gap-3 h-full">
         {/* DATOS DEL LEAD */}
         <section className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
           <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 mb-2.5 uppercase tracking-wider">
@@ -179,7 +179,7 @@ export function FichaTab({
         </section>
 
         {/* INTERÉS Y CALIDAD */}
-        <section className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-xs flex flex-col justify-between">
+        <section className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-xs flex flex-col justify-between flex-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* INTERÉS */}
             <div>
@@ -285,7 +285,7 @@ export function FichaTab({
       </div>
 
       {/* COLUMNA DERECHA */}
-      <div className="md:col-start-8 md:col-end-13 md:row-start-1 md:row-span-2 flex flex-col gap-3">
+      <div className="md:col-span-5 flex flex-col gap-3 h-full">
         {/* ACCIONES DE CONTACTO Y FEEDBACK */}
         <section>
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-2 grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -329,7 +329,7 @@ export function FichaTab({
         </section>
 
         {/* AGENDA DE ACCIONES */}
-        <section className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-xs flex flex-col">
+        <section className="bg-white rounded-2xl p-3.5 border border-slate-200/80 shadow-xs flex flex-col justify-between flex-1">
           <h3 className="text-xs font-bold text-slate-800 flex items-center gap-2 mb-2 uppercase tracking-wider">
             <div className="p-1 bg-emerald-50 text-emerald-600 rounded-lg border border-emerald-100/70"><CalendarIcon size={15} /></div> AGENDA DE ACCIONES
           </h3>
@@ -410,7 +410,7 @@ export function FichaTab({
 
           {/* LISTADO DE ACCIONES PENDIENTES */}
           {tasks.filter(t => !t.completed).length > 0 && (
-            <div className="mt-4 space-y-2 max-h-[200px] overflow-y-auto pr-1">
+            <div className="mt-3 space-y-2 flex-1 min-h-0 overflow-y-auto pr-1 custom-scrollbar">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <Clock size={12} /> Acciones pendientes de realizar ({tasks.filter(t => !t.completed).length})
               </p>
