@@ -1,5 +1,6 @@
 // src/pages/Inventory.tsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Search,
   Edit2,
@@ -63,6 +64,7 @@ const currencyFormatter = new Intl.NumberFormat('es-ES', { style: 'currency', cu
 const currencyFormatterCompact = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
 
 export default function Inventory() {
+  const navigate = useNavigate();
   const { data: settings } = useSettings();
   const { activePromotion, activePromotionId } = usePromotion();
   const [properties, setProperties] = useState<Property[]>([]);
@@ -445,7 +447,7 @@ export default function Inventory() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => window.open('/edificio-3d', '_self')}
+              onClick={() => navigate('/edificio-3d')}
               className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200/80 shadow-xs"
               title="Abrir maqueta 3D interactiva"
             >
@@ -791,7 +793,11 @@ export default function Inventory() {
 
                         <button
                           type="button"
-                          onClick={() => window.open(`https://lubens-farnesio.netlify.app/#unit=${property.portal}-${property.planta}-${property.letra}`, '_blank')}
+                          onClick={() => {
+                            const isFarnesioProp = property.promocion === 'farnesio' || property.portal === '1A' || property.portal === '1B';
+                            const target3d = isFarnesioProp ? 'https://lubens-farnesio.netlify.app/' : 'https://lubens-arroyo.netlify.app/';
+                            window.open(`${target3d}#unit=${property.portal}-${property.planta}-${property.letra}`, '_blank');
+                          }}
                           className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
                           title="Ver en Maqueta 3D"
                         >

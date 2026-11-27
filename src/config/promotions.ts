@@ -21,6 +21,7 @@ export interface PromotionConfig {
   installmentCount: number;
   deedPercentage: number;
   badgeColor: string;
+  app3dUrl: string;
 }
 
 export const PROMOTIONS: Record<'arroyo' | 'farnesio', PromotionConfig> = {
@@ -46,7 +47,8 @@ export const PROMOTIONS: Record<'arroyo' | 'farnesio', PromotionConfig> = {
     installmentPercentage: 10,
     installmentCount: 18,
     deedPercentage: 80,
-    badgeColor: 'bg-blue-600'
+    badgeColor: 'bg-blue-600',
+    app3dUrl: 'https://lubens-arroyo.netlify.app/'
   },
   farnesio: {
     id: 'farnesio',
@@ -70,7 +72,8 @@ export const PROMOTIONS: Record<'arroyo' | 'farnesio', PromotionConfig> = {
     installmentPercentage: 10,
     installmentCount: 18,
     deedPercentage: 80,
-    badgeColor: 'bg-emerald-600'
+    badgeColor: 'bg-emerald-600',
+    app3dUrl: 'https://lubens-farnesio.netlify.app/'
   }
 };
 
