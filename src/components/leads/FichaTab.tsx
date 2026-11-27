@@ -387,25 +387,23 @@ export function FichaTab({
                 </div>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Descripción</label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder={editingTaskId ? "Modificar descripción..." : "Ej: Llamar para confirmar visita"}
-                    value={newTask.title}
-                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                    className="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-xs outline-none transition-all"
-                  />
-                  <button type="button"
-                    onClick={() => saveTask()}
-                    disabled={loading || !newTask.title}
-                    className="px-5 rounded-xl flex items-center justify-center gap-1.5 text-white text-xs font-bold tracking-wider transition-all shadow-xs active:scale-95 disabled:opacity-50 bg-[#15a870] hover:bg-[#128f5f]"
-                  >
-                    {loading ? <Loader2 size={15} className="animate-spin" /> : editingTaskId ? <Save size={15} /> : <Plus size={15} />}
-                    {editingTaskId ? 'Guardar' : 'Añadir'}
-                  </button>
-                </div>
+                <textarea
+                  rows={3}
+                  placeholder={editingTaskId ? "Modificar descripción..." : "Ej: Llamar para confirmar visita"}
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                  className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-xs outline-none transition-all resize-none leading-relaxed"
+                />
+                <button type="button"
+                  onClick={() => saveTask()}
+                  disabled={loading || !newTask.title}
+                  className="w-full py-2 rounded-xl flex items-center justify-center gap-1.5 text-white text-xs font-bold tracking-wider transition-all shadow-xs active:scale-95 disabled:opacity-50 bg-[#15a870] hover:bg-[#128f5f] cursor-pointer"
+                >
+                  {loading ? <Loader2 size={15} className="animate-spin" /> : editingTaskId ? <Save size={15} /> : <Plus size={15} />}
+                  <span>{editingTaskId ? 'Guardar' : 'Añadir'}</span>
+                </button>
               </div>
             </div>
           </div>
