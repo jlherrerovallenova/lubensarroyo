@@ -49,7 +49,23 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
   const [pasteText, setPasteText] = useState('');
   const [showPaste, setShowPaste] = useState(false);
 
-  // Asegurar que al abrirse se limpie cualquier borrador previo que pudiera quedar en localStorage
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      email: '',
+      secondary_email: '',
+      phone: '',
+      source: 'Idealista',
+      promocion_interes: defaultPromotionId || 'arroyo',
+      assigned_to: defaultCommercial,
+      notes: ''
+    });
+    setPasteText('');
+    setShowPaste(false);
+    setErrorMsg(null);
+  };
+
+  // Limpiar cualquier borrador en localStorage al montar el modal
   useEffect(() => {
     try {
       localStorage.removeItem('draft-create-lead');
@@ -202,6 +218,11 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
     setPasteText('');
   };
 
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -243,6 +264,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
 
       createMutation.mutate(payload, {
         onSuccess: () => {
+          resetForm();
           onSuccess();
           onClose();
         },
@@ -273,7 +295,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
           </div>
           <button 
             type="button" 
-            onClick={onClose} 
+            onClick={handleClose} 
             className="p-2 hover:bg-slate-100 rounded-xl transition-colors text-slate-400 hover:text-slate-600"
             title="Cerrar"
           >
@@ -464,7 +486,7 @@ export default function CreateLeadModal({ isOpen, onClose, onSuccess, defaultPro
           <div className="pt-2 flex gap-3">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="flex-1 px-4 py-2.5 text-slate-500 font-bold text-sm hover:bg-slate-100 rounded-xl transition-all"
             >
               Cancelar

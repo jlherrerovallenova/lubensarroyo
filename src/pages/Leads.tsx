@@ -314,12 +314,14 @@ export default function Leads() {
         )}
       </Card>
 
-      <CreateLeadModal 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
-        defaultPromotionId={activePromotionId}
-        onSuccess={() => { refetch(); showMsg('success', '¡Completado!', 'Cliente creado.'); }} 
-      />
+      {isCreateModalOpen && (
+        <CreateLeadModal 
+          isOpen={isCreateModalOpen} 
+          onClose={() => setIsCreateModalOpen(false)} 
+          defaultPromotionId={activePromotionId}
+          onSuccess={() => { refetch(); showMsg('success', '¡Completado!', 'Cliente creado.'); }} 
+        />
+      )}
       {selectedLead && <LeadDetailModal lead={selectedLead} onClose={() => setSelectedLead(null)} onUpdate={(del) => { refetch(); showMsg(del ? 'success' : 'info', del ? 'Borrado' : 'Actualizado', del ? 'Cliente borrado.' : 'Cambios guardados.'); }} />}
       {emailLead && <EmailComposerModal isOpen={!!emailLead} onClose={() => { setEmailLead(null); setInitialTemplate(undefined); }} leadId={emailLead.id} leadName={emailLead.name!} leadEmail={emailLead.email} leadPhone={emailLead.phone} availableDocs={availableDocs} onSentSuccess={() => showMsg('success', 'Mensaje enviado', 'Registrado.')} initialMethod={initialMethod} initialTemplate={initialTemplate} />}
       {notification.show && <AppNotification title={notification.title} message={notification.message} type={notification.type} onClose={() => setNotification({ ...notification, show: false })} />}
